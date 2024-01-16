@@ -1,55 +1,13 @@
-{{-- resources/views/proxmox/show.blade.php --}}
-
 @extends('layouts.app')
 
 @section('content')
-    <div class ="container">
-        <h1><strong>Proxmox Data</strong></h1>
-        <h2 class="text-center">Cluster Data</h2>
-        {{-- Mostrar datos de Cluster --}}
-        <table class="table table-dark table-hover table-bordered">
-            <thead class="table-dark">
-                <tr>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Cantidad de nodos</th>
-                    <th scope="col">id de proxmox</th>
-                    <th scope="col">Última actualización</th>
-                    <th scope="col">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($clusters as $cluster)
-                    <tr>
-                        <td>{{ $cluster->name }}</td>
-                        <td>{{ $cluster->type }}</td>
-                        <td>{{ $cluster->node_count }}</td>
-                        <td>{{ $cluster->id_proxmox }}</td>
-                        <td>{{ \Carbon\Carbon::parse($cluster->updated_at)->format('d/m/Y H:i') }}</td>
-                        <td>
-                            <div class="d-flex justify-content-center">
-                            <form action="{{ route('proxmox.cluster.destroy', $cluster->name) }}" method="POST">
-                                <a class="btn btn-secondary btn-sm " href="/proxmox/cluster/{{ $cluster->name }}">Mostrar</a>
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm ">Borrar</button>
-                            </form>
-                            </div>
-                        </td>
-
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-
-
+    <div class="container">
         <h2 class="text-center">Node Data</h2>
 
         {{-- Mostrar datos de Node --}}
         <table class="table table-dark table-hover table-bordered">
             <thead>
                 <tr>
-                    <th scope="col">Nombre Cluster</th>
                     <th scope="col">id de proxmox</th>
                     <th scope="col">Tipo</th>
                     <th scope="col">Estado</th>
@@ -70,8 +28,6 @@
             <tbody>
                 @foreach ($nodes as $node)
                     <tr>
-
-                        <td>{{ $node->cluster_name }}</td>
                         <td>{{ $node->id_proxmox }}</td>
                         <td>{{ $node->type }}</td>
                         <td>{{ $node->status }}</td>
@@ -114,7 +70,6 @@
                 @endforeach
             </tbody>
         </table>
-
 
         <h2 class="text-center">Qemu Data</h2>
         {{-- boton para exportar a excel --}}
@@ -240,3 +195,5 @@
         </table>
     </div>
 @endsection
+
+

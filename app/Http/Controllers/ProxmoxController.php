@@ -328,15 +328,72 @@ class ProxmoxController extends Controller
             $node = node::find($qemu->node_id);
             $qemu->cluster_name = $node->cluster_name;
         }
+        //transformar el maxmem de bytes a gigabytes
+        foreach ($qemus as $qemu) {
+            $qemu->maxmem = ($qemu->maxmem / 1024 / 1024 / 1024)." Gb";
+        }
         $csvExporter = new \Laracsv\Export();
-        $csvExporter->build($qemus, ['id_proxmox', 'name', 'status', 'node_id', 'size', 'disk', 'cpu', 'mem', 'uptime', 'type', 'cluster_name'])->download();
+        $csvExporter->build($qemus, ['id_proxmox', 'name', 'status', 'node_id', 'size', 'disk', 'maxcpu', 'maxmem',  'type', 'cluster_name', 'storageName'])->download();
     }
 
-    public function searchQemu()
+    public function searchQemu(Request $request)
     {
-        $search_text = $_GET['query'];
-        $qemus = qemu::where('name', 'LIKE', '%' . $search_text . '%')->get();
+        $search = $request->get('search');
+        $qemus = Qemu::where('name', 'like', '%' . $search . '%')->paginate(5);
         return view('proxmox.qemu', ['qemus' => $qemus]);
     }
 
+    public function showByIdNode($node)
+    {
+        $node = 'node/'.$node;
+        
+        $nodes = node::where('id_proxmox', $node)->get();
+        foreach ($nodes as $node) {
+            $qemus = Qemu::where('node_id', $node->id_proxmox)->get();
+            $storages = Storage::where('node_id', $node->id_proxmox)->get();
+        }
+
+        // Inicializa un arreglo para almacenar las sumas de size por node_id
+        $sizeSumByNodeId = [];
+        $storageLocalMax = [];
+
+        // suma maxdisk del storage asociado al node_id y almacenarla en storageLocalMax
+        // no sumar "Backup-Virt"
+        foreach ($storages as $storage) {
+            $nodeId = $storage->node_id;
+            $maxdisk = $storage->maxdisk;
+            $storageName = $storage->storage;
+
+            if (!isset($storageLocalMax[$nodeId])) {
+                $storageLocalMax[$nodeId] = 0;
+            }
+
+            if ($storageName != 'Backup-Virt') {
+                $storageLocalMax[$nodeId] += $maxdisk;
+            }
+        }
+
+        // Recorre todos los qemus y suma sus sizes por node_id
+        foreach ($qemus as $qemu) {
+            $nodeId = $qemu->node_id;
+            $size = $this->getSizeInBytes($qemu->size);
+
+            if (!isset($sizeSumByNodeId[$nodeId])) {
+                $sizeSumByNodeId[$nodeId] = 0;
+            }
+
+            $sizeSumByNodeId[$nodeId] += $size;
+        }
+
+        return view(
+            'proxmox.node.show',
+            [
+                'nodes' => $nodes,
+                'qemus' => $qemus,
+                'storages' => $storages,
+                'storageLocal' => $sizeSumByNodeId,
+                'storageLocalMax' => $storageLocalMax
+            ]
+        );
+    }
 }

@@ -24,6 +24,7 @@ use App\Models\tabla as ModelsTabla;
 
 
 
+Auth::routes(['register' => false]);
 
 Route::get('/proxmox/fetch', [ProxmoxController::class, 'getData']);
 Route::get('/proxmox', [ProxmoxController::class, 'index'])->name('proxmox.index');
@@ -58,5 +59,4 @@ Route::get('/', function () {
 // Route::resource('table', TablaController::class);
 
 
-Auth::routes();
 
