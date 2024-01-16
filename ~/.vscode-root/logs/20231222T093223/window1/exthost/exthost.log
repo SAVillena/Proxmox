@@ -1,0 +1,42 @@
+2023-12-22 09:32:25.021 [info] Extension host with pid 8183 started
+2023-12-22 09:32:25.209 [info] ExtensionService#_doActivateExtension vscode.git-base, startup: true, activationEvent: '*', root cause: vscode.git
+2023-12-22 09:32:25.269 [info] ExtensionService#_doActivateExtension vscode.git, startup: true, activationEvent: '*'
+2023-12-22 09:32:25.349 [info] ExtensionService#_doActivateExtension vscode.github, startup: true, activationEvent: '*'
+2023-12-22 09:32:25.438 [info] Eager extensions activated
+2023-12-22 09:32:25.464 [info] ExtensionService#_doActivateExtension vscode.debug-auto-launch, startup: false, activationEvent: 'onStartupFinished'
+2023-12-22 09:32:25.468 [info] ExtensionService#_doActivateExtension vscode.merge-conflict, startup: false, activationEvent: 'onStartupFinished'
+2023-12-22 09:32:38.101 [info] ExtensionService#_doActivateExtension vscode.emmet, startup: false, activationEvent: 'onLanguage'
+2023-12-22 09:33:15.112 [info] Extension host terminating: renderer closed the MessagePort
+2023-12-22 09:33:15.136 [info] Extension host with pid 8183 exiting with code 0
+2023-12-22 09:33:15.912 [info] Extension host with pid 8313 started
+2023-12-22 09:33:15.912 [info] Skipping acquiring lock for /home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/workspaceStorage/31374dd9d4a082367e394b8176992a9f.
+2023-12-22 09:33:15.951 [info] ExtensionService#_doActivateExtension vscode.git-base, startup: true, activationEvent: '*'
+2023-12-22 09:33:15.954 [info] ExtensionService#_doActivateExtension vscode.npm, startup: true, activationEvent: 'workspaceContains:package.json'
+2023-12-22 09:33:15.984 [info] ExtensionService#_doActivateExtension vscode.github, startup: true, activationEvent: '*'
+2023-12-22 09:33:16.064 [info] Eager extensions activated
+2023-12-22 09:33:16.123 [info] ExtensionService#_doActivateExtension vscode.debug-auto-launch, startup: false, activationEvent: 'onStartupFinished'
+2023-12-22 09:33:16.125 [info] ExtensionService#_doActivateExtension vscode.merge-conflict, startup: false, activationEvent: 'onStartupFinished'
+2023-12-22 09:33:18.400 [info] ExtensionService#_doActivateExtension vscode.git, startup: false, activationEvent: 'api', root cause: vscode.github
+2023-12-22 09:33:40.989 [info] ExtensionService#_doActivateExtension vscode.extension-editing, startup: false, activationEvent: 'onLanguage:markdown'
+2023-12-22 09:33:41.011 [info] ExtensionService#_doActivateExtension vscode.markdown-language-features, startup: false, activationEvent: 'onLanguage:markdown'
+2023-12-22 09:33:41.112 [info] ExtensionService#_doActivateExtension vscode.emmet, startup: false, activationEvent: 'onLanguage'
+2023-12-22 09:33:41.600 [info] ExtensionService#_doActivateExtension vscode.markdown-math, startup: false, activationEvent: 'api', root cause: vscode.markdown-language-features
+2023-12-22 09:34:01.779 [info] ExtensionService#_doActivateExtension vscode.php-language-features, startup: false, activationEvent: 'onLanguage:php'
+2023-12-22 09:34:01.792 [info] ExtensionService#_doActivateExtension bmewburn.vscode-intelephense-client, startup: false, activationEvent: 'onLanguage:php'
+2023-12-22 09:34:33.757 [info] ExtensionService#_doActivateExtension onecentlin.laravel-blade, startup: false, activationEvent: 'onLanguage:blade'
+2023-12-22 15:56:41.628 [info] Extension host terminating: renderer closed the MessagePort
+2023-12-22 15:56:41.713 [error] An error occurred when deactivating the subscriptions for extension 'bmewburn.vscode-intelephense-client':
+2023-12-22 15:56:41.715 [error] TypeError: Cannot read private member #e from an object whose class did not declare it
+	at Object.dispose (/snap/code/148/usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:137:3693)
+	at s (/snap/code/148/usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:30:754)
+	at f.cb (/snap/code/148/usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:154:9873)
+	at /snap/code/148/usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:154:7808
+	at Array.map (<anonymous>)
+	at f.Y (/snap/code/148/usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:154:7795)
+	at f.terminate (/snap/code/148/usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:154:8068)
+	at s.terminate (/snap/code/148/usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:158:1513)
+	at a (/snap/code/148/usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:171:9802)
+	at MessagePortMain.<anonymous> (/snap/code/148/usr/share/code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:171:6227)
+	at MessagePortMain.emit (node:events:513:28)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:367)
+2023-12-22 15:56:41.743 [info] Extension host with pid 8313 exiting with code 0

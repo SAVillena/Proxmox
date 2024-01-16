@@ -1,0 +1,297 @@
+[Info  - 09:34:02] Initialising intelephense 1.10.2
+[Info  - 09:34:02] Initialised in 6 ms
+[Info  - 09:34:02] Environment changed. Refreshing 1 in memory documents.
+[Info  - 09:34:02] Searching file:///root/.vscode/extensions/bmewburn.vscode-intelephense-client-1.10.2/node_modules/intelephense/lib/stub for files to index.
+[Info  - 09:34:02] Searching file:///home/svillena/Escritorio/Laravel/prueba for files to index.
+[Warn  - 09:34:02] file:///home/svillena/Escritorio/Laravel/prueba/vendor/fakerphp/faker/src/Faker/Provider/nl_BE/Text.php is over the maximum file size of 1000000 bytes.
+[Info  - 09:34:02] Indexing started.
+[Info  - 09:34:03] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/globalStorage/bmewburn.vscode-intelephense-client for files to index.
+[Info  - 09:34:03] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/workspaceStorage/31374dd9d4a082367e394b8176992a9f/bmewburn.vscode-intelephense-client for files to index.
+[Info  - 09:34:03] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/logs/20231222T093223/window1/exthost/output_logging_20231222T093315 for files to index.
+[Info  - 09:34:10] Indexing ended. 7343 files indexed in 7s.
+[Info  - 09:34:10] Writing state to /home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/workspaceStorage/31374dd9d4a082367e394b8176992a9f/bmewburn.vscode-intelephense-client/5bf83c87.
+[Info  - 09:34:10] Wrote state in 0.6s.
+[Info  - 09:34:34] Indexing started.
+[Info  - 09:34:34] Indexing ended. 1 files indexed in 0s.
+[Info  - 09:40:24] Indexing started.
+[Info  - 09:40:24] Indexing ended. 1 files indexed in 0s.
+[Info  - 09:43:36] Indexing started.
+[Info  - 09:43:36] Indexing ended. 1 files indexed in 0s.
+[Info  - 09:45:49] Indexing started.
+[Info  - 09:45:49] Indexing ended. 1 files indexed in 0s.
+[Info  - 09:46:17] Indexing started.
+[Info  - 09:46:17] Indexing ended. 1 files indexed in 0s.
+[Info  - 09:52:06] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/Backups/828b43792440e285712d869b719eeae1 for files to index.
+[Info  - 09:52:06] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/Backups/828b43792440e285712d869b719eeae1/file for files to index.
+[Info  - 09:52:10] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/History/-2d8c1750 for files to index.
+[Info  - 09:54:47] Indexing started.
+[Info  - 09:54:47] Indexing ended. 1 files indexed in 0s.
+[Info  - 09:55:00] Indexing started.
+[Info  - 09:55:00] Indexing ended. 1 files indexed in 0s.
+[Info  - 09:55:34] Indexing started.
+[Info  - 09:55:34] Indexing ended. 1 files indexed in 0s.
+[Info  - 09:56:01] Indexing started.
+[Info  - 09:56:01] Indexing ended. 1 files indexed in 0s.
+[Info  - 09:56:52] Indexing started.
+[Info  - 09:56:53] Indexing ended. 1 files indexed in 0s.
+[Info  - 09:58:51] Indexing started.
+[Info  - 09:58:51] Indexing ended. 1 files indexed in 0s.
+[Info  - 09:59:35] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/History/dd4fe22 for files to index.
+[Info  - 09:59:35] Indexing started.
+[Info  - 09:59:36] Indexing ended. 1 files indexed in 0s.
+[Info  - 09:59:41] Indexing started.
+[Info  - 09:59:41] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:00:51] Indexing started.
+[Info  - 10:00:52] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:07:39] Indexing started.
+[Info  - 10:07:40] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:08:13] Indexing started.
+[Info  - 10:08:14] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:08:48] Indexing started.
+[Info  - 10:08:48] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:09:24] Indexing started.
+[Info  - 10:09:24] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:09:25] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/History/-2b5cced6 for files to index.
+[Info  - 10:09:25] Indexing started.
+[Info  - 10:09:25] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:10:23] Indexing started.
+[Info  - 10:10:23] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:11:20] Indexing started.
+[Info  - 10:11:20] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:12:22] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/History/-66ca16f6 for files to index.
+[Warn  - 10:12:22] Error: ENOENT: no such file or directory, stat '/home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/History/-2b5cced6/entries.json'
+[Info  - 10:12:22] Indexing started.
+[Info  - 10:12:22] Indexing ended. 2 files indexed in 0s.
+[Info  - 10:12:42] Indexing started.
+[Info  - 10:12:43] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:13:15] Indexing started.
+[Info  - 10:13:16] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:13:18] Indexing started.
+[Info  - 10:13:18] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:13:27] Indexing started.
+[Info  - 10:13:27] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:13:34] Indexing started.
+[Info  - 10:13:34] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:14:39] Indexing started.
+[Info  - 10:14:39] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:15:51] Indexing started.
+[Info  - 10:15:51] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:19:27] Indexing started.
+[Info  - 10:19:27] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:19:33] Indexing started.
+[Info  - 10:19:33] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:21:43] Indexing started.
+[Info  - 10:21:44] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:22:19] Indexing started.
+[Info  - 10:22:20] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:22:51] Indexing started.
+[Info  - 10:22:51] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:23:20] Indexing started.
+[Info  - 10:23:21] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:23:34] Indexing started.
+[Info  - 10:23:34] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:23:56] Indexing started.
+[Info  - 10:23:56] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:24:18] Indexing started.
+[Info  - 10:24:18] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:24:24] Indexing started.
+[Info  - 10:24:24] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:25:24] Indexing started.
+[Info  - 10:25:24] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:27:17] Indexing started.
+[Info  - 10:27:17] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:32:35] Indexing started.
+[Info  - 10:32:35] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:34:21] Indexing started.
+[Info  - 10:34:21] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:41:41] Indexing started.
+[Info  - 10:41:41] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:44:56] Indexing started.
+[Info  - 10:44:56] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:44:58] Indexing started.
+[Info  - 10:44:58] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:46:06] Indexing started.
+[Info  - 10:46:06] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:46:09] Indexing started.
+[Info  - 10:46:09] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:46:33] Indexing started.
+[Info  - 10:46:33] Indexing ended. 1 files indexed in 0s.
+[Info  - 10:46:47] Indexing started.
+[Info  - 10:46:47] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:07:43] Indexing started.
+[Info  - 11:07:43] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:10:30] Indexing started.
+[Info  - 11:10:30] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:10:57] Indexing started.
+[Info  - 11:10:57] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:19:40] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/History/-6f5946f9 for files to index.
+[Info  - 11:19:40] Indexing started.
+[Info  - 11:19:40] Indexing ended. 2 files indexed in 0s.
+[Info  - 11:19:46] Indexing started.
+[Info  - 11:19:47] Indexing ended. 2 files indexed in 0s.
+[Info  - 11:19:55] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/History/-66ca16f6 for files to index.
+[Info  - 11:19:55] Indexing started.
+[Info  - 11:19:55] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:21:14] Indexing started.
+[Info  - 11:21:14] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:22:09] Indexing started.
+[Info  - 11:22:09] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:22:32] Indexing started.
+[Info  - 11:22:32] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:22:48] Indexing started.
+[Info  - 11:22:48] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:22:55] Indexing started.
+[Info  - 11:22:55] Indexing ended. 1 files indexed in 0s.
+[Warn  - 11:22:59] Error: ENOENT: no such file or directory, stat '/home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/.org.chromium.Chromium.xm0q5T'
+[Info  - 11:24:37] Indexing started.
+[Info  - 11:24:38] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:24:50] Indexing started.
+[Info  - 11:24:51] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:26:13] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/History/2c44a722 for files to index.
+[Info  - 11:26:13] Indexing started.
+[Info  - 11:26:13] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:26:21] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/History/-66ca16f6 for files to index.
+[Info  - 11:26:21] Indexing started.
+[Info  - 11:26:21] Indexing ended. 2 files indexed in 0s.
+[Info  - 11:29:21] Indexing started.
+[Info  - 11:29:21] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:35:56] Indexing started.
+[Info  - 11:35:56] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:38:33] Indexing started.
+[Info  - 11:38:33] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:39:40] Indexing started.
+[Info  - 11:39:40] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:40:30] Indexing started.
+[Info  - 11:40:30] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:43:13] Indexing started.
+[Info  - 11:43:13] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:44:18] Indexing started.
+[Info  - 11:44:18] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:44:25] Indexing started.
+[Info  - 11:44:25] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:44:29] Indexing started.
+[Info  - 11:44:29] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:44:57] Indexing started.
+[Info  - 11:44:58] Indexing ended. 1 files indexed in 0s.
+[Info  - 11:47:07] Indexing started.
+[Info  - 11:47:07] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:41:12] Indexing started.
+[Info  - 12:41:12] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:42:33] Indexing started.
+[Info  - 12:42:33] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:43:05] Indexing started.
+[Info  - 12:43:05] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:43:44] Indexing started.
+[Info  - 12:43:44] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:43:47] Indexing started.
+[Info  - 12:43:47] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:44:08] Indexing started.
+[Info  - 12:44:08] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:44:10] Indexing started.
+[Info  - 12:44:10] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:45:32] Indexing started.
+[Info  - 12:45:32] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:45:35] Indexing started.
+[Info  - 12:45:35] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:46:21] Indexing started.
+[Info  - 12:46:21] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:46:35] Indexing started.
+[Info  - 12:46:35] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:53:36] Indexing started.
+[Info  - 12:53:36] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:53:59] Indexing started.
+[Info  - 12:53:59] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:55:01] Indexing started.
+[Info  - 12:55:01] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:55:04] Indexing started.
+[Info  - 12:55:04] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:55:24] Indexing started.
+[Info  - 12:55:25] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:55:27] Indexing started.
+[Info  - 12:55:28] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:55:52] Indexing started.
+[Info  - 12:55:52] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:55:55] Indexing started.
+[Info  - 12:55:55] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:56:24] Indexing started.
+[Info  - 12:56:24] Indexing ended. 1 files indexed in 0s.
+[Info  - 12:56:27] Indexing started.
+[Info  - 12:56:28] Indexing ended. 1 files indexed in 0s.
+[Info  - 13:16:02] Indexing started.
+[Info  - 13:16:02] Indexing ended. 1 files indexed in 0s.
+[Info  - 13:21:04] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/carbonphp for files to index.
+[Info  - 13:21:04] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/carbonphp/carbon-doctrine-types for files to index.
+[Info  - 13:21:04] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor for files to index.
+[Warn  - 13:21:06] file:///home/svillena/Escritorio/Laravel/prueba/vendor/fakerphp/faker/src/Faker/Provider/nl_BE/Text.php is over the maximum file size of 1000000 bytes.
+[Info  - 13:21:06] Indexing started.
+[Warn  - 13:21:08] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/mockery/mockery/fixtures/autoload.php'
+[Warn  - 13:21:08] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/nikic/php-parser/grammar/phpyLang.php'
+[Warn  - 13:21:08] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/nikic/php-parser/grammar/rebuildParsers.php'
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/guzzlehttp/guzzle for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/guzzlehttp/promises for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/guzzlehttp/psr7 for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/carbonphp/carbon-doctrine-types for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/guzzlehttp/uri-template for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/laravel/framework for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/laravel/pint for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/laravel/sail for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/league/flysystem for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/league/flysystem-local for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/mockery/mockery for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/nesbot/carbon for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/nikic/php-parser for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/php-code-coverage for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/sebastian/complexity for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/sebastian/diff for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/sebastian/lines-of-code for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/spatie/laravel-ignition for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/symfony/console for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/symfony/css-selector for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/symfony/http-kernel for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/symfony/routing for files to index.
+[Info  - 13:21:08] Searching file:///home/svillena/Escritorio/Laravel/prueba/vendor/tijsverkoyen/css-to-inline-styles for files to index.
+[Warn  - 13:21:11] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/nesbot/carbon/src/Carbon/Doctrine/CarbonDoctrineType.php'
+[Warn  - 13:21:11] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/nesbot/carbon/src/Carbon/Doctrine/CarbonImmutableType.php'
+[Warn  - 13:21:11] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/nesbot/carbon/src/Carbon/Doctrine/CarbonType.php'
+[Warn  - 13:21:11] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/nesbot/carbon/src/Carbon/Doctrine/CarbonTypeConverter.php'
+[Warn  - 13:21:11] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/nesbot/carbon/src/Carbon/Doctrine/DateTimeDefaultPrecision.php'
+[Warn  - 13:21:11] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/nesbot/carbon/src/Carbon/Doctrine/DateTimeImmutableType.php'
+[Warn  - 13:21:11] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/nesbot/carbon/src/Carbon/Doctrine/DateTimeType.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/TestResult.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/TestResultCollection.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/TestResultCollectionIterator.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/TestResultCollector.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/Subscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestConsideredRiskySubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestCreatedMockObjectForAbstractClassSubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestCreatedMockObjectForTraitSubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestCreatedMockObjectFromWsdlSubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestCreatedMockObjectSubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestCreatedPartialMockObjectSubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestCreatedTestProxySubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestCreatedTestStubSubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestErroredSubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestFailedSubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestFinishedSubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestMarkedIncompleteSubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestPassedSubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestPreparedSubscriber.php'
+[Warn  - 13:21:13] Error: ENOENT: no such file or directory, open '/home/svillena/Escritorio/Laravel/prueba/vendor/phpunit/phpunit/src/Logging/TestDox/TestMethod/Subscriber/TestSkippedSubscriber.php'
+[Info  - 13:21:17] Indexing ended. 15486 files indexed in 10s.
+[Info  - 13:26:06] Indexing started.
+[Info  - 13:26:07] Indexing ended. 1 files indexed in 0s.
+[Info  - 13:27:22] Indexing started.
+[Info  - 13:27:22] Indexing ended. 1 files indexed in 0s.
+[Info  - 13:29:01] Indexing started.
+[Info  - 13:29:01] Indexing ended. 1 files indexed in 0s.
+[Info  - 13:33:12] Indexing started.
+[Info  - 13:33:12] Indexing ended. 1 files indexed in 0s.
+[Info  - 13:34:26] Indexing started.
+[Info  - 13:34:26] Indexing ended. 1 files indexed in 0s.
+[Info  - 13:35:04] Indexing started.
+[Info  - 13:35:04] Indexing ended. 1 files indexed in 0s.
+[Info  - 13:37:03] Indexing started.
+[Info  - 13:37:03] Indexing ended. 1 files indexed in 0s.
+[Warn  - 15:46:15] Error: ENOENT: no such file or directory, stat '/home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/.org.chromium.Chromium.fzO0FS'
+[Info  - 15:46:27] Searching file:///home/svillena/Escritorio/Laravel/prueba/~/.vscode-root/User/History/-f0fec76 for files to index.
