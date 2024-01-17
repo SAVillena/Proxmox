@@ -3,7 +3,7 @@
 @extends('layouts.app')
 
 @section('content')
-       <div class="justify-content-start px-3">
+       <div class="justify-content-start px-3 py-3">
         <h1><strong>Proxmox Data</strong></h1>
         <h2 class="text-center">Cluster Data</h2>
         {{-- Mostrar datos de Cluster --}}
@@ -138,7 +138,6 @@
                     <th scope="col">RAM Usado</th>
                     <th scope="col">RAM Maximo</th>
                     <th scope="col">Tiempo activo</th>
-                    <th scope="col">Tamaño asignado</th>
                     <th scope="col">Nombre del storage</th>
                     <th scope="col">Última actualización</th>
 
@@ -169,10 +168,18 @@
                             <td>{{ round($qemu->maxdisk / 1073741824, 2) }} GB</td>
                         @endif
 
-                        <td>{{ round($qemu->mem / 1073741824, 2) }} GB</td>
+                        <td>
+                            <div class="progress" style="width: 100px;" title="{{ round($qemu->mem / $qemu->maxmem, 4) * 100 }}%">
+                                <div class="progress-bar 
+                                            {{ $qemu->mem / $qemu->maxmem * 100 <= 50 ? 'bg-success' : ($qemu->mem / $qemu->maxmem * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
+                                    role="progressbar" style="width: {{ $qemu->mem / $qemu->maxmem * 100 }}%"
+                                    aria-valuenow="{{ $qemu->mem / $qemu->maxmem * 100 }}" aria-valuemin="0"
+                                    aria-valuemax="100">
+                                    {{ round($qemu->mem / $qemu->maxmem, 4) * 100 }}%
+                                </div>
+                            </div>
                         <td>{{ round($qemu->maxmem / 1073741824, 2) }} GB</td>
                         <td>{{ $qemu->netin }}</td>
-                        <td>{{ $qemu->size }}</td>
                         <td>{{ $qemu->storageName }}</td>
                         <td>{{ \Carbon\Carbon::parse($qemu->updated_at)->format('d/m/Y H:i') }}</td>
 

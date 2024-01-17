@@ -52,6 +52,7 @@ Route::get('/proxmox/storage/search', [ProxmoxController::class, 'searchStorage'
 
 Route::get('/home', [ProxmoxController::class, 'home'])->name('proxmox.home');
 Route::get('/proxmox/history', [ProxmoxController::class, 'showVMHistory'])->name('proxmox.history'); 
+Route::get('/proxmox/historyAnual', [ProxmoxController::class, 'showVMHistory'])->name('proxmox.history'); 
 
 
 Route::get('/', function () {

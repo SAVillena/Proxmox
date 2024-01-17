@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="justify-content-start px-3">
+    <div class="justify-content-start px-3 py-3">
         <h2 class="text-center">Node Data</h2>
 
         {{-- Mostrar datos de Node --}}
@@ -71,11 +71,7 @@
             </tbody>
         </table>
 
-        <h2 class="text-center">Qemu Data</h2>
-        {{-- boton para exportar a excel --}}
-        <div class="d-flex justify-content-start mb-3">
-            <a href="{{ route('proxmox.export') }}" class="btn btn-success">Exportar a Excel</a>
-        </div>
+        <h2 class="text-center py-3">Qemu Data</h2>
         {{-- Mostrar datos de Qemu --}}
         <table class="table table-dark table-hover table-bordered">
             <thead>
@@ -89,10 +85,9 @@
                     <th scope="col">CPU</th>
                     <th scope="col">Carga de Cpu</th>
                     <th scope="col">Disco asignado</th>
-                    <th scope="col">RAM usado</th>
-                    <th scope="col">RAM maximo</th>
+                    <th scope="col">RAM Usado</th>
+                    <th scope="col">RAM Maximo</th>
                     <th scope="col">Tiempo activo</th>
-                    <th scope="col">Tamaño asignado</th>
                     <th scope="col">Nombre del storage</th>
                     <th scope="col">Última actualización</th>
 
@@ -123,10 +118,18 @@
                             <td>{{ round($qemu->maxdisk / 1073741824, 2) }} GB</td>
                         @endif
 
-                        <td>{{ round($qemu->mem / 1073741824, 2) }} GB</td>
+                        <td>
+                            <div class="progress" style="width: 100px;" title="{{ round($qemu->mem / $qemu->maxmem, 4) * 100 }}%">
+                                <div class="progress-bar 
+                                            {{ $qemu->mem / $qemu->maxmem * 100 <= 50 ? 'bg-success' : ($qemu->mem / $qemu->maxmem * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
+                                    role="progressbar" style="width: {{ $qemu->mem / $qemu->maxmem * 100 }}%"
+                                    aria-valuenow="{{ $qemu->mem / $qemu->maxmem * 100 }}" aria-valuemin="0"
+                                    aria-valuemax="100">
+                                    {{ round($qemu->mem / $qemu->maxmem, 4) * 100 }}%
+                                </div>
+                            </div>
                         <td>{{ round($qemu->maxmem / 1073741824, 2) }} GB</td>
                         <td>{{ $qemu->netin }}</td>
-                        <td>{{ $qemu->size }}</td>
                         <td>{{ $qemu->storageName }}</td>
                         <td>{{ \Carbon\Carbon::parse($qemu->updated_at)->format('d/m/Y H:i') }}</td>
 
@@ -135,7 +138,7 @@
             </tbody>
         </table>
 
-        <h2 class="text-center">Storage Data</h2>
+        <h2 class="text-center py-3">Storage Data</h2>
         {{-- Mostrar datos de Storage --}}
         <table class="table table-dark table-hover table-bordered">
             <thead>
