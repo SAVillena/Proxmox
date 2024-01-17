@@ -400,6 +400,13 @@ class ProxmoxController extends Controller
             /*  return view('proxmox.node', ['nodes' => $nodes]); */   
     }
 
+    public function searchStorage(Request $request)
+    {
+        $search = $request->get('search');
+        $storages = Storage::where('storage', 'like', '%' . $search . '%')->paginate(100)->appends(['search' => $search]);
+        return view('proxmox.storage', ['storages' => $storages]);
+    }
+
     public function showByIdNode($node)
     {
         $node = 'node/'.$node;

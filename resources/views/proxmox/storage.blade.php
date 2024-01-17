@@ -3,6 +3,12 @@
 @section('content')
     <div class = "justify-content-start px-3">
         <h2 class ="text-center py-3"><strong>Storage Data</strong></h2>
+
+        <form action="{{ route('proxmox.searchStorage') }}" method="GET">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Buscar por nombre" name="search">
+                <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+            </div>
         {{-- Mostrar datos de Storage --}}
         <table class="table table-dark table-hover table-bordered">
             <thead>

@@ -47,6 +47,7 @@ Route::get('/proxmox/node/{node}', [ProxmoxController::class, 'showByIdNode'])->
 Route::get('/proxmox/export', [ProxmoxController::class, 'exportQemuCSV'])->name('proxmox.export');
 //buscarQemu
 Route::get('/proxmox/qemu/search', [ProxmoxController::class, 'searchQemu'])->name('proxmox.searchQemu');
+Route::get('/proxmox/storage/search', [ProxmoxController::class, 'searchStorage'])->name('proxmox.searchStorage');
 
 
 Route::get('/home', [App\Http\Controllers\ProxmoxController::class, 'home'])->name('proxmox.home');
