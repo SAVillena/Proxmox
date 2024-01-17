@@ -469,4 +469,10 @@ class ProxmoxController extends Controller
         $VMHistory = VirtualMachineHistory::all();
         return view('proxmox.history', ['VMHistory' => $VMHistory]);
     }
+
+    public function showVMHistoryAnual()
+    {
+        $VMHistory = VirtualMachineHistory::all();
+        return view('proxmox.historyAnual', ['VMHistory' => $VMHistory]);
+    }
 }

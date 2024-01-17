@@ -50,15 +50,15 @@ Route::get('/proxmox/qemu/search', [ProxmoxController::class, 'searchQemu'])->na
 Route::get('/proxmox/storage/search', [ProxmoxController::class, 'searchStorage'])->name('proxmox.searchStorage');
 
 
-Route::get('/home', [ProxmoxController::class, 'home'])->name('proxmox.home');
+Route::get('/', [ProxmoxController::class, 'home'])->name('proxmox.home');
 Route::get('/proxmox/history', [ProxmoxController::class, 'showVMHistory'])->name('proxmox.history'); 
-Route::get('/proxmox/historyAnual', [ProxmoxController::class, 'showVMHistory'])->name('proxmox.history'); 
+Route::get('/proxmox/historyAnual', [ProxmoxController::class, 'showVMHistoryAnual'])->name('proxmox.historyAnual'); 
 
 
-Route::get('/', function () {
+/* Route::get('/', function () {
     return view('welcome');
 });
-
+ */
 // Route::resource('table', TablaController::class);
 
 

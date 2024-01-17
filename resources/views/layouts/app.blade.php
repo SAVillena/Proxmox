@@ -28,16 +28,7 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
             <div class="container">
-                <a class="navbar-brand" href="{{ url('/home') }}">
-                    HOLDCO
-                </a>
-                
-                
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+              
             
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <!-- Left Side Of Navbar -->
@@ -51,11 +42,11 @@
                 <a href="{{ url('/proxmox/history') }}" class="navbar-brand">Historico</a>
 
 
-                {{-- introducir imagen en el centro --}}
+                
                
                 {{-- introducir imagen que esta en carpeta public--}}
-                <a class="navbar-brand ms-auto">
-                    <img src="{{ asset('holdco.jpeg') }}" alt="" width="300" height="100">
+                <a class="navbar-brand ms-auto" href="{{ url('/home') }}">
+                    <img src="{{ asset('holdco.jpeg') }}"  alt="" width="300" height="100">
                 </a>
 
                 <!-- Right Side Of Navbar -->
