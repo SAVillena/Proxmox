@@ -1,8 +1,14 @@
 @extends('layouts.app')
 @section('content')
-    <div class = "container py-2">
+<div class="justify-content-start px-3">
 
-        <h2 class="text-center">Node Data</h2>
+        <h2 class="text-center py-3"><strong>Node Data</strong></h2>
+
+        <form action="{{ route('proxmox.searchNode') }}" method="GET">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Buscar por nombre" name="search">
+                <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+            </div>
 
         {{-- Mostrar datos de Node --}}
         <table class="table table-dark table-hover table-bordered">
@@ -35,7 +41,6 @@
                         <td>{{ $node->type }}</td>
                         <td>{{ $node->status }}</td>
                         {{-- mostrar el uso de almacenamiento pero en gigas o teras segun corresponda, considera que esta en bytes --}}
-
                         @if ($storageLocal[$node->id_proxmox] >= 1099511627776)
                             <td>{{ round($storageLocal[$node->id_proxmox] / 1099511627776, 2) }} TB</td>
                         @else
@@ -59,8 +64,7 @@
                         </td>
                         <td>{{ \Carbon\Carbon::parse($node->updated_at)->format('d/m/Y H:i') }}</td>
                         <td>
-                            {{-- botones del mismo tamaño --}}
-                            <div class="d-flex justify-content-center">
+                            <div class="d-flex justify-content-center gap-1">
                                 <a class="btn btn-secondary btn-sm" href="/proxmox/node/{{ $node->node }}">Mostrar</a>
                                 <form action="{{ route('proxmox.cluster.node.destroy', $node->node) }}" method="POST">
                                     @csrf

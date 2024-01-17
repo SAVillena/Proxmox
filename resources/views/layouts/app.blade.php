@@ -29,7 +29,7 @@
         <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/home') }}">
-                    {{ config('app.name', 'Proxmox') }}
+                    HOLDCO
                 </a>
                 
                 
@@ -44,10 +44,10 @@
                 
                 
                 {{-- Texto para ir a /proxmox/node --}}
-                <a href="{{ url('/proxmox') }}" class="navbar-brand">Data</a>
+                <a href="{{ url('/proxmox') }}" class="navbar-brand">Datos</a>
                 <a href="{{ url('/proxmox/node') }}" class="navbar-brand">Nodo</a>
-                <a href="{{ url('/proxmox/qemu') }}" class="navbar-brand">Qemu</a>
-                <a href="{{ url('/proxmox/storage') }}" class="navbar-brand">Storage</a>
+                <a href="{{ url('/proxmox/qemu') }}" class="navbar-brand">VM</a>
+                <a href="{{ url('/proxmox/storage') }}" class="navbar-brand">Almacenamiento</a>
 
 
                 {{-- introducir imagen en el centro --}}

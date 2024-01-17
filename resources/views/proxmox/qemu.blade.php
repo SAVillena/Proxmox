@@ -1,19 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class= "container">
+    <div class= "justify-content-start px-3">
         {{-- buscador por nombre, con $qemu->name --}}
+        <h2 class="text-center"><strong>Qemu Data</strong></h2>
+        {{-- boton para exportar a excel --}}
+        <div class="d-flex justify-content-start mb-3">
+            <a href="{{ route('proxmox.export') }}" class="btn btn-success">Exportar a Excel</a>
+        </div>
         <form action="{{ route('proxmox.searchQemu') }}" method="GET">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" placeholder="Buscar por nombre" name="search">
                 <button class="btn btn-outline-secondary" type="submit">Buscar</button>
             </div>
         </form>
-        <h2 class="text-center">Qemu Data</h2>
-        {{-- boton para exportar a excel --}}
-        <div class="d-flex justify-content-start mb-3">
-            <a href="{{ route('proxmox.export') }}" class="btn btn-success">Exportar a Excel</a>
-        </div>
         {{-- Mostrar datos de Qemu --}}
         <table class="table table-dark table-hover table-bordered">
             <thead>

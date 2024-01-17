@@ -3,7 +3,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class ="container">
+       <div class="justify-content-start px-3">
         <h1><strong>Proxmox Data</strong></h1>
         <h2 class="text-center">Cluster Data</h2>
         {{-- Mostrar datos de Cluster --}}
@@ -46,6 +46,7 @@
         <h2 class="text-center">Node Data</h2>
 
         {{-- Mostrar datos de Node --}}
+       <div class="d-flex justify-content-start ">
         <table class="table table-dark table-hover table-bordered">
             <thead>
                 <tr>
@@ -58,8 +59,8 @@
                     <th scope="col">IP</th>
                     <th scope="col">Nombre del nodo</th>
                     <th scope="col">Tiempo activo</th>
-                    <th scope="col">RAM usado</th>
-                    <th scope="col">RAM maximo</th>
+                    <th scope="col">RAM Usado</th>
+                    <th scope="col">RAM Maximo</th>
                     <th scope="col">Cores</th>
                     <th scope="col">Uso CPU</th>
                     <th scope="col">% de Storage</th>
@@ -92,8 +93,8 @@
                         <td>{{ $node->ip }}</td>
                         <td>{{ $node->node }}</td>
                         <td>{{ $node->uptime }}</td>
-                        <td>{{ round($node->mem / 1073741824, 2) }} GB</td>
-                        <td>{{ round($node->maxmem / 1073741824, 2) }} GB</td>
+                        <td>{{ round($node->mem / 1073741824, 2) }}GB</td>
+                        <td>{{ round($node->maxmem / 1073741824, 2) }}GB</td>
                         <td>{{ $node->maxcpu }}</td>
                         <td>{{ $node->cpu * 100 }}%</td>
                         <td>{{ round($storageLocal[$node->id_proxmox] / $storageLocalMax[$node->id_proxmox], 4) * 100 }}%
@@ -101,7 +102,7 @@
                         <td>{{ \Carbon\Carbon::parse($node->updated_at)->format('d/m/Y H:i') }}</td>
                         <td>
                             {{-- botones del mismo tamaño --}}
-                            <div class="d-flex justify-content-center">
+                            <div class="d-flex justify-content-center gap-1">
                                 <a class="btn btn-secondary btn-sm" href="/proxmox/node/{{ $node->node }}">Mostrar</a>
                                 <form action="{{ route('proxmox.cluster.node.destroy', $node->node) }}" method="POST">
                                     @csrf
@@ -114,7 +115,7 @@
                 @endforeach
             </tbody>
         </table>
-
+         </div>
 
         <h2 class="text-center">Qemu Data</h2>
         {{-- boton para exportar a excel --}}
@@ -134,8 +135,8 @@
                     <th scope="col">CPU</th>
                     <th scope="col">Carga de Cpu</th>
                     <th scope="col">Disco asignado</th>
-                    <th scope="col">RAM usado</th>
-                    <th scope="col">RAM maximo</th>
+                    <th scope="col">RAM Usado</th>
+                    <th scope="col">RAM Maximo</th>
                     <th scope="col">Tiempo activo</th>
                     <th scope="col">Tamaño asignado</th>
                     <th scope="col">Nombre del storage</th>

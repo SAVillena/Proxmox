@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class = "container">
-        <h2>Storage Data</h2>
+    <div class = "justify-content-start px-3">
+        <h2 class ="text-center py-3"><strong>Storage Data</strong></h2>
         {{-- Mostrar datos de Storage --}}
         <table class="table table-dark table-hover table-bordered">
             <thead>

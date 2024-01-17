@@ -339,8 +339,65 @@ class ProxmoxController extends Controller
     public function searchQemu(Request $request)
     {
         $search = $request->get('search');
-        $qemus = Qemu::where('name', 'like', '%' . $search . '%')->paginate(5);
+        $qemus = Qemu::where('name', 'like', '%' . $search . '%')->paginate(100)->appends(['search' => $search]);
         return view('proxmox.qemu', ['qemus' => $qemus]);
+    }
+
+    public function searchNode(Request $request)
+    {
+        $search = $request->get('search');
+        $nodes = Node::where('id_proxmox', 'like', '%' . $search . '%')->paginate(100)->appends(['search' => $search]);
+
+        //realizar una funcion en vez de repetir 
+        $nodeIds = $nodes->pluck('id_proxmox')->toArray();
+        $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
+        $storages = Storage::whereIn('node_id', $nodeIds)->get();
+        
+        // Inicializa un arreglo para almacenar las sumas de size por node_id
+        $sizeSumByNodeId = [];
+        $storageLocalMax = [];
+
+        // suma maxdisk del storage asociado al node_id y almacenarla en storageLocalMax
+        // no sumar "Backup-Virt"
+        foreach ($storages as $storage) {
+            $nodeId = $storage->node_id;
+            $maxdisk = $storage->maxdisk;
+            $storageName = $storage->storage;
+
+            if (!isset($storageLocalMax[$nodeId])) {
+                $storageLocalMax[$nodeId] = 0;
+            }
+
+            if ($storageName != 'Backup-Virt') {
+                $storageLocalMax[$nodeId] += $maxdisk;
+            }
+        }
+
+        // Recorre todos los qemus y suma sus sizes por node_id
+        foreach ($qemus as $qemu) {
+            $nodeId = $qemu->node_id;
+            $size = $this->getSizeInBytes($qemu->size);
+
+            if (!isset($sizeSumByNodeId[$nodeId])) {
+                $sizeSumByNodeId[$nodeId] = 0;
+            }
+
+            $sizeSumByNodeId[$nodeId] += $size;
+        }
+
+        return view(
+            'proxmox.node',
+            [
+                'nodes' => $nodes,
+                'qemus' => $qemus,
+                'storages' => $storages,
+                'storageLocal' => $sizeSumByNodeId,
+                'storageLocalMax' => $storageLocalMax
+            ]
+        );
+        
+
+            /*  return view('proxmox.node', ['nodes' => $nodes]); */   
     }
 
     public function showByIdNode($node)

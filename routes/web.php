@@ -41,12 +41,12 @@ Route::get('/proxmox/cluster/{name}', [ProxmoxController::class, 'showByIdCluste
 Route::delete('/proxmox/cluster/{name}', [ProxmoxController::class, 'destroyCluster'])->name('proxmox.cluster.destroy');
 
 Route::delete('/proxmox/node/{node}', [ProxmoxController::class, 'destroyNode'])->name('proxmox.cluster.node.destroy');
+Route::get('/proxmox/node/search', [ProxmoxController::class, 'searchNode'])->name('proxmox.searchNode');
 Route::get('/proxmox/node/{node}', [ProxmoxController::class, 'showByIdNode'])->name('proxmox.cluster.node.show');
 
 Route::get('/proxmox/export', [ProxmoxController::class, 'exportQemuCSV'])->name('proxmox.export');
 //buscarQemu
 Route::get('/proxmox/qemu/search', [ProxmoxController::class, 'searchQemu'])->name('proxmox.searchQemu');
-
 
 
 Route::get('/home', [App\Http\Controllers\ProxmoxController::class, 'home'])->name('proxmox.home');

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
+    <div class="justify-content-start px-3">
         <h2 class="text-center">Node Data</h2>
 
         {{-- Mostrar datos de Node --}}
