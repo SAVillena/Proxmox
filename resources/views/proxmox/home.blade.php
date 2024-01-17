@@ -6,7 +6,7 @@
         <div class="row">
             <!-- Tarjeta para Clusters -->
             <div class="col-md-6 mb-3 d-flex align-items-stretch">
-                <div class="card w-100">
+                <div class="card w-100 bg-dark text-white">
                     <h5 class="card-header">Clusters</h5>
                     <div class="card-body">
                         <h5 class="card-title">{{ $totalClusters }}</h5>
@@ -17,7 +17,7 @@
 
             <!-- Tarjeta para Nodos -->
             <div class="col-md-6 mb-3 d-flex align-items-stretch">
-                <div class="card w-100">
+                <div class="card w-100 bg-dark text-white">
                     <!-- Estructura de la tarjeta para Nodos -->
                     <h5 class="card-header">Nodes</h5>
                     <div class="card-body">
@@ -34,7 +34,7 @@
 
             <!-- Card for CPU Usage -->
             <div class="col-md-6 mb-3 mb-sm-0">
-                <div class="card w-100">
+                <div class="card w-100 bg-dark text-white">
                     <h5 class="card-header">CPU</h5>
                     {{-- mostrar total de cpu --}}
                     <div class="card-body">
@@ -55,7 +55,7 @@
 
             <!-- Card for Memory Usage -->
             <div class="col-md-6 mb-3 d-flex align-items-stretch">
-                <div class="card w-100">
+                <div class="card w-100 bg-dark text-white">
                     <h5 class="card-header">RAM</h5>
                     <div class="card-body">
                         {{-- mostrar total de memoria --}}
@@ -83,7 +83,7 @@
 
             <!-- Tarjeta para total maquinas virtuales -->
             <div class="col-md-6 mb-3 d-flex align-items-stretch">
-                <div class="card w-100">
+                <div class="card w-100 bg-dark text-white">
                     <h5 class="card-header">Qemu</h5>
                     <div class="card-body">
                         <p class="card-text">Total de maquinas virtuales en el sistema:</p>
@@ -94,7 +94,7 @@
 
             <!-- Tarjeta para total de storage -->
             <div class="col-md-6 mb-3 d-flex align-items-stretch">
-                <div class="card w-100">
+                <div class="card w-100 bg-dark text-white">
                     <h5 class="card-header">Storage</h5>
                     <div class="card-body">
                         <p class="card-text">Total de storage Almacenamiento:</p>
@@ -114,13 +114,6 @@
                                 {{ $diskUsagePercentage }}%
                             </div>
                         </div>
-
-
-
-
-
-
-
                     </div>
                 </div>
             </div>
