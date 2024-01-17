@@ -10,6 +10,8 @@ use App\Models\node;
 use App\Models\cluster;
 use App\Models\ClusterCredentials;
 use Illuminate\Support\Facades\Crypt;
+use App\Models\VirtualMachineHistory;
+use Carbon\Carbon;
 
 class ProxmoxService2
 {
@@ -352,6 +354,27 @@ class ProxmoxService2
                 ]);
             }
         }
+    }
+
+    public function VMHistory()
+    {
+        $qemus = Qemu::all();
+        $total_machines = $qemus->count();
+        $total_machines_running = $qemus->where('status', 'running')->count();
+        $total_machines_stopped = $qemus->where('status', 'stopped')->count();
+
+        VirtualMachineHistory::create([
+            'date' => Carbon::today(),
+            'total_machines' => $total_machines,
+            'total_machines_running' => $total_machines_running,
+            'total_machines_stopped' => $total_machines_stopped,
+        ]);
+    }
+
+    public function getVMHistory()
+    {
+        $VMHistory = VirtualMachineHistory::all();
+        return $VMHistory;
     }
     
 }

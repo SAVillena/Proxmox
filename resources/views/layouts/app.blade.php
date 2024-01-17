@@ -48,6 +48,7 @@
                 <a href="{{ url('/proxmox/node') }}" class="navbar-brand">Nodo</a>
                 <a href="{{ url('/proxmox/qemu') }}" class="navbar-brand">VM</a>
                 <a href="{{ url('/proxmox/storage') }}" class="navbar-brand">Almacenamiento</a>
+                <a href="{{ url('/proxmox/history') }}" class="navbar-brand">Historico</a>
 
 
                 {{-- introducir imagen en el centro --}}

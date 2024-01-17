@@ -7,6 +7,7 @@ use App\Models\qemu;
 use App\Models\Storage;
 use App\Models\node;
 use App\Models\cluster;
+use App\Models\VirtualMachineHistory;
 use App\Services\ProxmoxService2;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -26,6 +27,7 @@ class ProxmoxController extends Controller
         $totalClusters = Cluster::count();
         $totalNodes = Node::count();
         $totalQemus = Qemu::count();
+        $VMHistory = VirtualMachineHistory::all();
         $totalStorages = Storage::count();
 
         $totalCPU = Node::sum('maxcpu');
@@ -64,7 +66,7 @@ class ProxmoxController extends Controller
         $totalQemusStopped = Qemu::where('status', 'stopped')->count();
 
 
-
+        //historial de maquinas virtuales
 
 
         return view('proxmox.home', [
@@ -86,6 +88,7 @@ class ProxmoxController extends Controller
     public function getData()
     {
         $this->proxmoxService->processClusterNodes();
+        $this->proxmoxService->VMHistory();
         return redirect()->route('proxmox.index');
     }
 
@@ -459,5 +462,11 @@ class ProxmoxController extends Controller
                 'storageLocalMax' => $storageLocalMax
             ]
         );
+    }
+
+    public function showVMHistory()
+    {
+        $VMHistory = VirtualMachineHistory::all();
+        return view('proxmox.history', ['VMHistory' => $VMHistory]);
     }
 }

@@ -50,7 +50,8 @@ Route::get('/proxmox/qemu/search', [ProxmoxController::class, 'searchQemu'])->na
 Route::get('/proxmox/storage/search', [ProxmoxController::class, 'searchStorage'])->name('proxmox.searchStorage');
 
 
-Route::get('/home', [App\Http\Controllers\ProxmoxController::class, 'home'])->name('proxmox.home');
+Route::get('/home', [ProxmoxController::class, 'home'])->name('proxmox.home');
+Route::get('/proxmox/history', [ProxmoxController::class, 'showVMHistory'])->name('proxmox.history'); 
 
 
 Route::get('/', function () {
