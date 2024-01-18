@@ -14,7 +14,7 @@ class tabla extends Seeder
     public function run(): void
     {
         //
-        DB::table('tabla')->updateOrInsert([
+        /* DB::table('tabla')->updateOrInsert([
             'id_proxmox' => '1',
             'type' => 'qemu',
             'status' => 'running',
@@ -28,6 +28,6 @@ class tabla extends Seeder
             'cpu' => '0.6',
             'level' => '0',
         ]);
-            
+             */
     }
 }

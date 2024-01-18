@@ -3,7 +3,7 @@
 @extends('layouts.app')
 
 @section('content')
-       <div class="justify-content-start px-3 py-3">
+    <div class="justify-content-start px-3 py-3">
         <h1><strong>Proxmox Data</strong></h1>
         <h2 class="text-center">Cluster Data</h2>
         {{-- Mostrar datos de Cluster --}}
@@ -28,12 +28,13 @@
                         <td>{{ \Carbon\Carbon::parse($cluster->updated_at)->format('d/m/Y H:i') }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
-                            <form action="{{ route('proxmox.cluster.destroy', $cluster->name) }}" method="POST">
-                                <a class="btn btn-secondary btn-sm " href="/proxmox/cluster/{{ $cluster->name }}">Mostrar</a>
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm ">Borrar</button>
-                            </form>
+                                <form action="{{ route('proxmox.cluster.destroy', $cluster->name) }}" method="POST">
+                                    <a class="btn btn-secondary btn-sm "
+                                        href="/proxmox/cluster/{{ $cluster->name }}">Mostrar</a>
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm ">Borrar</button>
+                                </form>
                             </div>
                         </td>
 
@@ -46,78 +47,89 @@
         <h2 class="text-center">Node Data</h2>
 
         {{-- Mostrar datos de Node --}}
-       <div class="d-flex justify-content-start ">
-        <table class="table table-dark table-hover table-bordered">
-            <thead>
-                <tr>
-                    <th scope="col">Nombre Cluster</th>
-                    <th scope="col">id de proxmox</th>
-                    <th scope="col">Tipo</th>
-                    <th scope="col">Estado</th>
-                    <th scope="col">Storage usado</th>
-                    <th scope="col">Storage maximo</th>
-                    <th scope="col">IP</th>
-                    <th scope="col">Nombre del nodo</th>
-                    <th scope="col">Tiempo activo</th>
-                    <th scope="col">RAM Usado</th>
-                    <th scope="col">RAM Maximo</th>
-                    <th scope="col">Cores</th>
-                    <th scope="col">Uso CPU</th>
-                    <th scope="col">% de Storage</th>
-                    <th scope="col">Última actualización</th>
-                    <th scope="col">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($nodes as $node)
+        <div class="d-flex justify-content-start ">
+            <table class="table table-dark table-hover table-bordered">
+                <thead>
                     <tr>
+                        <th scope="col">Cluster</th>
+                        <th scope="col">Nodo</th>
+                        <th scope="col">Estado</th>
+                        <th scope="col">Cores</th>
+                        <th scope="col">RAM</th>
+                        <th scope="col">Uso disco</th>
+                        <th scope="col">Disco</th>
+                        <th scope="col">IP</th>
+                        <th scope="col">Uptime</th>
+                        <th scope="col">RAM usado</th>
+                        <th scope="col">Carga CPU</th>
 
-                        <td>{{ $node->cluster_name }}</td>
-                        <td>{{ $node->id_proxmox }}</td>
-                        <td>{{ $node->type }}</td>
-                        <td>{{ $node->status }}</td>
-                        {{-- mostrar el uso de almacenamiento pero en gigas o teras segun corresponda, considera que esta en bytes --}}
-
-                        @if ($storageLocal[$node->id_proxmox] >= 1099511627776)
-                            <td>{{ round($storageLocal[$node->id_proxmox] / 1099511627776, 2) }} TB</td>
-                        @else
-                            <td>{{ round($storageLocal[$node->id_proxmox] / 1073741824, 2) }} GB</td>
-                        @endif
-
-                        @if ($storageLocalMax[$node->id_proxmox] >= 1099511627776)
-                            <td>{{ round($storageLocalMax[$node->id_proxmox] / 1099511627776, 2) }} TB</td>
-                        @else
-                            <td>{{ round($storageLocalMax[$node->id_proxmox] / 1073741824, 2) }} GB</td>
-                        @endif
-
-                        <td>{{ $node->ip }}</td>
-                        <td>{{ $node->node }}</td>
-                        <td>{{ $node->uptime }}</td>
-                        <td>{{ round($node->mem / 1073741824, 2) }}GB</td>
-                        <td>{{ round($node->maxmem / 1073741824, 2) }}GB</td>
-                        <td>{{ $node->maxcpu }}</td>
-                        <td>{{ $node->cpu * 100 }}%</td>
-                        <td>{{ round($storageLocal[$node->id_proxmox] / $storageLocalMax[$node->id_proxmox], 4) * 100 }}%
-                        </td>
-                        <td>{{ \Carbon\Carbon::parse($node->updated_at)->format('d/m/Y H:i') }}</td>
-                        <td>
-                            {{-- botones del mismo tamaño --}}
-                            <div class="d-flex justify-content-center gap-1">
-                                <a class="btn btn-secondary btn-sm" href="/proxmox/node/{{ $node->node }}">Mostrar</a>
-                                <form action="{{ route('proxmox.cluster.node.destroy', $node->node) }}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Borrar</button>
-                                </form>
-                            </div>
-                            
+                        <th scope="col">Última actualización</th>
+                        <th scope="col">Acciones</th>
                     </tr>
-                @endforeach
-            </tbody>
-        </table>
-         </div>
+                </thead>
+                <tbody>
+                    @foreach ($nodes as $node)
+                        <tr>
 
-        <h2 class="text-center">Qemu Data</h2>
+                            <td>{{ $node->cluster_name }}</td>
+                            <td>{{ $node->node }}</td>
+                            <td>{{ $node->status }}</td>
+                            <td>{{ $node->maxcpu }}</td>
+                            <td>{{ round($node->maxmem / 1073741824, 2) }} GB</td>
+                            {{-- mostrar el uso de almacenamiento pero en gigas o teras segun corresponda, considera que esta en bytes --}}
+                            @if ($node->disk >= 1099511627776)
+                                <td>{{ round($node->disk / 1099511627776, 2) }} TB</td>
+                            @else
+                                <td>{{ round($node->disk / 1073741824, 2) }} GB</td>
+                            @endif
+
+                            @if ($node->maxdisk >= 1099511627776)
+                                <td>{{ round($node->maxdisk / 1099511627776, 2) }} TB</td>
+                            @else
+                                <td>{{ round($node->maxdisk / 1073741824, 2) }} GB</td>
+                            @endif
+
+                            <td>{{ $node->ip }}</td>
+                            <td>{{ round($node->uptime / 86400) }} días</td>
+                            <td>
+                                <div class="progress" style="width: 100px;">
+                                    <div class="progress-bar 
+                                        {{ ($node->mem / $node->maxmem) * 100 <= 50 ? 'bg-success' : (($node->mem / $node->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
+                                        role="progressbar" style="width: {{ ($node->mem / $node->maxmem) * 100 }}%"
+                                        aria-valuenow="{{ ($node->mem / $node->maxmem) * 100 }}" aria-valuemin="0"
+                                        aria-valuemax="100">
+                                        {{ ($node->mem / $node->maxmem) * 100 }}%
+                                    </div>
+                            <td>
+                                <div class="progress" style="width: 100px;">
+                                    <div class="progress-bar 
+                                        {{ $node->cpu * 100 <= 50 ? 'bg-success' : ($node->cpu * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
+                                        role="progressbar" style="width: {{ $node->cpu * 100 }}%"
+                                        aria-valuenow="{{ $node->cpu * 100 }}" aria-valuemin="0" aria-valuemax="100">
+                                        {{ $node->cpu * 100 }}%
+                                    </div>
+                                </div>
+                            </td>
+                            </td>
+                            <td>{{ \Carbon\Carbon::parse($node->updated_at)->format('d/m/Y H:i') }}</td>
+                            <td>
+                                <div class="d-flex justify-content-center gap-1">
+                                    <a class="btn btn-secondary btn-sm"
+                                        href="/proxmox/node/{{ $node->node }}">Mostrar</a>
+                                    <form action="{{ route('proxmox.cluster.node.destroy', $node->node) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Borrar</button>
+                                    </form>
+                                </div>
+
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <h2 class="text-center">VM Data</h2>
         {{-- boton para exportar a excel --}}
         <div class="d-flex justify-content-start mb-3">
             <a href="{{ route('proxmox.export') }}" class="btn btn-success">Exportar a Excel</a>
@@ -133,11 +145,10 @@
                     <th scope="col">Estado</th>
                     <th scope="col">Cores</th>
                     <th scope="col">CPU</th>
-                    <th scope="col">Carga de Cpu</th>
-                    <th scope="col">Disco asignado</th>
+                    <th scope="col">RAM</th>
+                    <th scope="col">Disco </th>
                     <th scope="col">RAM Usado</th>
-                    <th scope="col">RAM Maximo</th>
-                    <th scope="col">Tiempo activo</th>
+                    <th scope="col">Carga de Cpu</th>
                     <th scope="col">Nombre del storage</th>
                     <th scope="col">Última actualización</th>
 
@@ -152,7 +163,27 @@
                         <td>{{ $qemu->type }}</td>
                         <td>{{ $qemu->status }}</td>
                         <td>{{ $qemu->maxcpu }}</td>
-                        <td>{{ round($qemu->cpu,4) *100 }}%</td>
+                        <td>{{ round($qemu->cpu, 4) * 100 }}%</td>
+                        <td>{{ round($qemu->maxmem / 1073741824, 2) }} GB</td>
+
+                        @if ($qemu->maxdisk >= 1099511627776)
+                            <td>{{ round($qemu->maxdisk / 1099511627776, 2) }} TB</td>
+                        @else
+                            <td>{{ round($qemu->maxdisk / 1073741824, 2) }} GB</td>
+                        @endif
+
+                        <td>
+                            <div class="progress" style="width: 100px;"
+                                title="{{ round($qemu->mem / $qemu->maxmem, 4) * 100 }}%">
+                                <div class="progress-bar 
+                                            {{ ($qemu->mem / $qemu->maxmem) * 100 <= 50 ? 'bg-success' : (($qemu->mem / $qemu->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
+                                    role="progressbar" style="width: {{ ($qemu->mem / $qemu->maxmem) * 100 }}%"
+                                    aria-valuenow="{{ ($qemu->mem / $qemu->maxmem) * 100 }}" aria-valuemin="0"
+                                    aria-valuemax="100">
+                                    {{ round($qemu->mem / $qemu->maxmem, 4) * 100 }}%
+                                </div>
+                            </div>
+                        </td>
                         <td>
                             <div class="progress" style="width: 100px;">
                                 <div class="progress-bar 
@@ -162,24 +193,6 @@
                                     {{ $qemu->cpu * 100 }}%
                                 </div>
                             </div>
-                        @if ($qemu->maxdisk >= 1099511627776)
-                            <td>{{ round($qemu->maxdisk / 1099511627776, 2) }} TB</td>
-                        @else
-                            <td>{{ round($qemu->maxdisk / 1073741824, 2) }} GB</td>
-                        @endif
-
-                        <td>
-                            <div class="progress" style="width: 100px;" title="{{ round($qemu->mem / $qemu->maxmem, 4) * 100 }}%">
-                                <div class="progress-bar 
-                                            {{ $qemu->mem / $qemu->maxmem * 100 <= 50 ? 'bg-success' : ($qemu->mem / $qemu->maxmem * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
-                                    role="progressbar" style="width: {{ $qemu->mem / $qemu->maxmem * 100 }}%"
-                                    aria-valuenow="{{ $qemu->mem / $qemu->maxmem * 100 }}" aria-valuemin="0"
-                                    aria-valuemax="100">
-                                    {{ round($qemu->mem / $qemu->maxmem, 4) * 100 }}%
-                                </div>
-                            </div>
-                        <td>{{ round($qemu->maxmem / 1073741824, 2) }} GB</td>
-                        <td>{{ $qemu->netin }}</td>
                         <td>{{ $qemu->storageName }}</td>
                         <td>{{ \Carbon\Carbon::parse($qemu->updated_at)->format('d/m/Y H:i') }}</td>
 
@@ -194,15 +207,13 @@
             <thead>
                 <tr>
                     <th scope="col">id de proxmox</th>
-                    <th scope="col">Estado</th>
-                    <th scope="col">Almacenamiento usado</th>
-                    <th scope="col">Almacenamiento maximo</th>
+                    <th scope="col">Storage</th>
+                    <th scope="col">Carga</th>
                     <th scope="col">Uso</th>
-                    <th scope="col">Almacenamiento</th>
-                    <th scope="col">Nodo al que pertenece</th>
-                    <th scope="col">Nombre del Storage</th>
+                    <th scope="col">Total</th>
+                    <th scope="col">Nodo</th>
                     <th scope="col">Contenido</th>
-                    <th scope="col">plugintype</th>
+                    <th scope="col">Tipo</th>
                     <th scope="col">Última actualización</th>
 
                 </tr>
@@ -211,7 +222,18 @@
                 @foreach ($storages as $storage)
                     <tr>
                         <td>{{ $storage->id_proxmox }}</td>
-                        <td>{{ $storage->status }}</td>
+                        <td>{{ $storage->storage }}</td>
+                        <td>
+                            <div class="progress" style="width: 100px;">
+                                <div class="progress-bar 
+                                {{ $storage->used * 100 <= 50 ? 'bg-success' : ($storage->used * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
+                                    role="progressbar" style="width: {{ $storage->used * 100 }}%"
+                                    aria-valuenow="{{ $storage->used * 100 }}" aria-valuemin="0" aria-valuemax="100">
+                                    {{ $storage->used * 100 }}%
+                                </div>
+                            </div>
+
+                        </td>
                         @if ($storage->disk >= 1099511627776)
                             <td>{{ round($storage->disk / 1099511627776, 2) }} TB</td>
                         @else
@@ -222,22 +244,7 @@
                         @else
                             <td>{{ round($storage->maxdisk / 1073741824, 2) }} GB</td>
                         @endif
-                        <td>
-                            <div class="progress" style="width: 100px;">
-                                <div class="progress-bar 
-                                            {{ $storage->used * 100 <= 50 ? 'bg-success' : ($storage->used * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
-                                    role="progressbar" style="width: {{ $storage->used * 100 }}%"
-                                    aria-valuenow="{{ $storage->used * 100 }}" aria-valuemin="0" aria-valuemax="100">
-                                    {{ $storage->used * 100 }}%
-                                </div>
-                            </div>
-
-                            <td>{{ round($storage->used, 4) * 100 }}%</td>
-
-
-                        </td>
-                        <td>{{ $storage->node['node'] }}</td>
-                        <td>{{ $storage->storage }}</td>
+                        <td>{{ $storage->node_id }}</td>
                         <td>{{ $storage->content }}</td>
                         <td>{{ $storage->plugintype }}</td>
                         <td>{{ \Carbon\Carbon::parse($storage->updated_at)->format('d/m/Y H:i') }}</td>

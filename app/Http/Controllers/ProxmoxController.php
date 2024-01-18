@@ -475,4 +475,15 @@ class ProxmoxController extends Controller
         $VMHistory = VirtualMachineHistory::all();
         return view('proxmox.historyAnual', ['VMHistory' => $VMHistory]);
     }
+
+    //eliminar las qemus where status eliminado
+    public function destroyQemu()
+    {
+        $qemus = Qemu::where('status', 'eliminado')->get();
+        foreach ($qemus as $qemu) {
+            $qemu->delete();
+        }
+        return redirect()->route('proxmox.index');
+    }
+
 }

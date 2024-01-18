@@ -3,17 +3,31 @@
 @section('content')
     <div class= "justify-content-start px-3">
         {{-- buscador por nombre, con $qemu->name --}}
-        <h2 class="text-center"><strong>Qemu Data</strong></h2>
-        {{-- boton para exportar a excel --}}
-        <div class="d-flex justify-content-start mb-3">
+        <h2 class="text-center"><strong>VM Data</strong></h2>
+       <div class="d-flex px-3">
+         {{-- boton para exportar a excel --}}
+        
+         <div class="d-flex justify-content-start mb-3">
             <a href="{{ route('proxmox.export') }}" class="btn btn-success">Exportar a Excel</a>
         </div>
+        {{-- crear boton de eliminar qemus en estado eliminado --}}
+        <form class= "px-3"action="{{ route('proxmox.qemu.destroy') }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <button class="btn btn-danger mb-3" type="submit">Eliminar VMs</button>
+            
+        </form>
+        </div>
+        {{-- buscador por nombre, con $qemu->name --}}
+        
         <form action="{{ route('proxmox.searchQemu') }}" method="GET">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" placeholder="Buscar por nombre" name="search">
                 <button class="btn btn-outline-secondary" type="submit">Buscar</button>
             </div>
         </form>
+
+
         {{-- Mostrar datos de Qemu --}}
         <table class="table table-dark table-hover table-bordered">
             <thead>
@@ -25,11 +39,10 @@
                     <th scope="col">Estado</th>
                     <th scope="col">Cores</th>
                     <th scope="col">CPU</th>
-                    <th scope="col">Carga de Cpu</th>
-                    <th scope="col">Disco asignado</th>
+                    <th scope="col">RAM</th>
+                    <th scope="col">Disco </th>
                     <th scope="col">RAM Usado</th>
-                    <th scope="col">RAM Maximo</th>
-                    <th scope="col">Tiempo activo</th>
+                    <th scope="col">Carga de Cpu</th>
                     <th scope="col">Nombre del storage</th>
                     <th scope="col">Última actualización</th>
 
@@ -45,15 +58,8 @@
                         <td>{{ $qemu->status }}</td>
                         <td>{{ $qemu->maxcpu }}</td>
                         <td>{{ round($qemu->cpu,4) *100 }}%</td>
-                        <td>
-                            <div class="progress" style="width: 100px;">
-                                <div class="progress-bar 
-                                            {{ $qemu->cpu * 100 <= 50 ? 'bg-success' : ($qemu->cpu * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
-                                    role="progressbar" style="width: {{ $qemu->cpu * 100 }}%"
-                                    aria-valuenow="{{ $qemu->cpu * 100 }}" aria-valuemin="0" aria-valuemax="100">
-                                    {{ $qemu->cpu * 100 }}%
-                                </div>
-                            </div>
+                        <td>{{ round($qemu->maxmem / 1073741824, 2) }} GB</td>
+                        
                         @if ($qemu->maxdisk >= 1099511627776)
                             <td>{{ round($qemu->maxdisk / 1099511627776, 2) }} TB</td>
                         @else
@@ -70,8 +76,16 @@
                                     {{ round($qemu->mem / $qemu->maxmem, 4) * 100 }}%
                                 </div>
                             </div>
-                        <td>{{ round($qemu->maxmem / 1073741824, 2) }} GB</td>
-                        <td>{{ $qemu->netin }}</td>
+                        </td>
+                        <td>
+                            <div class="progress" style="width: 100px;">
+                                <div class="progress-bar 
+                                            {{ $qemu->cpu * 100 <= 50 ? 'bg-success' : ($qemu->cpu * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
+                                    role="progressbar" style="width: {{ $qemu->cpu * 100 }}%"
+                                    aria-valuenow="{{ $qemu->cpu * 100 }}" aria-valuemin="0" aria-valuemax="100">
+                                    {{ $qemu->cpu * 100 }}%
+                                </div>
+                            </div>
                         <td>{{ $qemu->storageName }}</td>
                         <td>{{ \Carbon\Carbon::parse($qemu->updated_at)->format('d/m/Y H:i') }}</td>
 

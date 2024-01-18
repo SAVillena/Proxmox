@@ -9,8 +9,10 @@ class VirtualMachineHistory extends Model
 {
     protected $fillable = [
         'date',
-        'total_machines',
-        'total_machines_running',
-        'total_machines_stopped',
+        'cluster_name',
+        'cluster_qemus',
+        'cluster_cpu',
+        'cluster_memory',
+
     ];
 }

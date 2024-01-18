@@ -15,7 +15,6 @@
                     <th scope="col">Storage maximo</th>
                     <th scope="col">IP</th>
                     <th scope="col">Nombre del nodo</th>
-                    <th scope="col">Tiempo activo</th>
                     <th scope="col">RAM usado</th>
                     <th scope="col">RAM maximo</th>
                     <th scope="col">Cores</th>
@@ -47,7 +46,6 @@
 
                         <td>{{ $node->ip }}</td>
                         <td>{{ $node->node }}</td>
-                        <td>{{ $node->uptime }}</td>
                         <td>{{ round($node->mem / 1073741824, 2) }} GB</td>
                         <td>{{ round($node->maxmem / 1073741824, 2) }} GB</td>
                         <td>{{ $node->maxcpu }}</td>
@@ -71,7 +69,7 @@
             </tbody>
         </table>
 
-        <h2 class="text-center py-3">Qemu Data</h2>
+        <h2 class="text-center py-3">VM Data</h2>
         {{-- Mostrar datos de Qemu --}}
         <table class="table table-dark table-hover table-bordered">
             <thead>
@@ -87,7 +85,6 @@
                     <th scope="col">Disco asignado</th>
                     <th scope="col">RAM Usado</th>
                     <th scope="col">RAM Maximo</th>
-                    <th scope="col">Tiempo activo</th>
                     <th scope="col">Nombre del storage</th>
                     <th scope="col">Última actualización</th>
 
@@ -129,7 +126,6 @@
                                 </div>
                             </div>
                         <td>{{ round($qemu->maxmem / 1073741824, 2) }} GB</td>
-                        <td>{{ $qemu->netin }}</td>
                         <td>{{ $qemu->storageName }}</td>
                         <td>{{ \Carbon\Carbon::parse($qemu->updated_at)->format('d/m/Y H:i') }}</td>
 

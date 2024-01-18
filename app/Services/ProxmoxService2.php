@@ -12,6 +12,7 @@ use App\Models\ClusterCredentials;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\VirtualMachineHistory;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class ProxmoxService2
 {
@@ -19,6 +20,7 @@ class ProxmoxService2
     protected $baseUrl;
     protected $nodeInfo = [];
     protected $clusterName;
+    protected $updatedQemuIds = [];
 
     public function __construct()
     {
@@ -202,10 +204,11 @@ class ProxmoxService2
             $configUrl = $this->baseUrl . "/nodes/{$nodeId}/qemu/{$vmid}/config";
             $configData = $this->makeRequest('GET', $configUrl, $authData);
             if ($configData) {
+                $this->updatedQemuIds[] = $qemuItem['id'];
                 $InfoStorage = $this->extractStorageInfo($configData['scsi0']);
                 // Guardar los datos combinados en la base de datos
                 Qemu::updateOrCreate(
-                    ['id_proxmox' => $qemuItem['id']],
+                    ['id_proxmox' => $qemuItem['vmid']],
                     [
                         'node_id' => 'node/' . $qemuItem['node'],
                         'name' => $qemuItem['name'],
@@ -276,6 +279,7 @@ class ProxmoxService2
 
     public function processClusterNodes()
     {
+        $this->updatedQemuIds = [];
         $NameAllCluster = cluster::all()->pluck('name')->toArray();
         $nodes = Node::where('cluster_name', $NameAllCluster)->get();
         //incluir los nodos con cluster_name = null
@@ -296,10 +300,11 @@ class ProxmoxService2
                 }
             } catch (GuzzleException $e) {
                 // Si la autenticación falla, se podría registrar el error o intentar con el siguiente nodo
-                // Log::error("Error al conectar con el nodo: " . $node->ip);
+                Log::error("Error al conectar con el nodo: " . $node->ip);
                 continue;
             }
         }
+        $this->markMissingQemuAsDeleted();
     }
 
     public function addCluster($ip, $username, $password)
@@ -358,23 +363,50 @@ class ProxmoxService2
 
     public function VMHistory()
     {
-        $qemus = Qemu::all();
-        $total_machines = $qemus->count();
-        $total_machines_running = $qemus->where('status', 'running')->count();
-        $total_machines_stopped = $qemus->where('status', 'stopped')->count();
+        //nombre de los clusters
+        $NameAllCluster = cluster::all()->pluck('name')->toArray();
+        //recorrer los nodos del cluster
+        foreach ($NameAllCluster as $nameCluster) {
+            $nodes = Node::where('cluster_name', $nameCluster)->get();
+            //incluir los nodos con cluster_name = null
+            //guardar informacion de cantidad de cpu, ram y qemus
+            $TotalCPU = 0;
+            $TotalRAM = 0;
+            $TotalQemus = 0;
+            foreach ($nodes as $node) {
+                $TotalCPU = $TotalCPU + $node->maxcpu;
+                $TotalRAM = $node->maxmem;
+                $TotalQemus = Qemu::where('node_id', 'node/' . $node->id_proxmox)->get()->count();
+            }
+            //guardar informacion en la tabla de historial
+            VirtualMachineHistory::create([
+                'date' => Carbon::today(),
+                'cluster_name' => $nameCluster,
+                'cluster_qemus' => $TotalQemus,
+                'cluster_cpu' => $TotalCPU,
+                'cluster_memory' => $TotalRAM,
+            ]);
+        }
 
-        VirtualMachineHistory::create([
-            'date' => Carbon::today(),
-            'total_machines' => $total_machines,
-            'total_machines_running' => $total_machines_running,
-            'total_machines_stopped' => $total_machines_stopped,
-        ]);
     }
 
     public function getVMHistory()
     {
         $VMHistory = VirtualMachineHistory::all();
+        
         return $VMHistory;
     }
     
+    public function markMissingQemuAsDeleted()
+    {
+        $allQemuIds = Qemu::pluck('id_proxmox')->all();
+
+        $qemusToMarkDeleted = array_diff($allQemuIds, $this->updatedQemuIds);
+
+    // Marcar como 'eliminado' los QEMU que ya no están presentes
+        Qemu::whereIn('id_proxmox', $qemusToMarkDeleted)
+        ->update(['status' => 'eliminado']);
+    }
+
+
 }

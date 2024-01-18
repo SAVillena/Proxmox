@@ -45,7 +45,7 @@
                 
                
                 {{-- introducir imagen que esta en carpeta public--}}
-                <a class="navbar-brand ms-auto" href="{{ url('/home') }}">
+                <a class="navbar-brand ms-auto" href="{{ url('/') }}">
                     <img src="{{ asset('holdco.jpeg') }}"  alt="" width="300" height="100">
                 </a>
 

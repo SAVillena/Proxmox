@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HelloWorld;
 use App\Http\Controllers\UserController;
@@ -8,7 +9,7 @@ use App\Http\Controllers\ProxmoxController;
 // use auth
 use Illuminate\Support\Facades\Auth;
 
-use App\Models\tabla as ModelsTabla;
+
 
 
 /*
@@ -24,7 +25,13 @@ use App\Models\tabla as ModelsTabla;
 
 
 
-Auth::routes(['register' => false]);
+Route::get('/login/auth', function () {
+    return view('auth.login');
+})->name('viewLogin');
+
+Route::post('/login', [LoginController::class, 'loginUser'])->name('login');
+
+Route::get('/', [ProxmoxController::class, 'home'])->name('proxmox.home')->middleware('auth:api');
 
 Route::get('/proxmox/fetch', [ProxmoxController::class, 'getData']);
 Route::get('/proxmox', [ProxmoxController::class, 'index'])->name('proxmox.index');
@@ -50,9 +57,10 @@ Route::get('/proxmox/qemu/search', [ProxmoxController::class, 'searchQemu'])->na
 Route::get('/proxmox/storage/search', [ProxmoxController::class, 'searchStorage'])->name('proxmox.searchStorage');
 
 
-Route::get('/', [ProxmoxController::class, 'home'])->name('proxmox.home');
 Route::get('/proxmox/history', [ProxmoxController::class, 'showVMHistory'])->name('proxmox.history'); 
 Route::get('/proxmox/historyAnual', [ProxmoxController::class, 'showVMHistoryAnual'])->name('proxmox.historyAnual'); 
+
+Route::delete('/proxmox/qemu', [ProxmoxController::class, 'destroyQemu'])->name('proxmox.qemu.destroy');
 
 
 /* Route::get('/', function () {

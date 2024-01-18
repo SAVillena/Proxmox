@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('virtual_machine_histories', function (Blueprint $table) {
             $table->id();
             $table->date('date');
-            $table->integer('total_machines');
-            $table->integer('total_machines_running');
-            $table->integer('total_machines_stopped');
+            $table->string('cluster_name');
+            $table->integer('cluster_qemus');
+            $table->integer('cluster_cpu');
+            $table->integer('cluster_memory');
             $table->timestamps();
         });
     }
