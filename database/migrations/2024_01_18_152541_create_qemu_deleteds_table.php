@@ -3,8 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
-
 
 return new class extends Migration
 {
@@ -13,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-    Schema::create('qemus', function (Blueprint $table) {
+        Schema::create('qemu_deleteds', function (Blueprint $table) {
             $table->string('node_id')->nullable();
             $table->string('id_proxmox')->primary();
-            $table->string('vmid')->nullable();
             $table->string('name')->nullable();
             $table->string('type', 50)->nullable();
             $table->string('status', 50)->nullable();
@@ -32,10 +29,7 @@ return new class extends Migration
             $table->string('storageName')->nullable();
             $table->string('size')->nullable();
             $table->timestamps();
-
-            $table->foreign('node_id')->references('id_proxmox')->on('nodes')->onDelete('cascade');
         });
-        
     }
 
     /**
@@ -43,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('qemus');
+        Schema::dropIfExists('qemu_deleteds');
     }
 };

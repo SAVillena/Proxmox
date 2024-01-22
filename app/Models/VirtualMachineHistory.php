@@ -13,6 +13,7 @@ class VirtualMachineHistory extends Model
         'cluster_qemus',
         'cluster_cpu',
         'cluster_memory',
+        'cluster_disk',
 
     ];
 }

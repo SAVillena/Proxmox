@@ -15,9 +15,10 @@ return new class extends Migration
             $table->id();
             $table->date('date');
             $table->string('cluster_name');
-            $table->integer('cluster_qemus');
-            $table->integer('cluster_cpu');
-            $table->integer('cluster_memory');
+            $table->bigInteger('cluster_qemus');
+            $table->bigInteger('cluster_cpu');
+            $table->bigInteger('cluster_memory');
+            $table->bigInteger('cluster_disk');
             $table->timestamps();
         });
     }

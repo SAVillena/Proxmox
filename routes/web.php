@@ -6,6 +6,9 @@ use App\Http\Controllers\HelloWorld;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TablaController;
 use App\Http\Controllers\ProxmoxController;
+use App\Http\Controllers\QemuDeletedController;
+use App\Http\Controllers\VirtualMachineHistoryController;
+use App\Models\QemuDeleted;
 // use auth
 use Illuminate\Support\Facades\Auth;
 
@@ -25,13 +28,11 @@ use Illuminate\Support\Facades\Auth;
 
 
 
-Route::get('/login/auth', function () {
-    return view('auth.login');
-})->name('viewLogin');
+Route::get('/login', function () { return view('auth.login'); })->name('viewLogin');
 
-Route::post('/login', [LoginController::class, 'loginUser'])->name('login');
+Route::post('/login/auth', [LoginController::class, 'loginUser'])->name('login');
 
-Route::get('/', [ProxmoxController::class, 'home'])->name('proxmox.home')->middleware('auth:api');
+Route::get('/', [ProxmoxController::class, 'home'])->name('proxmox.home') ->middleware('auth:api');
 
 Route::get('/proxmox/fetch', [ProxmoxController::class, 'getData']);
 Route::get('/proxmox', [ProxmoxController::class, 'index'])->name('proxmox.index');
@@ -57,11 +58,12 @@ Route::get('/proxmox/qemu/search', [ProxmoxController::class, 'searchQemu'])->na
 Route::get('/proxmox/storage/search', [ProxmoxController::class, 'searchStorage'])->name('proxmox.searchStorage');
 
 
-Route::get('/proxmox/history', [ProxmoxController::class, 'showVMHistory'])->name('proxmox.history'); 
-Route::get('/proxmox/historyAnual', [ProxmoxController::class, 'showVMHistoryAnual'])->name('proxmox.historyAnual'); 
 
 Route::delete('/proxmox/qemu', [ProxmoxController::class, 'destroyQemu'])->name('proxmox.qemu.destroy');
+Route::get('/proxmox/QemuDeleted', [QemuDeletedController::class, 'index'])->name('proxmox.qemuDeleted');
 
+Route::get('/proxmox/history', [VirtualMachineHistoryController::class, 'indexMonthly'])->name('proxmox.history'); 
+Route::get('/proxmox/historyAnual', [VirtualMachineHistoryController::class, 'indexAnual'])->name('proxmox.historyAnual'); 
 
 /* Route::get('/', function () {
     return view('welcome');

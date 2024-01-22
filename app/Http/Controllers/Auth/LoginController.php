@@ -64,18 +64,18 @@ class LoginController extends Controller
 
             if (!$user = $this->auth->attempt(...$credenciales)) {
 
-                return view('proxmox.home', ['error' => 'Credenciales incorrectas']);
+                return view('auth.login', ['error' => 'Credenciales incorrectas']);
             }
             Passport::personalAccessTokensExpireIn(Carbon::now()->addDays(7));
             $tokenResult = $user->createToken($user->name);
-            Passport::token()->where('id', $tokenResult->token['id'])->first()->update(['sistema_id' => $request->sistema_id]);
-
-            $success = [
+/*             Passport::token()->where('id', $tokenResult->token['id'])->first()->update(['sistema_id' => $request->sistema_id]);
+ */            $success = [
                 'token' => $tokenResult->accessToken,
                 'token_type' => 'Bearer Token',
                 'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString()
             ];
             Log::info("success", $success);
-            return view('proxmox.home', ['success' => $success]);
+            return redirect()->route('proxmox.index');
+
     }
 }

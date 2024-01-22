@@ -5,7 +5,9 @@
 
         <div>
             <h1>Historico de Maquinas Virtuales</h1>
-            <p> Ultimo Registro: {{ $VMHistory->last()->total_machines }}</p>
+            <p> Último Registro: {{ $total_machines }}</p>
+            <p> Último Registro: {{ $cpu_growht }}</p>
+            <p> Último Registro: {{ $memory_growht }}</p>
         </div>
 
         @php
@@ -16,7 +18,7 @@
 
             $representativeMonthlyValues = $monthlyData->map(function ($subGroup) {
                 // Seleccionar el último valor de cada mes
-                return $subGroup->last()->total_machines;
+                return $subGroup->last()->cluster_qemus;
             });
 
         @endphp

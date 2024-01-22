@@ -28,45 +28,40 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">
             <div class="container">
-              
-            
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <!-- Left Side Of Navbar -->
-                
-                
-                {{-- Texto para ir a /proxmox/node --}}
-                <a href="{{ url('/proxmox') }}" class="navbar-brand">Datos</a>
-                <a href="{{ url('/proxmox/node') }}" class="navbar-brand">Nodo</a>
-                <a href="{{ url('/proxmox/qemu') }}" class="navbar-brand">VM</a>
-                <a href="{{ url('/proxmox/storage') }}" class="navbar-brand">Almacenamiento</a>
-                <a href="{{ url('/proxmox/history') }}" class="navbar-brand">Historico</a>
-
-
-                
-               
-                {{-- introducir imagen que esta en carpeta public--}}
-                <a class="navbar-brand ms-auto" href="{{ url('/') }}">
-                    <img src="{{ asset('holdco.jpeg') }}"  alt="" width="300" height="100">
-                </a>
-
-                <!-- Right Side Of Navbar -->
-                <ul class="navbar-nav ms-auto">
-                    <ul class="navbar-nav me-auto">
-                        <div class="btn-group btn-group-lg" role="group" aria-label="Large button group">
-                            {{-- boton para ir a /proxmox/fetch --}}
-                            <a href="{{ url('/proxmox/fetch') }}" class="btn btn-success mb-3">Actualizar</a>
-                            
-                            {{-- boton para ir a /proxmox/cluster/create --}}
-                            <a href="{{ url('/proxmox/cluster/create') }}" class="btn btn-success mb-3">Crear
-                                Cluster</a>
-                            </div>
-                            
-                        </ul>
-                        
+                <!-- Logo a la izquierda -->
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="{{ url('/') }}">
+                        <img src="{{ asset('holdco.jpeg') }}" alt="" width="300" height="100">
+                    </a>
+                </div>
+        
+                <!-- Botones centrados -->
+                <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
+                    <ul class="navbar-nav">
+                        <li class="nav-item"><a href="{{ url('/proxmox') }}" class="nav-link">Datos</a></li>
+                        <li class="nav-item"><a href="{{ url('/proxmox/node') }}" class="nav-link">Nodo</a></li>
+                        <li class="nav-item"><a href="{{ url('/proxmox/qemu') }}" class="nav-link">VM</a></li>
+                        <li class="nav-item"><a href="{{ url('/proxmox/storage') }}" class="nav-link">Storage</a></li>
+                        <li class="nav-item"><a href="{{ url('/proxmox/history') }}" class="nav-link">Historico</a></li>
+                        <li class="nav-item"><a href="{{ url('/proxmox/QemuDeleted') }}" class="nav-link">VM Eliminadas</a></li>
                     </ul>
                 </div>
+        
+                <!-- Botones a la derecha -->
+                <ul class="navbar-nav ml-auto">
+                    <div class="btn-group btn-group-lg" role="group" aria-label="Large button group">
+                        {{-- boton para ir a /proxmox/fetch --}}
+                        <a href="{{ url('/proxmox/fetch') }}" class="btn btn-success mb-3">Actualizar</a>
+                        
+                        {{-- boton para ir a /proxmox/cluster/create --}}
+                        <a href="{{ url('/proxmox/cluster/create') }}" class="btn btn-success mb-3">Crear
+                            Cluster</a>
+                        </div>
+                        
+                    </ul>
             </div>
         </nav>
+        
         
         <main class="py-4">
             @yield('content')

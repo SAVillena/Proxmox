@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Crypt;
 use App\Models\VirtualMachineHistory;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpKernel\Debug\VirtualRequestStack;
+use App\Models\QemuDeleted;
 
 class ProxmoxService2
 {
@@ -204,13 +206,15 @@ class ProxmoxService2
             $configUrl = $this->baseUrl . "/nodes/{$nodeId}/qemu/{$vmid}/config";
             $configData = $this->makeRequest('GET', $configUrl, $authData);
             if ($configData) {
-                $this->updatedQemuIds[] = $qemuItem['id'];
+                $this->updatedQemuIds[] = $qemuItem['node'].'/'.$qemuItem['id'];
+                                
                 $InfoStorage = $this->extractStorageInfo($configData['scsi0']);
                 // Guardar los datos combinados en la base de datos
                 Qemu::updateOrCreate(
-                    ['id_proxmox' => $qemuItem['vmid']],
+                    ['id_proxmox' => $qemuItem['node'].'/'.$qemuItem['id']],
                     [
                         'node_id' => 'node/' . $qemuItem['node'],
+                        'vmid' => $qemuItem['vmid'],
                         'name' => $qemuItem['name'],
                         'type' => $qemuItem['type'],
                         'status' => $qemuItem['status'],
@@ -318,6 +322,7 @@ class ProxmoxService2
                 $this->addClusterCredentials($ip, $username, $password);
 
             }
+            $this->VMHistory();
         } catch (GuzzleException $e) {
             // Si la autenticación falla, se podría registrar el error o intentar con el siguiente nodo
         }
@@ -361,51 +366,95 @@ class ProxmoxService2
         }
     }
 
-    public function VMHistory()
-    {
-        //nombre de los clusters
-        $NameAllCluster = cluster::all()->pluck('name')->toArray();
-        //recorrer los nodos del cluster
-        foreach ($NameAllCluster as $nameCluster) {
-            $nodes = Node::where('cluster_name', $nameCluster)->get();
-            //incluir los nodos con cluster_name = null
-            //guardar informacion de cantidad de cpu, ram y qemus
-            $TotalCPU = 0;
-            $TotalRAM = 0;
-            $TotalQemus = 0;
-            foreach ($nodes as $node) {
-                $TotalCPU = $TotalCPU + $node->maxcpu;
-                $TotalRAM = $node->maxmem;
-                $TotalQemus = Qemu::where('node_id', 'node/' . $node->id_proxmox)->get()->count();
-            }
-            //guardar informacion en la tabla de historial
-            VirtualMachineHistory::create([
-                'date' => Carbon::today(),
-                'cluster_name' => $nameCluster,
+public function VMHistory()
+{
+    // Nombre de los clusters
+    $NameAllCluster = cluster::all()->pluck('name')->toArray();
+
+    // Fecha de inicio y fin del mes actual
+    $startOfMonth = Carbon::now()->startOfMonth();
+    $endOfMonth = Carbon::now()->endOfMonth();
+
+    // Recorrer los nodos del cluster
+    foreach ($NameAllCluster as $nameCluster) {
+        // Inicializar totales
+        $TotalCPU = 0;
+        $TotalRAM = 0;
+        $TotalQemus = 0;
+        $TotalDisk = 0;
+
+        // Filtrar QEMUs creadas en el mes actual y que pertenecen al cluster
+        $qemus = Qemu::whereHas('node', function ($query) use ($nameCluster) {
+                    $query->where('cluster_name', $nameCluster);
+                })
+                ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
+                ->get();
+
+        // Calcular totales
+        $TotalQemus = $qemus->count();
+        $TotalCPU = $qemus->sum('maxcpu');
+        $TotalRAM = $qemus->sum('maxmem');
+        $TotalDisk = $qemus->sum('maxdisk');
+        
+
+        
+        // Guardar o actualizar información en la tabla de historial
+        VirtualMachineHistory::updateOrCreate(
+            [
+                'date' => $startOfMonth,
+                'cluster_name' => $nameCluster
+            ],
+            [
                 'cluster_qemus' => $TotalQemus,
                 'cluster_cpu' => $TotalCPU,
                 'cluster_memory' => $TotalRAM,
-            ]);
-        }
-
+                'cluster_disk' => $TotalDisk,
+            ]
+        );
     }
-
-    public function getVMHistory()
-    {
-        $VMHistory = VirtualMachineHistory::all();
-        
-        return $VMHistory;
-    }
+}
     
     public function markMissingQemuAsDeleted()
     {
         $allQemuIds = Qemu::pluck('id_proxmox')->all();
-
         $qemusToMarkDeleted = array_diff($allQemuIds, $this->updatedQemuIds);
 
     // Marcar como 'eliminado' los QEMU que ya no están presentes
-        Qemu::whereIn('id_proxmox', $qemusToMarkDeleted)
-        ->update(['status' => 'eliminado']);
+        $QemuDeleted = Qemu::whereIn('id_proxmox', $qemusToMarkDeleted)->get();
+        
+        // Qemu::whereIn('id_proxmox', $qemusToMarkDeleted)->delete();
+        Qemu::whereIn('id_proxmox', $qemusToMarkDeleted)->update(['status' => 'eliminado']);
+        
+                
+
+        foreach ($QemuDeleted as $qemu) {
+            QemuDeleted::updateOrCreate(
+                ['id_proxmox' => $qemu->id_proxmox],
+                [
+                    'vmid' => $qemu->vmid,
+                    'node_id' => $qemu->node_id,
+                    'name' => $qemu->name,
+                    'type' => $qemu->type,
+                    'status' => 'eliminado',
+                    'cpu' => $qemu->cpu,
+                    'maxcpu' => $qemu->maxcpu,
+                    'diskwrite' => $qemu->diskwrite,
+                    'maxdisk' => $qemu->maxdisk,
+                    'netout' => $qemu->netout,
+                    'mem' => $qemu->mem,
+                    'maxmem' => $qemu->maxmem,
+                    'uptime' => $qemu->uptime,
+                    'disk' => $qemu->disk,
+                    'netin' => $qemu->netin,
+                    'storageName' => $qemu->storageName,
+                    'size' => $qemu->size,
+                ]
+            );
+            
+            //eliminar el estado de status de los qemus eliminados
+            Qemu::where('status', 'eliminado')->delete();
+
+        }
     }
 
 

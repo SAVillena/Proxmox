@@ -158,7 +158,8 @@
                 @foreach ($qemus as $qemu)
                     <tr>
                         <td>{{ $qemu->node_id }}</td>
-                        <td>{{ $qemu->id_proxmox }}</td>
+                        {{-- substr para mostrar solo el id de la vm y no el path completo --}}
+                        <td>{{ substr($qemu->id_proxmox, strrpos($qemu->id_proxmox, '/') + 1) }}</td>
                         <td>{{ $qemu->name }}</td>
                         <td>{{ $qemu->type }}</td>
                         <td>{{ $qemu->status }}</td>

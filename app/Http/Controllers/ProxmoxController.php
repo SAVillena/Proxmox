@@ -7,9 +7,9 @@ use App\Models\qemu;
 use App\Models\Storage;
 use App\Models\node;
 use App\Models\cluster;
-use App\Models\VirtualMachineHistory;
+use App\Models\QemuDeleted;
 use App\Services\ProxmoxService2;
-use Maatwebsite\Excel\Facades\Excel;
+
 
 
 class ProxmoxController extends Controller
@@ -22,12 +22,16 @@ class ProxmoxController extends Controller
         $this->proxmoxService = $proxmoxService;
     }
 
+    /**
+     * Método para obtener los datos necesarios para la vista de inicio.
+     *
+     * @return \Illuminate\View\View
+     */
     public function home()
     {
         $totalClusters = Cluster::count();
         $totalNodes = Node::count();
         $totalQemus = Qemu::count();
-        $VMHistory = VirtualMachineHistory::all();
         $totalStorages = Storage::count();
 
         $totalCPU = Node::sum('maxcpu');
@@ -37,27 +41,26 @@ class ProxmoxController extends Controller
 
         //cpuUsagePercentage, Node->cpu es el porcentaje de uso de cpu de cada nodo        
         $cpuUsagePercentage = Node::sum('cpu');
-        if($cpuUsagePercentage == 0){
+        if ($cpuUsagePercentage == 0) {
             $cpuUsagePercentage = 0;
-        }else{
+        } else {
             $cpuUsagePercentage = $cpuUsagePercentage / $totalCPU * 100;
         }
 
         //memoryUsagePercentage
         $memoryUsagePercentage = Node::sum('mem');
-        if($memoryUsagePercentage == 0){
+        if ($memoryUsagePercentage == 0) {
             $memoryUsagePercentage = 0;
-        }else{
-        $memoryUsagePercentage = $memoryUsagePercentage / $totalRAM * 100;
+        } else {
+            $memoryUsagePercentage = $memoryUsagePercentage / $totalRAM * 100;
         }
         //diskUsagePercentage
         $diskUsagePercentage = Storage::where('storage', '!=', 'Backup-Virt')->where('storage', '!=', 'local')->where('storage', '!=', 'local-lvm')->sum('disk');
-        if($diskUsagePercentage == 0){
+        if ($diskUsagePercentage == 0) {
             $diskUsagePercentage = 0;
-        }else{
-        $diskUsagePercentage = $diskUsagePercentage / $totalDisk * 100;
+        } else {
+            $diskUsagePercentage = $diskUsagePercentage / $totalDisk * 100;
         }
-
 
         $diskUsagePercentage = round($diskUsagePercentage, 2);
 
@@ -85,6 +88,12 @@ class ProxmoxController extends Controller
         ]);
     }
 
+    /**
+     * Recupera datos de Proxmox, procesa los nodos del clúster y el historial de las máquinas virtuales,
+     * y redirige a la ruta 'proxmox.index'.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function getData()
     {
         $this->proxmoxService->processClusterNodes();
@@ -92,16 +101,29 @@ class ProxmoxController extends Controller
         return redirect()->route('proxmox.index');
     }
 
+    /**
+     * Método para obtener la información necesaria en la vista index.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
+     */
     public function index()
     {
+        // Obtiene todos los registros de la tabla qemu
         $qemus = qemu::all();
-        $storages = storage::all();
-        $nodes = node::all();
-        $clusters = cluster::all();
 
+        // Obtiene todos los registros de la tabla storage
+        $storages = storage::all();
+
+        // Obtiene todos los registros de la tabla node
+        $nodes = node::all();
+
+        // Obtiene todos los registros de la tabla cluster
+        $clusters = cluster::all();
 
         // Inicializa un arreglo para almacenar las sumas de size por node_id
         $sizeSumByNodeId = [];
+
+        // Inicializa un arreglo para almacenar el máximo de almacenamiento local por node_id
         $storageLocalMax = [];
 
         // Recorre todos los qemus y suma sus sizes por node_id
@@ -116,6 +138,7 @@ class ProxmoxController extends Controller
             $sizeSumByNodeId[$nodeId] += $size;
         }
 
+        // Recorre todos los storages y suma los maxdisk por node_id, excluyendo el storage 'Backup-Virt'
         foreach ($storages as $storage) {
             $nodeId = $storage->node_id;
             $maxdisk = $storage->maxdisk;
@@ -141,6 +164,12 @@ class ProxmoxController extends Controller
         ]);
     }
 
+    /**
+     * Convierte una cadena de tamaño en bytes.
+     *
+     * @param string $sizeStr La cadena de tamaño en formato "número unidad" (por ejemplo, "10G" para 10 gigabytes).
+     * @return int El tamaño en bytes.
+     */
     private function getSizeInBytes($sizeStr)
     {
         preg_match('/(\d+)(G|T)/', $sizeStr, $matches);
@@ -155,19 +184,33 @@ class ProxmoxController extends Controller
     }
 
 
+    /**
+     * Método para obtener información de los nodos, qemus y storages.
+     *
+     * @return \Illuminate\View\View
+     */
     public function node()
     {
+        // Obtiene todos los nodos
         $nodes = node::all();
+
+        // Obtiene los IDs de los nodos
         $nodeIds = $nodes->pluck('id_proxmox')->toArray();
+
+        // Obtiene los qemus asociados a los nodos
         $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
+
+        // Obtiene los storages asociados a los nodos
         $storages = Storage::whereIn('node_id', $nodeIds)->get();
 
         // Inicializa un arreglo para almacenar las sumas de size por node_id
         $sizeSumByNodeId = [];
+
+        // Inicializa un arreglo para almacenar el tamaño máximo de almacenamiento local por node_id
         $storageLocalMax = [];
 
-        // suma maxdisk del storage asociado al node_id y almacenarla en storageLocalMax
-        // no sumar "Backup-Virt"
+        // Suma el tamaño máximo del almacenamiento local asociado a cada node_id
+        // No se suma el almacenamiento "Backup-Virt"
         foreach ($storages as $storage) {
             $nodeId = $storage->node_id;
             $maxdisk = $storage->maxdisk;
@@ -182,7 +225,7 @@ class ProxmoxController extends Controller
             }
         }
 
-        // Recorre todos los qemus y suma sus sizes por node_id
+        // Recorre todos los qemus y suma sus tamaños por node_id
         foreach ($qemus as $qemu) {
             $nodeId = $qemu->node_id;
             $size = $this->getSizeInBytes($qemu->size);
@@ -194,6 +237,7 @@ class ProxmoxController extends Controller
             $sizeSumByNodeId[$nodeId] += $size;
         }
 
+        // Retorna la vista con la información obtenida
         return view(
             'proxmox.node',
             [
@@ -206,21 +250,37 @@ class ProxmoxController extends Controller
         );
     }
 
+    /**
+     * Método para obtener todos los registros de la tabla qemu y mostrarlos en la vista 'proxmox.qemu'.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function qemu()
     {
         $qemus = qemu::all();
         return view('proxmox.qemu', ['qemus' => $qemus]);
     }
 
+    /**
+     * Método para obtener todos los registros de la tabla storage y mostrarlos en la vista 'proxmox.storage'.
+     *
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function storage()
     {
         $storages = storage::all();
         return view('proxmox.storage', ['storages' => $storages]);
     }
 
+    /**
+     * Elimina un clúster y sus nodos, qemus y almacenamientos asociados.
+     *
+     * @param string $name El nombre del clúster a eliminar.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroyCluster($name)
     {
-        //eliminar cluster y los nodos asociados, y los qemus y los storages
+        //eliminar clúster y los nodos asociados, y los qemus y los almacenamientos
         $cluster = cluster::find($name);
         $nodes = node::where('cluster_name', $name)->get();
         $nodeIds = $nodes->pluck('id_proxmox')->toArray();
@@ -240,9 +300,14 @@ class ProxmoxController extends Controller
         return redirect()->route('proxmox.index');
     }
 
+    /**
+     * Elimina un nodo y todos los qemus y storages asociados.
+     *
+     * @param string $name El nombre del nodo a eliminar.
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroyNode($name)
     {
-        //eliminar cluster y los nodos asociados, y los qemus y los storages
         $node = node::find('node/' . $name);
         $qemus = Qemu::where('node_id', $node->id_proxmox)->get();
         $storages = Storage::where('node_id', $node->id_proxmox)->get();
@@ -257,11 +322,22 @@ class ProxmoxController extends Controller
         return redirect()->route('proxmox.index');
     }
 
+    /**
+     * Muestra la vista para crear un clúster.
+     *
+     * @return \Illuminate\View\View
+     */
     public function createCluster()
     {
         return view('proxmox.cluster.create');
     }
 
+    /**
+     * Almacena un clúster en la base de datos y sus credenciales.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function storeCluster(Request $request)
     {
         $ip = $request->input('ip');
@@ -269,20 +345,38 @@ class ProxmoxController extends Controller
         return redirect()->route('proxmox.index');
     }
 
+    /**
+     * Muestra los datos de un cluster y sus nodos, qemus y storages asociados.
+     *
+     * @param string $name El nombre del cluster.
+     * @return \Illuminate\View\View La vista que muestra los datos del cluster.
+     */
     public function showbyIdCluster($name)
     {
+        // Obtiene el cluster por su nombre
         $cluster = cluster::find($name);
+
+        // Obtiene los nodos asociados al cluster
         $nodes = node::where('cluster_name', $name)->get();
+
+        // Obtiene los IDs de los nodos
         $nodeIds = $nodes->pluck('id_proxmox')->toArray();
+
+        // Obtiene los qemus asociados a los nodos
         $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
+
+        // Obtiene los storages asociados a los nodos
         $storages = Storage::whereIn('node_id', $nodeIds)->get();
 
         // Inicializa un arreglo para almacenar las sumas de size por node_id
         $sizeSumByNodeId = [];
+
+        // Inicializa un arreglo para almacenar las sumas de maxdisk por node_id
         $storageLocalMax = [];
 
-        // suma maxdisk del storage asociado al node_id y almacenarla en storageLocalMax
-        // no sumar "Backup-Virt"
+        // Calcula la suma de maxdisk del storage asociado a cada node_id
+        // y almacena los resultados en el arreglo storageLocalMax
+        // No se suman los storages con nombre "Backup-Virt"
         foreach ($storages as $storage) {
             $nodeId = $storage->node_id;
             $maxdisk = $storage->maxdisk;
@@ -309,7 +403,7 @@ class ProxmoxController extends Controller
             $sizeSumByNodeId[$nodeId] += $size;
         }
 
-
+        // Retorna la vista con los datos del cluster y sus asociaciones
         return view(
             'proxmox.cluster.show',
             compact('cluster'),
@@ -323,22 +417,36 @@ class ProxmoxController extends Controller
         );
     }
 
+    /**
+     * Exporta los datos de los Qemu en formato CSV.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function exportQemuCSV()
     {
         $qemus = qemu::all();
+
         // nombre del cluster obtenido del nodo que pertenece el qemu
         foreach ($qemus as $qemu) {
             $node = node::find($qemu->node_id);
             $qemu->cluster_name = $node->cluster_name;
         }
+
         //transformar el maxmem de bytes a gigabytes
         foreach ($qemus as $qemu) {
-            $qemu->maxmem = ($qemu->maxmem / 1024 / 1024 / 1024)." Gb";
+            $qemu->maxmem = ($qemu->maxmem / 1024 / 1024 / 1024) . " Gb";
         }
+
         $csvExporter = new \Laracsv\Export();
         $csvExporter->build($qemus, ['id_proxmox', 'name', 'status', 'node_id', 'size', 'disk', 'maxcpu', 'maxmem',  'type', 'cluster_name', 'storageName'])->download();
     }
 
+    /**
+     * Busca las instancias Qemu que coincidan con el término de búsqueda proporcionado.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\View\View
+     */
     public function searchQemu(Request $request)
     {
         $search = $request->get('search');
@@ -346,6 +454,13 @@ class ProxmoxController extends Controller
         return view('proxmox.qemu', ['qemus' => $qemus]);
     }
 
+    /**
+     * Busca los nodos que coincidan con el término de búsqueda proporcionado y realiza
+     * operaciones relacionadas con los nodos y las instancias Qemu asociadas.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\View\View
+     */
     public function searchNode(Request $request)
     {
         $search = $request->get('search');
@@ -355,7 +470,7 @@ class ProxmoxController extends Controller
         $nodeIds = $nodes->pluck('id_proxmox')->toArray();
         $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
         $storages = Storage::whereIn('node_id', $nodeIds)->get();
-        
+
         // Inicializa un arreglo para almacenar las sumas de size por node_id
         $sizeSumByNodeId = [];
         $storageLocalMax = [];
@@ -375,6 +490,7 @@ class ProxmoxController extends Controller
                 $storageLocalMax[$nodeId] += $maxdisk;
             }
         }
+
 
         // Recorre todos los qemus y suma sus sizes por node_id
         foreach ($qemus as $qemu) {
@@ -398,11 +514,14 @@ class ProxmoxController extends Controller
                 'storageLocalMax' => $storageLocalMax
             ]
         );
-        
-
-            /*  return view('proxmox.node', ['nodes' => $nodes]); */   
     }
 
+    /**
+     * Busca almacenamiento basado en el término de búsqueda dado.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Contracts\View\View
+     */
     public function searchStorage(Request $request)
     {
         $search = $request->get('search');
@@ -410,10 +529,16 @@ class ProxmoxController extends Controller
         return view('proxmox.storage', ['storages' => $storages]);
     }
 
+    /**
+     * Muestra los nodos y sus detalles asociados según el ID del nodo.
+     *
+     * @param string $node El ID del nodo.
+     * @return \Illuminate\View\View La vista con los nodos, qemus, storages y las sumas de tamaño por node_id.
+     */
     public function showByIdNode($node)
     {
-        $node = 'node/'.$node;
-        
+        $node = 'node/' . $node;
+
         $nodes = node::where('id_proxmox', $node)->get();
         foreach ($nodes as $node) {
             $qemus = Qemu::where('node_id', $node->id_proxmox)->get();
@@ -464,26 +589,16 @@ class ProxmoxController extends Controller
         );
     }
 
-    public function showVMHistory()
-    {
-        $VMHistory = VirtualMachineHistory::all();
-        return view('proxmox.history', ['VMHistory' => $VMHistory]);
-    }
-
-    public function showVMHistoryAnual()
-    {
-        $VMHistory = VirtualMachineHistory::all();
-        return view('proxmox.historyAnual', ['VMHistory' => $VMHistory]);
-    }
-
-    //eliminar las qemus where status eliminado
+    /**
+     * Elimina las instancias Qemu que tienen el estado "eliminado" y vacía la tabla QemuDeleted.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function destroyQemu()
     {
-        $qemus = Qemu::where('status', 'eliminado')->get();
-        foreach ($qemus as $qemu) {
-            $qemu->delete();
-        }
+        Qemu::where('status', 'eliminado')->delete();
+        QemuDeleted::truncate();
+
         return redirect()->route('proxmox.index');
     }
-
 }

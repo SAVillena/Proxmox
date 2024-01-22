@@ -5,17 +5,31 @@
         
     <div>
         <h1>Historico de Maquinas Virtuales</h1>
-        <p> Ultimo Registro: {{ $VMHistory->last()->total_machines }}</p>
-    </div>
+        {{-- {{dd($VMHistoryLast)}} --}}
+        @foreach ($VMHistoryLast as $item)
+        <h2> Ultimo Registro cluster {{$item->cluster_name}}</h2>
+        <h5> Numero de maquinas virtuales: {{$item->cluster_qemus}}</h5>
+        <h5> Numero de cpu: {{$item->cluster_cpu}}</h5>
+        <h5> Numero de memory: {{$item->cluster_memory}}</h5>
+
+        @endforeach
+        <p> Ultimo Registro: {{ $total_machines }}</p>
+
+        <h5>Crecimiento de maquinas virtuales por año</h5>
+        <p> Ultimo Registro: {{ $cpu_growht }}</p>
+
+        <h5> Crecimiento de RAM  por año</h5>
+        <p> Ultimo Registro: {{ $memory_growht }}</p>
+        </div>
 
 @php
-    $AnualData = $VMHistory->sortBy('date')->groupBy(function($date) {
+    $AnualData = $VMHistory->sortBy('date')->groupBy(function ($date) {
         // Agrupar por año 
         return Carbon\Carbon::parse($date->date)->format('Y');
     });
     $representativeAnualValues = $AnualData->map(function($subGroup){
         // Seleccionar el último valor del año
-        return $subGroup->last()->total_machines;
+        return $subGroup->last()->cluster_qemus;
     });
 @endphp
 
@@ -75,7 +89,7 @@
                         }
                     }
                 },
-                // ... otras opciones ...
+                
             }
         });
     </script>

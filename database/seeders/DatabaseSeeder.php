@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
                 
          ]);
 
-        $this->call(tabla::class);
+        $this->call(VirtualMachineHistorySeeder::class);
+        $this->call(UsersSeeder::class);
     }
 }
