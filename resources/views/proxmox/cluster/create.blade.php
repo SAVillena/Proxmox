@@ -8,20 +8,18 @@
             @csrf
 
             <div class="container">
-                    <div class="form-floating mb-3">
-                        <input type="ip" class="form-control" id="floatingInput" placeholder="IP" name="ip">
-                        <label for="floatingInput">IP</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="username" class="form-control" id="floatingInput" placeholder="Username"
-                            name="username">
-                        <label for="floatingInput">Username</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" class="form-control" id="floatingInput" placeholder="Password"
-                            name="password">
-                        <label for="floatingInput">Password</label>
-                    </div>
+                <div class="form-floating mb-3">
+                    <input type="ip" class="form-control" id="floatingInput" placeholder="IP" name="ip">
+                    <label for="floatingInput">IP</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="username" class="form-control" id="floatingInput" placeholder="Username" name="username">
+                    <label for="floatingInput">Usuario</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control" id="floatingInput" placeholder="Password" name="password">
+                    <label for="floatingInput">Contraseña</label>
+                </div>
             </div>
 
             <div>

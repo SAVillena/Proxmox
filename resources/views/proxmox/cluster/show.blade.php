@@ -93,13 +93,12 @@
                     <th scope="col">Nombre</th>
                     <th scope="col">Tipo</th>
                     <th scope="col">Estado</th>
-                    <th scope="col">Cores</th>
-                    <th scope="col">CPU</th>
+                    <th scope="col">vCPU</th>
                     <th scope="col">RAM</th>
                     <th scope="col">Disco </th>
                     <th scope="col">RAM Usado</th>
                     <th scope="col">Carga de Cpu</th>
-                    <th scope="col">Nombre del storage</th>
+                    <th scope="col">Storage</th>
                     <th scope="col">Última actualización</th>
 
                 </tr>
@@ -113,7 +112,6 @@
                         <td>{{ $qemu->type }}</td>
                         <td>{{ $qemu->status }}</td>
                         <td>{{ $qemu->maxcpu }}</td>
-                        <td>{{ round($qemu->cpu,4) *100 }}%</td>
                         <td>{{ round($qemu->maxmem / 1073741824, 2) }} GB</td>
                         
                         @if ($qemu->maxdisk >= 1099511627776)

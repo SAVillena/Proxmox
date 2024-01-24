@@ -31,7 +31,7 @@
                 <!-- Logo a la izquierda -->
                 <div class="navbar-header">
                     <a class="navbar-brand" href="{{ url('/') }}">
-                        <img src="{{ asset('holdco.jpeg') }}" alt="" width="300" height="100">
+                        <img src="{{ asset('holdco.png') }}" alt="" width="300" height="100">
                     </a>
                 </div>
         
@@ -44,6 +44,7 @@
                         <li class="nav-item"><a href="{{ url('/proxmox/storage') }}" class="nav-link">Storage</a></li>
                         <li class="nav-item"><a href="{{ url('/proxmox/history') }}" class="nav-link">Historico</a></li>
                         <li class="nav-item"><a href="{{ url('/proxmox/QemuDeleted') }}" class="nav-link">VM Eliminadas</a></li>
+                        <li class="nav-item"><a href="{{ url('/users') }}" class="nav-link">Usuarios</a></li>
                     </ul>
                 </div>
         

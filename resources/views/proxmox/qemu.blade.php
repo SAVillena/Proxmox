@@ -11,12 +11,6 @@
             <a href="{{ route('proxmox.export') }}" class="btn btn-success">Exportar a Excel</a>
         </div>
         {{-- crear boton de eliminar qemus en estado eliminado --}}
-        <form class= "px-3"action="{{ route('proxmox.qemu.destroy') }}" method="POST">
-            @csrf
-            @method('DELETE')
-            <button class="btn btn-danger mb-3" type="submit">Eliminar VMs</button>
-            
-        </form>
         </div>
         {{-- buscador por nombre, con $qemu->name --}}
         
@@ -37,13 +31,12 @@
                     <th scope="col">Nombre</th>
                     <th scope="col">Tipo</th>
                     <th scope="col">Estado</th>
-                    <th scope="col">Cores</th>
-                    <th scope="col">CPU</th>
+                    <th scope="col">vCPU</th>
                     <th scope="col">RAM</th>
                     <th scope="col">Disco </th>
                     <th scope="col">RAM Usado</th>
                     <th scope="col">Carga de Cpu</th>
-                    <th scope="col">Nombre del storage</th>
+                    <th scope="col">Storage</th>
                     <th scope="col">Última actualización</th>
 
                 </tr>
@@ -57,7 +50,6 @@
                         <td>{{ $qemu->type }}</td>
                         <td>{{ $qemu->status }}</td>
                         <td>{{ $qemu->maxcpu }}</td>
-                        <td>{{ round($qemu->cpu,4) *100 }}%</td>
                         <td>{{ round($qemu->maxmem / 1073741824, 2) }} GB</td>
                         
                         @if ($qemu->maxdisk >= 1099511627776)

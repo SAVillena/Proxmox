@@ -22,15 +22,16 @@ class VirtualMachineHistoryController extends Controller
         $VMHistory = VirtualMachineHistory::all();
 
         //suma todas las qemu de cada clúster, todas las cpu de cada clúster, todas las memoria de cada clúster, todas las disco de cada clúster por meses
-        $total_qemus = VirtualMachineHistory::sum('cluster_qemus');
-        $total_cpus = VirtualMachineHistory::sum('cluster_cpu');
-        $total_memorys = VirtualMachineHistory::sum('cluster_memory');
-    
-        $total_disks = VirtualMachineHistory::sum('cluster_disk');
-
+        
         //histories suma de todos los clusters del mes
         $histories = VirtualMachineHistory::selectRaw('date, SUM(cluster_qemus) as cluster_qemus, SUM(cluster_cpu) as cluster_cpu, SUM(cluster_memory) as cluster_memory, SUM(cluster_disk) as cluster_disk')
             ->groupBy('date')->get();
+
+        $total_qemus = $histories->sum('cluster_qemus');
+        $total_cpus = $histories->sum('cluster_cpu');
+        $total_memorys = $histories->sum('cluster_memory');
+    
+        $total_disks = $histories->sum('cluster_disk');
 
         return view('proxmox.virtualMachineHistory', compact('histories'), compact('total_qemus', 'total_cpus', 'total_memorys', 'total_disks', 'VMHistory'));
     }

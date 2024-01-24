@@ -9,8 +9,7 @@ use App\Models\node;
 use App\Models\cluster;
 use App\Models\QemuDeleted;
 use App\Services\ProxmoxService2;
-
-
+use Illuminate\Support\Facades\Log;
 
 class ProxmoxController extends Controller
 {
@@ -97,7 +96,9 @@ class ProxmoxController extends Controller
     public function getData()
     {
         $this->proxmoxService->processClusterNodes();
+        $this->proxmoxService->markMissingQemuAsDeleted();
         $this->proxmoxService->VMHistory();
+        $this->proxmoxService->resetUpdatedQemuIds();
         return redirect()->route('proxmox.index');
     }
 
@@ -280,24 +281,32 @@ class ProxmoxController extends Controller
      */
     public function destroyCluster($name)
     {
-        //eliminar clúster y los nodos asociados, y los qemus y los almacenamientos
-        $cluster = cluster::find($name);
-        $nodes = node::where('cluster_name', $name)->get();
-        $nodeIds = $nodes->pluck('id_proxmox')->toArray();
-        $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
-        $storages = Storage::whereIn('node_id', $nodeIds)->get();
+        try {
+            //eliminar clúster y los nodos asociados, y los qemus y los almacenamientos
+            $cluster = cluster::find($name);
+            if (!$cluster) {
+                throw new \Exception('Cluster no encontrado');
+            }
+            $nodes = node::where('cluster_name', $name)->get();
+            $nodeIds = $nodes->pluck('id_proxmox')->toArray();
+            $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
+            $storages = Storage::whereIn('node_id', $nodeIds)->get();
 
-        foreach ($qemus as $qemu) {
-            $qemu->delete();
+            foreach ($qemus as $qemu) {
+                $qemu->delete();
+            }
+            foreach ($storages as $storage) {
+                $storage->delete();
+            }
+            foreach ($nodes as $node) {
+                $node->delete();
+            }
+            $cluster->delete();
+            return redirect()->route('proxmox.index');
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while deleting the cluster.');
         }
-        foreach ($storages as $storage) {
-            $storage->delete();
-        }
-        foreach ($nodes as $node) {
-            $node->delete();
-        }
-        $cluster->delete();
-        return redirect()->route('proxmox.index');
     }
 
     /**
@@ -340,9 +349,22 @@ class ProxmoxController extends Controller
      */
     public function storeCluster(Request $request)
     {
-        $ip = $request->input('ip');
-        $this->proxmoxService->addCluster($ip, $request->input('username'), $request->input('password'));
-        return redirect()->route('proxmox.index');
+        /* $request->validate([
+            'ip' => 'required|string',
+            'username' => 'required|string',
+            'password' => 'required|string'
+        ]); */
+
+        try {
+            $ip = $request->input('ip');
+            $username = $request->input('username');
+            $password = $request->input('password');
+            $this->proxmoxService->addCluster($ip, $username, $password);
+            return redirect()->route('proxmox.index');
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()->back()->with('error', 'Ocurrió un error agregando el cluster.');
+        }
     }
 
     /**
@@ -353,68 +375,77 @@ class ProxmoxController extends Controller
      */
     public function showbyIdCluster($name)
     {
-        // Obtiene el cluster por su nombre
-        $cluster = cluster::find($name);
+        try {
+            // Obtiene el cluster por su nombre
+            $cluster = cluster::find($name);
 
-        // Obtiene los nodos asociados al cluster
-        $nodes = node::where('cluster_name', $name)->get();
-
-        // Obtiene los IDs de los nodos
-        $nodeIds = $nodes->pluck('id_proxmox')->toArray();
-
-        // Obtiene los qemus asociados a los nodos
-        $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
-
-        // Obtiene los storages asociados a los nodos
-        $storages = Storage::whereIn('node_id', $nodeIds)->get();
-
-        // Inicializa un arreglo para almacenar las sumas de size por node_id
-        $sizeSumByNodeId = [];
-
-        // Inicializa un arreglo para almacenar las sumas de maxdisk por node_id
-        $storageLocalMax = [];
-
-        // Calcula la suma de maxdisk del storage asociado a cada node_id
-        // y almacena los resultados en el arreglo storageLocalMax
-        // No se suman los storages con nombre "Backup-Virt"
-        foreach ($storages as $storage) {
-            $nodeId = $storage->node_id;
-            $maxdisk = $storage->maxdisk;
-            $storageName = $storage->storage;
-
-            if (!isset($storageLocalMax[$nodeId])) {
-                $storageLocalMax[$nodeId] = 0;
+            if (!$cluster) {
+                throw new \Exception('Cluster no encontrado');
             }
 
-            if ($storageName != 'Backup-Virt') {
-                $storageLocalMax[$nodeId] += $maxdisk;
+            // Obtiene los nodos asociados al cluster
+            $nodes = node::where('cluster_name', $name)->get();
+
+            // Obtiene los IDs de los nodos
+            $nodeIds = $nodes->pluck('id_proxmox')->toArray();
+
+            // Obtiene los qemus asociados a los nodos
+            $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
+
+            // Obtiene los storages asociados a los nodos
+            $storages = Storage::whereIn('node_id', $nodeIds)->get();
+
+            // Inicializa un arreglo para almacenar las sumas de size por node_id
+            $sizeSumByNodeId = [];
+
+            // Inicializa un arreglo para almacenar las sumas de maxdisk por node_id
+            $storageLocalMax = [];
+
+            // Calcula la suma de maxdisk del storage asociado a cada node_id
+            // y almacena los resultados en el arreglo storageLocalMax
+            // No se suman los storages con nombre "Backup-Virt"
+            foreach ($storages as $storage) {
+                $nodeId = $storage->node_id;
+                $maxdisk = $storage->maxdisk;
+                $storageName = $storage->storage;
+
+                if (!isset($storageLocalMax[$nodeId])) {
+                    $storageLocalMax[$nodeId] = 0;
+                }
+
+                if ($storageName != 'Backup-Virt') {
+                    $storageLocalMax[$nodeId] += $maxdisk;
+                }
             }
+
+            // Recorre todos los qemus y suma sus sizes por node_id
+            foreach ($qemus as $qemu) {
+                $nodeId = $qemu->node_id;
+                $size = $this->getSizeInBytes($qemu->size);
+
+                if (!isset($sizeSumByNodeId[$nodeId])) {
+                    $sizeSumByNodeId[$nodeId] = 0;
+                }
+
+                $sizeSumByNodeId[$nodeId] += $size;
+            }
+
+            // Retorna la vista con los datos del cluster y sus asociaciones
+            return view(
+                'proxmox.cluster.show',
+                compact('cluster'),
+                [
+                    'nodes' => $nodes,
+                    'qemus' => $qemus,
+                    'storages' => $storages,
+                    'storageLocal' => $sizeSumByNodeId,
+                    'storageLocalMax' => $storageLocalMax
+                ]
+            );
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred while retrieving cluster data.');
         }
-
-        // Recorre todos los qemus y suma sus sizes por node_id
-        foreach ($qemus as $qemu) {
-            $nodeId = $qemu->node_id;
-            $size = $this->getSizeInBytes($qemu->size);
-
-            if (!isset($sizeSumByNodeId[$nodeId])) {
-                $sizeSumByNodeId[$nodeId] = 0;
-            }
-
-            $sizeSumByNodeId[$nodeId] += $size;
-        }
-
-        // Retorna la vista con los datos del cluster y sus asociaciones
-        return view(
-            'proxmox.cluster.show',
-            compact('cluster'),
-            [
-                'nodes' => $nodes,
-                'qemus' => $qemus,
-                'storages' => $storages,
-                'storageLocal' => $sizeSumByNodeId,
-                'storageLocalMax' => $storageLocalMax
-            ]
-        );
     }
 
     /**
@@ -537,56 +568,61 @@ class ProxmoxController extends Controller
      */
     public function showByIdNode($node)
     {
-        $node = 'node/' . $node;
+        try {
+            $node = 'node/' . $node;
 
-        $nodes = node::where('id_proxmox', $node)->get();
-        foreach ($nodes as $node) {
-            $qemus = Qemu::where('node_id', $node->id_proxmox)->get();
-            $storages = Storage::where('node_id', $node->id_proxmox)->get();
-        }
-
-        // Inicializa un arreglo para almacenar las sumas de size por node_id
-        $sizeSumByNodeId = [];
-        $storageLocalMax = [];
-
-        // suma maxdisk del storage asociado al node_id y almacenarla en storageLocalMax
-        // no sumar "Backup-Virt"
-        foreach ($storages as $storage) {
-            $nodeId = $storage->node_id;
-            $maxdisk = $storage->maxdisk;
-            $storageName = $storage->storage;
-
-            if (!isset($storageLocalMax[$nodeId])) {
-                $storageLocalMax[$nodeId] = 0;
+            $nodes = node::where('id_proxmox', $node)->get();
+            foreach ($nodes as $node) {
+                $qemus = Qemu::where('node_id', $node->id_proxmox)->get();
+                $storages = Storage::where('node_id', $node->id_proxmox)->get();
             }
 
-            if ($storageName != 'Backup-Virt') {
-                $storageLocalMax[$nodeId] += $maxdisk;
+            // Inicializa un arreglo para almacenar las sumas de size por node_id
+            $sizeSumByNodeId = [];
+            $storageLocalMax = [];
+
+            // suma maxdisk del storage asociado al node_id y almacenarla en storageLocalMax
+            // no sumar "Backup-Virt"
+            foreach ($storages as $storage) {
+                $nodeId = $storage->node_id;
+                $maxdisk = $storage->maxdisk;
+                $storageName = $storage->storage;
+
+                if (!isset($storageLocalMax[$nodeId])) {
+                    $storageLocalMax[$nodeId] = 0;
+                }
+
+                if ($storageName != 'Backup-Virt') {
+                    $storageLocalMax[$nodeId] += $maxdisk;
+                }
             }
-        }
 
-        // Recorre todos los qemus y suma sus sizes por node_id
-        foreach ($qemus as $qemu) {
-            $nodeId = $qemu->node_id;
-            $size = $this->getSizeInBytes($qemu->size);
+            // Recorre todos los qemus y suma sus sizes por node_id
+            foreach ($qemus as $qemu) {
+                $nodeId = $qemu->node_id;
+                $size = $this->getSizeInBytes($qemu->size);
 
-            if (!isset($sizeSumByNodeId[$nodeId])) {
-                $sizeSumByNodeId[$nodeId] = 0;
+                if (!isset($sizeSumByNodeId[$nodeId])) {
+                    $sizeSumByNodeId[$nodeId] = 0;
+                }
+
+                $sizeSumByNodeId[$nodeId] += $size;
             }
 
-            $sizeSumByNodeId[$nodeId] += $size;
+            return view(
+                'proxmox.node.show',
+                [
+                    'nodes' => $nodes,
+                    'qemus' => $qemus,
+                    'storages' => $storages,
+                    'storageLocal' => $sizeSumByNodeId,
+                    'storageLocalMax' => $storageLocalMax
+                ]
+            );
+        } catch (\Exception $e) {
+            Log::error($e->getMessage());
+            return response()->view('error', ['message' => $e->getMessage()], 500);
         }
-
-        return view(
-            'proxmox.node.show',
-            [
-                'nodes' => $nodes,
-                'qemus' => $qemus,
-                'storages' => $storages,
-                'storageLocal' => $sizeSumByNodeId,
-                'storageLocalMax' => $storageLocalMax
-            ]
-        );
     }
 
     /**
@@ -596,9 +632,13 @@ class ProxmoxController extends Controller
      */
     public function destroyQemu()
     {
-        Qemu::where('status', 'eliminado')->delete();
-        QemuDeleted::truncate();
+        try {
+            /* Qemu::where('status', 'eliminado')->delete(); */
+            QemuDeleted::truncate();
 
-        return redirect()->route('proxmox.index');
+            return redirect()->route('proxmox.index');
+        } catch (\Exception $e) {
+            return response()->view('error', ['message' => $e->getMessage()], 500);
+        }
     }
 }

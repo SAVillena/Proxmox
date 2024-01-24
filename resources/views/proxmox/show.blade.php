@@ -5,6 +5,19 @@
 @section('content')
     <div class="justify-content-start px-3 py-3">
         <h1><strong>Proxmox Data</strong></h1>
+
+        @if (session('success'))
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <h2 class="text-center">Cluster Data</h2>
         {{-- Mostrar datos de Cluster --}}
         <table class="table table-dark table-hover table-bordered">
@@ -13,7 +26,7 @@
                     <th scope="col">Nombre</th>
                     <th scope="col">Tipo</th>
                     <th scope="col">Cantidad de nodos</th>
-                    <th scope="col">id de proxmox</th>
+                    <th scope="col">Nodos</th>
                     <th scope="col">Última actualización</th>
                     <th scope="col">Acciones</th>
                 </tr>
@@ -24,7 +37,7 @@
                         <td>{{ $cluster->name }}</td>
                         <td>{{ $cluster->type }}</td>
                         <td>{{ $cluster->node_count }}</td>
-                        <td>{{ $cluster->id_proxmox }}</td>
+                        <td>{{ $cluster->nodes }}</td>
                         <td>{{ \Carbon\Carbon::parse($cluster->updated_at)->format('d/m/Y H:i') }}</td>
                         <td>
                             <div class="d-flex justify-content-center">
@@ -143,13 +156,12 @@
                     <th scope="col">Nombre</th>
                     <th scope="col">Tipo</th>
                     <th scope="col">Estado</th>
-                    <th scope="col">Cores</th>
-                    <th scope="col">CPU</th>
+                    <th scope="col">vCPU</th>
                     <th scope="col">RAM</th>
                     <th scope="col">Disco </th>
                     <th scope="col">RAM Usado</th>
                     <th scope="col">Carga de Cpu</th>
-                    <th scope="col">Nombre del storage</th>
+                    <th scope="col">Storage</th>
                     <th scope="col">Última actualización</th>
 
                 </tr>
@@ -158,13 +170,11 @@
                 @foreach ($qemus as $qemu)
                     <tr>
                         <td>{{ $qemu->node_id }}</td>
-                        {{-- substr para mostrar solo el id de la vm y no el path completo --}}
-                        <td>{{ substr($qemu->id_proxmox, strrpos($qemu->id_proxmox, '/') + 1) }}</td>
+                        <td>{{ $qemu->id_proxmox }}</td>
                         <td>{{ $qemu->name }}</td>
                         <td>{{ $qemu->type }}</td>
                         <td>{{ $qemu->status }}</td>
                         <td>{{ $qemu->maxcpu }}</td>
-                        <td>{{ round($qemu->cpu, 4) * 100 }}%</td>
                         <td>{{ round($qemu->maxmem / 1073741824, 2) }} GB</td>
 
                         @if ($qemu->maxdisk >= 1099511627776)

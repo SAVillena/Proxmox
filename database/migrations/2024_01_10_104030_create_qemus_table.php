@@ -30,7 +30,7 @@ return new class extends Migration
             $table->bigInteger('netin')->nullable();
             $table->bigInteger('netout')->nullable();
             $table->string('storageName')->nullable();
-            $table->string('size')->nullable();
+            $table->bigInteger('size')->nullable();
             $table->timestamps();
 
             $table->foreign('node_id')->references('id_proxmox')->on('nodes')->onDelete('cascade');

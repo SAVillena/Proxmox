@@ -30,19 +30,20 @@ class ProxmoxService2
         $this->baseUrl;
     }
 
+    /**
+     * Obtiene un token de autenticación de la API de Proxmox.
+     *
+     * @param string $ip La dirección IP del servidor Proxmox.
+     * @param string $username El nombre de usuario para la autenticación.
+     * @param string $password La contraseña encriptada para la autenticación.
+     * @return array|null Los datos de autenticación o null si ocurrió un error.
+     */
     public function getAuthToken($ip, $username, $password)
     {
         try {
-            /* $username = env('PROXMOX_USERNAME');
-            $password = env('PROXMOX_PASSWORD') */;
-
-            //realizar un for para que se conecte a todos los proxmox
-            //con distintas urls
             $URL = 'https://' . $ip . ':8006/api2/json';
 
             $password = Crypt::decrypt($password);
-            
-            // $URL = env('PROXMOX_URL');
 
             $response = $this->client->request('POST', $URL . '/access/ticket', [
                 'form_params' => [
@@ -59,14 +60,17 @@ class ProxmoxService2
             $authData = json_decode($body, true);
             return $authData['data'];
         } catch (GuzzleException $e) {
-            // Manejo de excepciones
-            // Mostrar el error
-            error_log($e->getMessage());
+            Log::error($e->getMessage());
             return null;
-        
         }
     }
 
+    /**
+     * Obtiene los datos de Proxmox.
+     *
+     * @param array $authData Los datos de autenticación.
+     * @return void
+     */
     public function getProxmoxData($authData)
     {
         $this->clusterName = null;
@@ -74,8 +78,15 @@ class ProxmoxService2
         $this->fetchAndSaveClusterResources($authData);
     }
 
+    /**
+     * Obtiene y guarda el estado del clúster.
+     *
+     * @param array $authData Los datos de autenticación.
+     * @return void
+     */
     protected function fetchAndSaveClusterStatus($authData)
     {
+        $this->clusterName = null;
         $this->nodeInfo = [];
         $url = $this->baseUrl . '/cluster/status';
         $data = $this->makeRequest('GET', $url, $authData);
@@ -83,7 +94,7 @@ class ProxmoxService2
             return strcmp($item1['type'], $item2['type']);
         });
         if ($data) {
-            //guarda todos los nombre de los nodos de $data en $this->nodeInfo
+            // Guarda todos los nombres de los nodos de $data en $this->nodeInfo
             foreach ($data as $item) {
                 if ($item['type'] == 'node') {
                     $this->nodeInfo[$item['id']] = $item;
@@ -97,17 +108,18 @@ class ProxmoxService2
                     $ipNode = array_column($this->nodeInfo, 'ip');
                     $nameNode = implode(',', $nameNode);
                     $this->saveDataToCluster($item, $nameNode);
-                    //agregar a clusterName el nombre del cluster
                     $this->clusterName = $item['name'];
                 }
             }
-
-            // Actualizar el estado de los registros que no se actualizaron
-            // $this->updateStatusForStaleData();
-
         }
     }
 
+    /**
+     * Obtiene y guarda los recursos del clúster.
+     *
+     * @param array $authData Los datos de autenticación.
+     * @return void
+     */
     protected function fetchAndSaveClusterResources($authData)
     {
         $url = $this->baseUrl . '/cluster/resources';
@@ -134,12 +146,20 @@ class ProxmoxService2
     }
 
 
+    /**
+     * Guarda los datos en el clúster.
+     *
+     * @param array $item Los datos del ítem a guardar.
+     * @param array $nodeInfo La información de los nodos.
+     * @return void
+     */
     protected function saveDataToCluster($item, $nodeInfo)
     {
         // Guardar los datos en la base de datos
         cluster::updateOrCreate(
-            ['id_proxmox' => $item['id']],
+            ['id_proxmox' => $item['name']],
             [
+
                 'type' => $item['type'],
                 'name' => $item['name'],
                 'node_count' => $item['nodes'],
@@ -148,6 +168,13 @@ class ProxmoxService2
         );
     }
 
+    /**
+     * Obtiene y guarda los datos del nodo en la base de datos.
+     *
+     * @param array $nodeItem Los datos del nodo a guardar.
+     * @param array $IP Los datos de IP asociados al nodo.
+     * @return void
+     */
     protected function fetchAndSaveNodeData($nodeItem, $IP)
     {
         if ($nodeItem) {
@@ -173,6 +200,12 @@ class ProxmoxService2
         }
     }
 
+    /**
+     * Obtiene y guarda los datos de almacenamiento en la base de datos.
+     *
+     * @param array|null $storageItem Los datos del elemento de almacenamiento.
+     * @return void
+     */
     protected function fetchAndSaveStorageData($storageItem)
     {
         if ($storageItem) {
@@ -197,21 +230,27 @@ class ProxmoxService2
     }
 
 
+    /**
+     * Recupera y guarda los datos de Qemu.
+     *
+     * @param array $authData Los datos de autenticación.
+     * @param array $qemuItem Los datos del item Qemu.
+     * @return void
+     */
     protected function fetchAndSaveQemuData($authData, $qemuItem)
     {
         $nodeId = $qemuItem['node'];
         $vmid = $qemuItem['vmid'];
         if ($qemuItem) {
-            // Complementar la información de Qemu con la configuración específica
             $configUrl = $this->baseUrl . "/nodes/{$nodeId}/qemu/{$vmid}/config";
             $configData = $this->makeRequest('GET', $configUrl, $authData);
+            $this->updatedQemuIds[] = $qemuItem['node'] . '/' . $qemuItem['id'];
             if ($configData) {
-                $this->updatedQemuIds[] = $qemuItem['node'].'/'.$qemuItem['id'];
-                                
-                $InfoStorage = $this->extractStorageInfo($configData['scsi0']);
+
+                $disk = $this->calculateTotalDiskSize($configData);
                 // Guardar los datos combinados en la base de datos
                 Qemu::updateOrCreate(
-                    ['id_proxmox' => $qemuItem['node'].'/'.$qemuItem['id']],
+                    ['id_proxmox' => $qemuItem['node'] . '/' . $qemuItem['id']],
                     [
                         'node_id' => 'node/' . $qemuItem['node'],
                         'vmid' => $qemuItem['vmid'],
@@ -228,14 +267,93 @@ class ProxmoxService2
                         'uptime' => $qemuItem['uptime'],
                         'disk' => $qemuItem['disk'],
                         'netin' => $qemuItem['netin'],
-                        'storageName' => $InfoStorage['storageName'],
-                        'size' => $InfoStorage['size'],
+                        'storageName' => $disk['storageNames'],
+                        'size' => $disk['totalSize'],
                     ]
                 );
             }
         }
     }
 
+    /**
+     * Calcula el tamaño total del disco y los nombres de los storages.
+     *
+     * @param array $configData Los datos de configuración.
+     * @return array El tamaño total del disco y los nombres de los storages.
+     */
+    protected function calculateTotalDiskSize($configData)
+    {
+        $totalSize = 0;
+        $storageNames = [];
+        foreach ($configData as $key => $value) {
+            if (strpos($value, '-disk-') !== false) {
+                $diskInfo = $this->extractDiskInfo($value);
+                if ($diskInfo && isset($diskInfo['size'])) {
+                    $totalSize += $this->convertToGigabytes($diskInfo['size']);
+                }
+                // Extraer el nombre del storage
+                $storageName = explode(':', $value)[0];
+                if (!in_array($storageName, $storageNames)) {
+                    $storageNames[] = $storageName;
+                }
+            }
+        }
+
+        // Convertir el array de nombres de almacenamiento a un string
+        $storageNamesString = implode(', ', $storageNames);
+
+        // Puedes retornar tanto el tamaño total como los nombres de los storages
+        return ['totalSize' => $totalSize, 'storageNames' => $storageNamesString];
+    }
+
+
+
+    /**
+     * Extrae información del disco a partir de una cadena de disco dada.
+     *
+     * @param string $diskString La cadena de disco de la cual extraer información.
+     * @return array|null Un array que contiene la información del disco extraída, o null si no se encontró información.
+     */
+    protected function extractDiskInfo($diskString)
+    {
+        if (preg_match('/size=(\d+(?:\.\d+)?)G/', $diskString, $matches)) {
+            return ['size' => $matches[1]];
+        }
+        return null;
+    }
+
+    /**
+     * Convierte el tamaño de almacenamiento a gigabytes.
+     *
+     * @param string|int $size El tamaño de almacenamiento a convertir.
+     * @return int El tamaño en gigabytes.
+     */
+    protected function convertToGigabytes($size)
+    {
+        //cambiar de T a Bytes
+        if (strpos($size, 'T') !== false) {
+            $size = str_replace('T', '', $size);
+            $size = $size * 1024 * 1024 * 1024;
+        }
+        //cambiar de G a Bytes
+        if (strpos($size, 'G') !== false) {
+            $size = str_replace('G', '', $size);
+            $size = $size * 1024 * 1024;
+        }
+
+        return $size; // Ajustar si la conversión es necesaria
+    }
+
+
+
+    /**
+     * Realiza una solicitud a la URL especificada utilizando el método HTTP y los datos de autenticación proporcionados.
+     *
+     * @param string $method El método HTTP a utilizar para la solicitud (por ejemplo, GET, POST, PUT, DELETE).
+     * @param string $url La URL a la que se enviará la solicitud.
+     * @param array $authData Los datos de autenticación requeridos para la solicitud.
+     * @return mixed Los datos de respuesta de la solicitud, o null si se produjo un error.
+     */
     protected function makeRequest($method, $url, $authData)
     {
         try {
@@ -248,23 +366,19 @@ class ProxmoxService2
             $json = json_decode($response->getBody(), true);
             return $json['data'];
         } catch (GuzzleException $e) {
+            Log::error($e->getMessage());
             dd($e->getMessage());
             return null;
         }
     }
 
 
-    public function updateStatusForStaleData()
-    {
-        $oneHourAgo = now()->subHour();
-
-        // Actualizar los registros donde la columna 'updated_at' es menor que $oneHourAgo
-        // y donde 'type' es igual a 'qemu'
-        Qemu::where('type', 'qemu')
-            ->where('updated_at', '<', $oneHourAgo)->where('status', '!=', 'stopped')
-            ->update(['status' => 'eliminado']);
-    }
-
+    /**
+     * Extrae el nombre y el tamaño de un elemento de almacenamiento.
+     *
+     * @param string $scsiString La cadena de configuración del elemento de almacenamiento.
+     * @return array Un array con el nombre y el tamaño del elemento de almacenamiento.
+     */
     function extractStorageInfo($scsiString)
     {
         // Extraer el nombre del storage
@@ -281,11 +395,23 @@ class ProxmoxService2
         ];
     }
 
+
+    /**
+     * Procesa los nodos del clúster.
+     *
+     * Este método recorre todos los nodos del clúster y realiza las siguientes acciones:
+     * - Obtiene los nombres de todos los clústeres existentes.
+     * - Obtiene los nodos asociados a cada clúster.
+     * - Incluye los nodos que no tienen un clúster asociado.
+     * - Realiza una solicitud a cada nodo para obtener los datos de Proxmox.
+     * - Marca los QEMU que ya no están presentes como eliminados.
+     * 
+     * @return void
+     */
     public function processClusterNodes()
     {
-        $this->updatedQemuIds = [];
         $NameAllCluster = cluster::all()->pluck('name')->toArray();
-        $nodes = Node::where('cluster_name', $NameAllCluster)->get();
+        $nodes = Node::whereIn('cluster_name', $NameAllCluster)->get();
         //incluir los nodos con cluster_name = null
         $nodesNull = Node::where('cluster_name', null)->get();
         $nodes = $nodes->merge($nodesNull);
@@ -295,9 +421,9 @@ class ProxmoxService2
             $this->baseUrl = 'https://' . $node->ip . ':8006/api2/json';
 
             try {
-                
+
                 $credentials = ClusterCredentials::where('ip', $node->ip)->first();
-                $authData = $this->getAuthToken($node->ip,$credentials->username, $credentials->password);
+                $authData = $this->getAuthToken($node->ip, $credentials->username, $credentials->password);
 
                 if ($authData) {
                     $this->getProxmoxData($authData);
@@ -308,9 +434,21 @@ class ProxmoxService2
                 continue;
             }
         }
-        $this->markMissingQemuAsDeleted();
     }
 
+    public function resetUpdatedQemuIds()
+    {
+        $this->updatedQemuIds = [];
+    }
+
+    /**
+     * Agrega un clúster al servidor Proxmox.
+     *
+     * @param string $ip La dirección IP del servidor Proxmox.
+     * @param string $username El nombre de usuario para la autenticación.
+     * @param string $password La contraseña para la autenticación.
+     * @return void
+     */
     public function addCluster($ip, $username, $password)
     {
         $this->baseUrl = 'https://' . $ip . ':8006/api2/json';
@@ -320,15 +458,27 @@ class ProxmoxService2
             if ($authData) {
                 $this->getProxmoxData($authData);
                 $this->addClusterCredentials($ip, $username, $password);
-
+                $this->VMHistory();
+            }else {
+                Log::error("Error al conectar con el nodo: " . $ip);
             }
-            $this->VMHistory();
         } catch (GuzzleException $e) {
             // Si la autenticación falla, se podría registrar el error o intentar con el siguiente nodo
+
+            Log::error("Error al conectar con el nodo: " . $ip);
+            
         }
     }
-    
 
+
+    /**
+     * Agrega las credenciales del clúster.
+     *
+     * @param string $ip La dirección IP del clúster.
+     * @param string $username El nombre de usuario para autenticarse en el clúster.
+     * @param string $password La contraseña para autenticarse en el clúster.
+     * @return void
+     */
     public function addClusterCredentials($ip, $username, $password)
     {
         //recorre el array de ips y si encuentra la ip en la base de datos
@@ -336,8 +486,9 @@ class ProxmoxService2
         $this->baseUrl = 'https://' . $ip . ':8006/api2/json';
         $url = $this->baseUrl . '/cluster/status';
         $passwordEncrypt = Crypt::encrypt($password);
-        $authData= $this->getAuthToken($ip, $username, $passwordEncrypt);
+        $authData = $this->getAuthToken($ip, $username, $passwordEncrypt);
         $data = $this->makeRequest('GET', $url, $authData);
+        Log::info($data);
         usort($data, function ($item1, $item2) {
             return strcmp($item1['type'], $item2['type']);
         });
@@ -366,66 +517,81 @@ class ProxmoxService2
         }
     }
 
-public function VMHistory()
-{
-    // Nombre de los clusters
-    $NameAllCluster = cluster::all()->pluck('name')->toArray();
+    /**
+     * Realiza el historial de las máquinas virtuales para cada clúster y lo guarda en la tabla VirtualMachineHistory.
+     *
+     * @return void
+     */
+    public function VMHistory()
+    {
+        try {
+            // Nombre de los clústeres
+            $NameAllCluster = cluster::all()->pluck('name')->toArray();
 
-    // Fecha de inicio y fin del mes actual
-    $startOfMonth = Carbon::now()->startOfMonth();
-    $endOfMonth = Carbon::now()->endOfMonth();
+            // Fecha de inicio y fin del mes actual
+            $startOfMonth = Carbon::now()->startOfMonth();
+            $endOfMonth = Carbon::now()->endOfMonth();
 
-    // Recorrer los nodos del cluster
-    foreach ($NameAllCluster as $nameCluster) {
-        // Inicializar totales
-        $TotalCPU = 0;
-        $TotalRAM = 0;
-        $TotalQemus = 0;
-        $TotalDisk = 0;
+            // Recorrer los nodos del clúster
+            foreach ($NameAllCluster as $nameCluster) {
+                // Inicializar totales
+                $TotalCPU = 0;
+                $TotalRAM = 0;
+                $TotalQemus = 0;
+                $TotalDisk = 0;
 
-        // Filtrar QEMUs creadas en el mes actual y que pertenecen al cluster
-        $qemus = Qemu::whereHas('node', function ($query) use ($nameCluster) {
+                // Filtrar las QEMUs creadas en el mes actual y que pertenecen al clúster
+                $qemus = Qemu::whereHas('node', function ($query) use ($nameCluster) {
                     $query->where('cluster_name', $nameCluster);
                 })
-                ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
-                ->get();
+                    ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
+                    ->get();
 
-        // Calcular totales
-        $TotalQemus = $qemus->count();
-        $TotalCPU = $qemus->sum('maxcpu');
-        $TotalRAM = $qemus->sum('maxmem');
-        $TotalDisk = $qemus->sum('maxdisk');
-        
+                // Calcular totales
+                $TotalQemus = $qemus->count();
+                $TotalCPU = $qemus->sum('maxcpu');
+                $TotalRAM = $qemus->sum('maxmem');
+                $TotalDisk = $qemus->sum('maxdisk');
 
-        
-        // Guardar o actualizar información en la tabla de historial
-        VirtualMachineHistory::updateOrCreate(
-            [
-                'date' => $startOfMonth,
-                'cluster_name' => $nameCluster
-            ],
-            [
-                'cluster_qemus' => $TotalQemus,
-                'cluster_cpu' => $TotalCPU,
-                'cluster_memory' => $TotalRAM,
-                'cluster_disk' => $TotalDisk,
-            ]
-        );
+                // Guardar o actualizar información en la tabla de historial
+                VirtualMachineHistory::updateOrCreate(
+                    [
+                        'date' => $startOfMonth,
+                        'cluster_name' => $nameCluster
+                    ],
+                    [
+                        'cluster_qemus' => $TotalQemus,
+                        'cluster_cpu' => $TotalCPU,
+                        'cluster_memory' => $TotalRAM,
+                        'cluster_disk' => $TotalDisk,
+                    ]
+                );
+            }
+        } catch (GuzzleException $e) {
+            Log::error("Error occurred: " . $e->getMessage());
+        }
     }
-}
-    
+
+    /**
+     * Marca los QEMU no recibidos en las peticiones como eliminados.
+     *
+     * @return void
+     */
     public function markMissingQemuAsDeleted()
     {
         $allQemuIds = Qemu::pluck('id_proxmox')->all();
         $qemusToMarkDeleted = array_diff($allQemuIds, $this->updatedQemuIds);
 
-    // Marcar como 'eliminado' los QEMU que ya no están presentes
+        // Marcar como 'eliminado' los QEMU que ya no están presentes
         $QemuDeleted = Qemu::whereIn('id_proxmox', $qemusToMarkDeleted)->get();
-        
+
+        //sacar solo el id_proxmox de $QemuDeleted
+        $QemuDelete = $QemuDeleted->pluck('id_proxmox');
+
         // Qemu::whereIn('id_proxmox', $qemusToMarkDeleted)->delete();
-        Qemu::whereIn('id_proxmox', $qemusToMarkDeleted)->update(['status' => 'eliminado']);
-        
-                
+        Qemu::whereIn('id_proxmox', $QemuDelete)->update(['status' => 'eliminado']);
+
+
 
         foreach ($QemuDeleted as $qemu) {
             QemuDeleted::updateOrCreate(
@@ -450,12 +616,9 @@ public function VMHistory()
                     'size' => $qemu->size,
                 ]
             );
-            
+
             //eliminar el estado de status de los qemus eliminados
             Qemu::where('status', 'eliminado')->delete();
-
         }
     }
-
-
 }

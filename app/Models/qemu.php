@@ -29,7 +29,7 @@ class qemu extends Model
         'size',
     ];
 
-     public function node()
+      public function node()
     {
         return $this->belongsTo(Node::class, 'node_id', 'id_proxmox');
     }

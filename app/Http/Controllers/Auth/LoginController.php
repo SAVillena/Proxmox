@@ -49,7 +49,6 @@ class LoginController extends Controller
 
     public function loginUser(Request $request)
     {
-        Log::info(["requestllegueeeee"]);
             Log::info(["request" => $request]);
             $request->request->add(['provider' => 'users']);
             //$credenciales = [];
@@ -68,14 +67,14 @@ class LoginController extends Controller
             }
             Passport::personalAccessTokensExpireIn(Carbon::now()->addDays(7));
             $tokenResult = $user->createToken($user->name);
-/*             Passport::token()->where('id', $tokenResult->token['id'])->first()->update(['sistema_id' => $request->sistema_id]);
- */            $success = [
+            /*Passport::token()->where('id', $tokenResult->token['id'])->first()->update(['sistema_id' => $request->sistema_id]);*/
+            $success = [
                 'token' => $tokenResult->accessToken,
                 'token_type' => 'Bearer Token',
                 'expires_at' => Carbon::parse($tokenResult->token->expires_at)->toDateTimeString()
             ];
             Log::info("success", $success);
-            return redirect()->route('proxmox.index');
+            return redirect()->route('proxmox.index', ['success' => $success]);
 
     }
 }
