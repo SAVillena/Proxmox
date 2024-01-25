@@ -11,6 +11,10 @@ use App\Models\QemuDeleted;
 use App\Services\ProxmoxService2;
 use Illuminate\Support\Facades\Log;
 
+use Illuminate\Support\Facades\Auth;
+use Tymon\JWTAuth\Facades\JWTAuth;
+
+
 class ProxmoxController extends Controller
 {
     //
@@ -18,6 +22,7 @@ class ProxmoxController extends Controller
 
     public function __construct(ProxmoxService2 $proxmoxService)
     {
+        $this->middleware('auth');
         $this->proxmoxService = $proxmoxService;
     }
 
@@ -68,7 +73,7 @@ class ProxmoxController extends Controller
         $totalQemusStopped = Qemu::where('status', 'stopped')->count();
 
 
-        //historial de maquinas virtuales
+
 
 
         return view('proxmox.home', [
@@ -95,11 +100,20 @@ class ProxmoxController extends Controller
      */
     public function getData()
     {
-        $this->proxmoxService->processClusterNodes();
-        $this->proxmoxService->markMissingQemuAsDeleted();
-        $this->proxmoxService->VMHistory();
-        $this->proxmoxService->resetUpdatedQemuIds();
-        return redirect()->route('proxmox.index');
+        set_time_limit(60);
+        try {
+
+            $this->proxmoxService->processClusterNodes();
+            $this->proxmoxService->markMissingQemuAsDeleted();
+            $this->proxmoxService->VMHistory();
+            $this->proxmoxService->resetUpdatedQemuIds();
+            return redirect()->route('proxmox.index');
+        } catch (\Exception $e) {
+            
+            Log::error($e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred.');
+        }
+
     }
 
     /**
@@ -469,7 +483,7 @@ class ProxmoxController extends Controller
         }
 
         $csvExporter = new \Laracsv\Export();
-        $csvExporter->build($qemus, ['id_proxmox', 'name', 'status', 'node_id', 'size', 'disk', 'maxcpu', 'maxmem',  'type', 'cluster_name', 'storageName'])->download();
+        $csvExporter->build($qemus, ['id_proxmox', 'name', 'status', 'node_id', 'size', 'vmid', 'maxcpu', 'maxmem',  'type', 'cluster_name', 'storageName'])->download();
     }
 
     /**
@@ -481,7 +495,9 @@ class ProxmoxController extends Controller
     public function searchQemu(Request $request)
     {
         $search = $request->get('search');
-        $qemus = Qemu::where('name', 'like', '%' . $search . '%')->paginate(100)->appends(['search' => $search]);
+        $qemusID = Qemu::where('vmid', 'like', '%' . $search . '%')->paginate(1000)->appends(['search' => $search]);
+        $qemus = Qemu::where('name', 'like', '%' . $search . '%')->paginate(1000)->appends(['search' => $search]);
+        $qemus = $qemus->merge($qemusID);
         return view('proxmox.qemu', ['qemus' => $qemus]);
     }
 

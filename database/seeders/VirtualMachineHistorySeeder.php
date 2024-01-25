@@ -14,7 +14,7 @@ class VirtualMachineHistorySeeder extends Seeder
     public function run(): void
     {
         //
-        DB::table('virtual_machine_histories')->updateOrInsert([
+       /*  DB::table('virtual_machine_histories')->updateOrInsert([
             'date' => '2023-05-05',
             'cluster_name' => 'cluster1',
             'cluster_qemus' => '1',
@@ -56,6 +56,6 @@ class VirtualMachineHistorySeeder extends Seeder
             'cluster_disk' => '4000',
             'created_at' => '2024-01-01 00:00:00',
             'updated_at' => '2024-01-01 00:00:00',
-        ]);
+        ]); */
     }
 }

@@ -23,6 +23,14 @@
                 <input type="password" class="form-control" name="password" id="floatingInput" placeholder="Password">
                 <label for="floatingInput">Contraseña</label>
             </div>
+            <div class="form-floating mb-3">
+                <select class="form-select" name="role" id="floatingSelect" aria-label="Floating label select example">
+                    <option selected>Selecciona un Rol</option>
+                    @foreach ($roles as $role)
+                        <option value="{{ $role->name }}">{{ $role->name }}</option>
+                    @endforeach
+                </select>
+            </div>
             <div>
                 <button type="submit" class="btn btn-primary">Crear Usuario</button>
             </div>

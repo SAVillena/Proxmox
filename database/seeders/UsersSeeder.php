@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Models\User;
 
 class UsersSeeder extends Seeder
 {
@@ -13,10 +14,15 @@ class UsersSeeder extends Seeder
     public function run(): void
     {
         //
-        \App\Models\User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        User::factory()->create([
+            'username' => 'admin',
+            'name' => 'admin admin',
+            'email' => 'admin@email.com',
             'password' => bcrypt('password'),
         ]);
+
+        $adminUser = User::where('username', 'admin')->first();
+        $adminUser->assignRole('admin');
+
     }
 }

@@ -5,25 +5,25 @@
         <div class="row justify-content-center">
             <div class="col-md-8">
                 @if (session('success'))
-                    <div class="alert alert-success">
+                    <div class="alert alert-success bg-dark text-white"> <!-- Agrega las clases para el tema oscuro -->
                         {{ session('success') }}
                     </div>
                 @endif
 
                 @if (session('error'))
-                    <div class="alert alert-danger">
+                    <div class="alert alert-danger bg-dark text-white"> <!-- Agrega las clases para el tema oscuro -->
                         {{ session('error') }}
                     </div>
                 @endif
-                <div class="card">
+                <div class="card bg-dark text-white"> <!-- Agrega las clases para el tema oscuro -->
                     <div class="card-header">Detalles del Usuario</div>
-
 
                     <div class="card-body">
                         <div class="py-2">
-                        <a href="{{ route('users.index') }}" class="btn btn-primary">Volver</a>
+                            <a href="{{ route('users.index') }}" class="btn btn-primary">Volver</a>
                         </div>
-                        <table class="table table-bordered">
+                        <table class="table table-bordered table-dark">
+                            <!-- Agrega la clase 'table-dark' para el tema oscuro -->
                             <tbody>
                                 <tr>
                                     <th class="table-primary">Usuario</th>

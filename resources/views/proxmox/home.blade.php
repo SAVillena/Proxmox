@@ -15,6 +15,7 @@
                 </div>
             </div>
 
+
             <!-- Tarjeta para Nodos -->
             <div class="col-md-6 mb-3 d-flex align-items-stretch">
                 <div class="card w-100 bg-dark text-white">
@@ -74,7 +75,7 @@
                             <div class="progress-bar {{ $memoryUsagePercentage >= 90 ? 'bg-danger' : ($memoryUsagePercentage >= 70 ? 'bg-warning' : 'bg-info') }}"
                                 role="progressbar" style="width: {{ $memoryUsagePercentage }}%"
                                 aria-valuenow="{{ $memoryUsagePercentage }}" aria-valuemin="0" aria-valuemax="100">
-                                {{ $memoryUsagePercentage }}%</div>
+                                {{ round($memoryUsagePercentage, 2) }}%</div>
                         </div>
                     </div>
                 </div>

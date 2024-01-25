@@ -28,20 +28,15 @@ use Illuminate\Support\Facades\Auth;
 
 
 
-Route::get('/login', function () { return view('auth.login'); })->name('viewLogin');
+Route::get('/proxmox', [ProxmoxController::class, 'index'])->name('proxmox.index');
 
-Route::post('/login/auth', [LoginController::class, 'loginUser'])->name('login');
-
-Route::get('/', [ProxmoxController::class, 'home'])->name('proxmox.home') ->middleware('auth:api');
+Route::get('/', [ProxmoxController::class, 'home'])->name('proxmox.home');
 
 Route::get('/proxmox/fetch', [ProxmoxController::class, 'getData']);
-Route::get('/proxmox', [ProxmoxController::class, 'index'])->name('proxmox.index');
 Route::get('/proxmox/node', [ProxmoxController::class, 'node'])->name('proxmox.node');
 
 Route::get('/proxmox/qemu', [ProxmoxController::class, 'qemu'])->name('proxmox.qemu');
 Route::get('/proxmox/storage', [ProxmoxController::class, 'storage'])->name('proxmox.storage');
-// Route::delete('/proxmox/{name}', [ProxmoxController::class, 'delete'])->name('proxmox.destroy');
-// crear ruta de crear cluster
 Route::get('/proxmox/cluster/create', [ProxmoxController::class, 'createCluster'])->name('proxmox.cluster.create');
 Route::post('/proxmox/cluster/', [ProxmoxController::class, 'storeCluster'])->name('proxmox.cluster.store');
 
@@ -53,11 +48,8 @@ Route::get('/proxmox/node/search', [ProxmoxController::class, 'searchNode'])->na
 Route::get('/proxmox/node/{node}', [ProxmoxController::class, 'showByIdNode'])->name('proxmox.cluster.node.show');
 
 Route::get('/proxmox/export', [ProxmoxController::class, 'exportQemuCSV'])->name('proxmox.export');
-//buscarQemu
 Route::get('/proxmox/qemu/search', [ProxmoxController::class, 'searchQemu'])->name('proxmox.searchQemu');
 Route::get('/proxmox/storage/search', [ProxmoxController::class, 'searchStorage'])->name('proxmox.searchStorage');
-
-
 
 Route::delete('/proxmox/qemu', [ProxmoxController::class, 'destroyQemu'])->name('proxmox.qemu.destroy');
 Route::get('/proxmox/QemuDeleted', [QemuDeletedController::class, 'index'])->name('proxmox.qemuDeleted');
@@ -75,3 +67,5 @@ Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.
 
 
 
+
+Auth::routes(['register' => false, 'reset' => false, 'verify' => false, 'confirm' => false]);

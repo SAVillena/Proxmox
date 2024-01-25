@@ -8,6 +8,12 @@ use Carbon\Carbon;
 
 class VirtualMachineHistoryController extends Controller
 {
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+        $this->middleware('can:view cluster');
+    }
     //
     /**
      * Muestra el historial mensual de las máquinas virtuales.

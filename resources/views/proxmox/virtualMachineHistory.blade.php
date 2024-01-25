@@ -23,7 +23,18 @@
                 {{ $monthlyData->last() ? number_format($last->first()->cluster_memory / 1024 ** 3, 2) : 'N/A' }}
                 GB</p>
             <p>Último Registro - Disco:
-                {{ $monthlyData->last() ? number_format($last->first()->cluster_disk / 1024 ** 3, 2) : 'N/A' }} GB
+                @if ($monthlyData->last())
+                    @php
+                        $diskInGB = $last->first()->cluster_disk / 1024 ** 3; // Convertir a GB
+                    @endphp
+                    @if ($diskInGB >= 1024)
+                        {{ number_format($diskInGB / 1024, 2) }} TB
+                    @else
+                        {{ number_format($diskInGB, 2) }} GB
+                    @endif
+                @else
+                    N/A
+                @endif
             </p>
         </div>
 

@@ -16,7 +16,7 @@
         
         <form action="{{ route('proxmox.searchQemu') }}" method="GET">
             <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Buscar por nombre" name="search">
+                <input type="text" class="form-control" placeholder="Buscar por nombre o ID" name="search">
                 <button class="btn btn-outline-secondary" type="submit">Buscar</button>
             </div>
         </form>

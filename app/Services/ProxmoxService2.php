@@ -362,7 +362,7 @@ class ProxmoxService2
                 'Cookie' => "PVEAuthCookie={$authData['ticket']}",
                 'Content-Type' => 'application/json',
             ];
-            $response = $this->client->request($method, $url, ['headers' => $headers, 'verify' => false]);
+            $response = $this->client->request($method, $url, ['headers' => $headers, 'verify' => false, 'timeout' => 200]);
             $json = json_decode($response->getBody(), true);
             return $json['data'];
         } catch (GuzzleException $e) {
