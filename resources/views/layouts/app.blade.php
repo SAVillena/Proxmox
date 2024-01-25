@@ -88,7 +88,7 @@
                         <!-- Botones a la derecha -->
                         @can('manage cluster')
                         <ul class="navbar-nav ml-auto">
-                            <div class="btn-group btn-group-lg" role="group" aria-label="Large button group">
+                            <div class="btn-group btn-group-md" role="group" aria-label="Large button group">
                                 {{-- boton para ir a /proxmox/fetch --}}
                                 <a href="{{ url('/proxmox/fetch') }}" class="btn btn-success mb-3">Actualizar</a>
 

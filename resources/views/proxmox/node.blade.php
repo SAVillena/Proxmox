@@ -82,7 +82,9 @@
                                     <form action="{{ route('proxmox.cluster.node.destroy', $node->node) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Borrar</button>
+                                        @can ('manage cluster')
+                                            <button type="submit" class="btn btn-danger btn-sm">Borrar</button>
+                                        @endcan
                                     </form>
                                 </div>
 
