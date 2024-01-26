@@ -8,6 +8,7 @@ use App\Models\Storage;
 use App\Models\node;
 use App\Models\cluster;
 use App\Models\QemuDeleted;
+use App\Models\VirtualMachineHistory;
 use App\Services\ProxmoxService2;
 use Illuminate\Support\Facades\Log;
 
@@ -22,7 +23,7 @@ class ProxmoxController extends Controller
 
     public function __construct(ProxmoxService2 $proxmoxService)
     {
-        $this->middleware('auth');
+        $this->middleware('auth', ['except' => ['getDataRedirect2']]);
         $this->proxmoxService = $proxmoxService;
     }
 
@@ -33,9 +34,18 @@ class ProxmoxController extends Controller
      */
     public function home()
     {
+        $lastRecords = VirtualMachineHistory::selectRaw('MAX(date) as last_date, cluster_name')
+            ->groupBy('cluster_name')
+            ->pluck('last_date', 'cluster_name');
+
+        $totals = VirtualMachineHistory::whereIn('cluster_name', array_keys($lastRecords->toArray()))
+            ->whereIn('date', $lastRecords->toArray())
+            ->selectRaw('SUM(cluster_cpu) as totalCPU, SUM(cluster_memory) as totalRAM, SUM(cluster_disk) as totalDisk, SUM(cluster_qemus) as totalQemus')
+            ->first();
+
         $totalClusters = Cluster::count();
         $totalNodes = Node::count();
-        $totalQemus = Qemu::count();
+
         $totalStorages = Storage::count();
 
         $totalCPU = Node::sum('maxcpu');
@@ -43,7 +53,7 @@ class ProxmoxController extends Controller
         //que la suma no incluya ni al 'Backup-Virt' tampoco  'local' ni 'local-lvm'
         $totalDisk = Storage::where('storage', '!=', 'Backup-Virt')->where('storage', '!=', 'local')->where('storage', '!=', 'local-lvm')->sum('maxdisk');
 
-        //cpuUsagePercentage, Node->cpu es el porcentaje de uso de cpu de cada nodo        
+        //cpuUsagePercentage, Node->cpu es el porcentaje de uso de cpu de cada nodo
         $cpuUsagePercentage = Node::sum('cpu');
         if ($cpuUsagePercentage == 0) {
             $cpuUsagePercentage = 0;
@@ -68,30 +78,19 @@ class ProxmoxController extends Controller
 
         $diskUsagePercentage = round($diskUsagePercentage, 2);
 
-        //qemus status running
-        $totalQemusRunning = Qemu::where('status', 'running')->count();
-        $totalQemusStopped = Qemu::where('status', 'stopped')->count();
-
-
-
-
-
         return view('proxmox.home', [
             'totalClusters' => $totalClusters,
             'totalNodes' => $totalNodes,
-            'totalQemus' => $totalQemus,
+            'totalQemus' => $totals->totalQemus,
             'totalStorages' => $totalStorages,
-            'totalCPU' => $totalCPU,
-            'totalRAM' => $totalRAM,
-            'totalDisk' => $totalDisk,
+            'totalCPU' => $totals->totalCPU,
+            'totalRAM' => $totals->totalRAM,
+            'totalDisk' => $totals->totalDisk,
             'cpuUsagePercentage' => $cpuUsagePercentage,
             'memoryUsagePercentage' => $memoryUsagePercentage,
             'diskUsagePercentage' => $diskUsagePercentage,
-            'totalQemusRunning' => $totalQemusRunning,
-            'totalQemusStopped' => $totalQemusStopped
         ]);
     }
-
     /**
      * Recupera datos de Proxmox, procesa los nodos del clúster y el historial de las máquinas virtuales,
      * y redirige a la ruta 'proxmox.index'.
@@ -100,20 +99,46 @@ class ProxmoxController extends Controller
      */
     public function getData()
     {
-        set_time_limit(60);
+
         try {
 
             $this->proxmoxService->processClusterNodes();
             $this->proxmoxService->markMissingQemuAsDeleted();
             $this->proxmoxService->VMHistory();
             $this->proxmoxService->resetUpdatedQemuIds();
-            return redirect()->route('proxmox.index');
         } catch (\Exception $e) {
-            
+
             Log::error($e->getMessage());
             return redirect()->back()->with('error', 'An error occurred.');
         }
+    }
 
+    public function getDataRedirect()
+    {
+        set_time_limit(60);
+        try {
+
+            $this->getData();
+            return redirect()->route('proxmox.index');
+        } catch (\Exception $e) {
+
+            Log::error($e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred.');
+        }
+    }
+
+    public function getDataRedirect2()
+    {
+        set_time_limit(60);
+        try {
+
+            $this->getData();
+            return redirect()->back();
+        } catch (\Exception $e) {
+
+            Log::error($e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred.');
+        }
     }
 
     /**

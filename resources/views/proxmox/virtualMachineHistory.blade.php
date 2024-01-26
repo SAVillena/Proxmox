@@ -16,7 +16,7 @@
 
     <div class="container">
         <div>
-            <h1>Historico de Maquinas Virtuales</h1>
+            <h1>Historial de Maquinas Virtuales</h1>
             <p>Último Registro - Total de máquinas: {{ $last->first()->cluster_qemus ?? 'N/A' }}</p>
             <p>Último Registro - vCPU: {{ $last->first()->cluster_cpu ?? 'N/A' }}</p>
             <p>Último Registro - Memoria:

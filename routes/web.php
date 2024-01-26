@@ -32,7 +32,8 @@ Route::get('/proxmox', [ProxmoxController::class, 'index'])->name('proxmox.index
 
 Route::get('/', [ProxmoxController::class, 'home'])->name('proxmox.home');
 
-Route::get('/proxmox/fetch', [ProxmoxController::class, 'getData']);
+Route::get('/proxmox/fetch', [ProxmoxController::class, 'getDataRedirect']);
+Route::get('/proxmox/actualizar', [ProxmoxController::class, 'getDataRedirect2'])->name('proxmox.actualizar');
 Route::get('/proxmox/node', [ProxmoxController::class, 'node'])->name('proxmox.node');
 
 Route::get('/proxmox/qemu', [ProxmoxController::class, 'qemu'])->name('proxmox.qemu');
