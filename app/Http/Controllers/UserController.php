@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\User\StoreUserRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
@@ -34,30 +35,31 @@ class UserController extends Controller
         return view('users.create', ['roles' => $RolName]);
     }
 
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
         try {
-            $validatedData = $request->validate([
+            /* $validatedData = $request->validated(); */
+           /*  $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
                 'email' => 'required|email|unique:users,email',
                 'password' => 'required|string|min:8',
                 'username' => 'required|string|max:255',
                 'role' => 'required|string|exists:roles,name',
+            ]); */
+            //validar y retornar el error
+            $user = User::create ([ 
+                'name' => $request['name'],
+                'email' => $request['email'],
+                'password' => bcrypt($request['password']),
+                'username' => $request['username'],
             ]);
 
-            $user = new User();
-            $user->name = $validatedData['name'];
-            $user->email = $validatedData['email'];
-            $user->password = bcrypt($validatedData['password']);
-            $user->username = $validatedData['username'];
-            $user->save();
-
-            $user->assignRole($validatedData['role']);
+            $user->assignRole($request['role']);
 
             return redirect()->route('users.show', $user->id)->with('success', 'Usuario creado correctamente');
         } catch (\Exception $e) {
             Log::error($e);
-            return redirect()->route('users.index')->with('error', 'Error al crear el usuario: ' . $e->getMessage());
+            return redirect()->route('users.create')->with('error', 'Error al crear el usuario: ' . $e->getMessage());
         }
     }
 

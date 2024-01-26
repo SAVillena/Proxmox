@@ -84,6 +84,8 @@ class ProxmoxController extends Controller
             'totalQemus' => $totals->totalQemus,
             'totalStorages' => $totalStorages,
             'totalCPU' => $totals->totalCPU,
+            'totalNodeCpu' => $totalCPU,
+            'totalNodeRAM' => $totalRAM,
             'totalRAM' => $totals->totalRAM,
             'totalDisk' => $totals->totalDisk,
             'cpuUsagePercentage' => $cpuUsagePercentage,
@@ -308,8 +310,27 @@ class ProxmoxController extends Controller
      */
     public function storage()
     {
-        $storages = storage::all();
-        return view('proxmox.storage', ['storages' => $storages]);
+        $storages = storage::where('storage', '!=', 'local')->where('storage', '!=', 'local-lvm')->where('storage', '!=', 'Backup')->where('storage', '!=', 'Backup-Vicidial')->get();
+        
+        $uniqueNames = [];
+
+        $filteredStorages = [];
+        foreach ($storages as $storage) {
+            if (!in_array($storage->storage, $uniqueNames)) {
+                $uniqueNames[] = $storage->storage;
+
+                if($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial'){
+                    
+                    $filteredStorages[] = $storage;
+                }
+            }
+        }
+
+        
+
+
+
+        return view('proxmox.storage', ['storages' => $storages, 'filteredStorages' => $filteredStorages]);
     }
 
     /**
@@ -598,7 +619,22 @@ class ProxmoxController extends Controller
     {
         $search = $request->get('search');
         $storages = Storage::where('storage', 'like', '%' . $search . '%')->paginate(100)->appends(['search' => $search]);
-        return view('proxmox.storage', ['storages' => $storages]);
+        
+        $uniqueNames = [];
+
+        $filteredStorages = [];
+        foreach ($storages as $storage) {
+            if (!in_array($storage->storage, $uniqueNames)) {
+                $uniqueNames[] = $storage->storage;
+
+                if($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial'){
+                    
+                    $filteredStorages[] = $storage;
+                }
+            }
+        }
+
+        return view('proxmox.storage', ['storages' => $storages, 'filteredStorages' => $filteredStorages]);
     }
 
     /**

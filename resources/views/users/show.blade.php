@@ -37,6 +37,9 @@
                                     <td>{{ $user->email }}</td>
                                 </tr>
                                 <tr>
+                                    <th class="table-primary">Rol</th>
+                                    <td>{{ $user->roles[0]->name }}</td>
+                                <tr>
                                     <th class="table-primary">Creado</th>
                                     <td>{{ $user->created_at }}</td>
                                 </tr>

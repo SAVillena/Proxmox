@@ -4,7 +4,16 @@
     <div class = "container">
        
         <h1>Crear Usuario</h1>
-
+        @if($errors->any())
+            <div class="alert alert-danger">
+                <strong>Whoops!</strong> Hubo un problema con la creación del usuario.<br><br>
+                <ul>
+                   @foreach ($errors->all()  as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul> 
+            </div>
+        @endif
         <form class= "row" action="{{ route('users.store') }}" method="POST">
             @csrf
            <div class="form-floating mb-3">

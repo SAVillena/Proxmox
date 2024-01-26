@@ -61,7 +61,7 @@
             });
         @endphp
         @foreach ($grouped as $month => $items)
-            <div class="card py-3">
+            <div class="card w-100 bg-dark text-white py-3">
                 <div class="card-header">{{ $month }}</div>
                 <div class="card-body">
                     <table class="table table-dark table-hover table-bordered ">
@@ -81,8 +81,8 @@
                                     <td>{{ $item->cluster_name }}</td>
                                     <td>{{ $item->cluster_qemus }}</td>
                                     <td>{{ $item->cluster_cpu }}</td>
-                                    <td>{{ round($item->cluster_memory / (1024 ** 3), 2)}} GB</td>
-                                    <td>{{ round($item->cluster_disk/ (1024 ** 3), 2) }} GB</td>
+                                    <td>{{ round($item->cluster_memory / 1024 ** 3, 2) }} GB</td>
+                                    <td>{{ round($item->cluster_disk / 1024 ** 3, 2) }} GB</td>
                                     <td>{{ $item->date }}</td>
                                 </tr>
                             @endforeach
@@ -103,8 +103,8 @@
                 datasets: [{
                     label: 'Número de VMs',
                     data: @json($representativeMonthlyValues->values()),
-                    backgroundColor: ['rgba(250, 100, 130, 0.2)'],
-                    borderColor: ['rgba(250, 100, 130, 1)'],
+                    backgroundColor: ['rgba(4, 132, 76, 0.6)'],
+                    borderColor: ['rgba(4, 132, 76, 1)'],
                     borderWidth: 3
                 }]
             },

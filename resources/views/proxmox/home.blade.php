@@ -27,29 +27,32 @@
                     </div>
                 </div>
 
-                <!-- Continúa con las siguientes tarjetas, asegurándote de cerrar y abrir una nueva fila (row) después de cada par de tarjetas -->
             </div>
 
             <!-- Nueva fila para las siguientes dos tarjetas -->
 
-
-            <!-- Card for CPU Usage -->
-            <div class="col-md-6 mb-3 mb-sm-0">
-                <div class="card w-100 bg-dark text-white">
+            <div class="col-md-6 mb-3 d-flex align-items-stretch">
+                <div class = "card w-100 bg-dark text-white">
                     <h5 class="card-header">CPU</h5>
+                    <div class="card-body">
+                        <p class="card-text">Total de CPU de nodos:</p>
+                        <h5 class="card-text">{{ $totalNodeCpu }} Cores</h5>
+
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Card for vCPU Usage -->
+            <div class="col-md-6 mb-3 d-flex align-items-stretch">
+                <div class="card w-100 bg-dark text-white">
+                    <h5 class="card-header">vCPU</h5>
                     {{-- mostrar total de cpu --}}
                     <div class="card-body">
-                        <p class="card-text">Total de CPU en el sistema:</p>
+                        <p class="card-text">Total de vCPU en Maquinas virtuales :</p>
                         <h5 class="card-text">{{ $totalCPU }} Cores</h5>
                         {{-- mostrar porcentaje de cpu usado --}}
-                        <p class="card-text">Porcentaje de CPU usado:</p>
-                        <p class="card-text">{{ round($cpuUsagePercentage, 2) }}%</p>
-                        <div class="progress" style="height: 30px">
-                            <div class="progress-bar {{ $cpuUsagePercentage >= 90 ? 'bg-danger' : ($cpuUsagePercentage >= 70 ? 'bg-warning' : 'bg-info') }}"
-                                role="progressbar" style="width: {{ $cpuUsagePercentage }}%"
-                                aria-valuenow="{{ $cpuUsagePercentage }}" aria-valuemin="0" aria-valuemax="100">
-                                {{ $cpuUsagePercentage }}%</div>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -60,7 +63,7 @@
                     <h5 class="card-header">RAM</h5>
                     <div class="card-body">
                         {{-- mostrar total de memoria --}}
-                        <p class="card-text">Total de memoria en el sistema:</p>
+                        <p class="card-text">Total de memoria en nodos:</p>
                         @if ($totalRAM >= 1099511627776)
                             <h5 class="card-text">{{ round($totalRAM / 1099511627776, 2) }} TB</h5>
                         @else
@@ -82,17 +85,7 @@
             </div>
 
 
-            <!-- Tarjeta para total maquinas virtuales -->
-            <div class="col-md-6 mb-3 d-flex align-items-stretch">
-                <div class="card w-100 bg-dark text-white">
-                    <h5 class="card-header">Qemu</h5>
-                    <div class="card-body">
-                        <p class="card-text">Total de maquinas virtuales en el sistema:</p>
-                        <h5 class="card-text">{{ $totalQemus }}</h5>
-                    </div>
-                </div>
-            </div>
-
+            
             <!-- Tarjeta para total de storage -->
             <div class="col-md-6 mb-3 d-flex align-items-stretch">
                 <div class="card w-100 bg-dark text-white">
@@ -100,7 +93,7 @@
                     <div class="card-body">
                         <p class="card-text">Total de storage Almacenamiento:</p>
                         @if ($totalDisk >= 1099511627776)
-                            <h5 class="card-text">{{ round($totalDisk / 1099511627776, 2) }} TB</h5>
+                        <h5 class="card-text">{{ round($totalDisk / 1099511627776, 2) }} TB</h5>
                         @else
                             <h5 class="card-text">{{ round($totalDisk / 1073741824, 2) }} GB</h5>
                         @endif
@@ -115,6 +108,17 @@
                                 {{ $diskUsagePercentage }}%
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tarjeta para total maquinas virtuales -->
+            <div class="col-md-6 mb-3 d-flex align-items-stretch">
+                <div class="card w-100 bg-dark text-white">
+                    <h5 class="card-header">Qemu</h5>
+                    <div class="card-body">
+                        <p class="card-text">Total de maquinas virtuales en el sistema:</p>
+                        <h5 class="card-text">{{ $totalQemus }}</h5>
                     </div>
                 </div>
             </div>

@@ -60,7 +60,7 @@ class ProxmoxService2
             $authData = json_decode($body, true);
             return $authData['data'];
         } catch (GuzzleException $e) {
-            Log::error($e->getMessage());
+            Log::error($e->getMessage() . "AUTH");
             return null;
         }
     }
@@ -209,6 +209,11 @@ class ProxmoxService2
     protected function fetchAndSaveStorageData($storageItem)
     {
         if ($storageItem) {
+            //si en $storageItem no existe plugintype y content poner null
+            if (!isset($storageItem['plugintype'])) {
+                $storageItem['plugintype'] = null;
+                $storageItem['content'] = null;
+            }
             // Guardar los datos en la base de datos
             Storage::updateOrCreate(
                 ['id_proxmox' => $storageItem['id']],
@@ -366,7 +371,7 @@ class ProxmoxService2
             $json = json_decode($response->getBody(), true);
             return $json['data'];
         } catch (GuzzleException $e) {
-            Log::error($e->getMessage());
+            Log::error($e->getMessage() . "request");
             dd($e->getMessage());
             return null;
         }
@@ -459,14 +464,13 @@ class ProxmoxService2
                 $this->getProxmoxData($authData);
                 $this->addClusterCredentials($ip, $username, $password);
                 $this->VMHistory();
-            }else {
+            } else {
                 Log::error("Error al conectar con el nodo: " . $ip);
             }
         } catch (GuzzleException $e) {
             // Si la autenticación falla, se podría registrar el error o intentar con el siguiente nodo
 
             Log::error("Error al conectar con el nodo: " . $ip);
-            
         }
     }
 
@@ -488,7 +492,6 @@ class ProxmoxService2
         $passwordEncrypt = Crypt::encrypt($password);
         $authData = $this->getAuthToken($ip, $username, $passwordEncrypt);
         $data = $this->makeRequest('GET', $url, $authData);
-        Log::info($data);
         usort($data, function ($item1, $item2) {
             return strcmp($item1['type'], $item2['type']);
         });
