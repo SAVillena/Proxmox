@@ -22,6 +22,7 @@ class Storage extends Model
         'plugintype',
         'shared',
         'used',
+        'cluster',
     ];
 
     public function node()

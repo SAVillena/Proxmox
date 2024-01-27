@@ -52,12 +52,11 @@
             <table class="table table-dark table-hover table-bordered">
                 <thead>
                     <tr>
-                        <th scope="col">id de proxmox</th>
+                        <th scope="col">Cluster</th>
                         <th scope="col">Storage</th>
                         <th scope="col">Carga</th>
                         <th scope="col">Uso</th>
                         <th scope="col">Total</th>
-                        <th scope="col">Nodo</th>
                         <th scope="col">Contenido</th>
                         <th scope="col">Tipo</th>
                         <th scope="col">Última actualización</th>
@@ -65,9 +64,9 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($storages as $storage)
+                    @foreach ($filteredStorages as $storage)
                         <tr>
-                            <td>{{ $storage->id_proxmox }}</td>
+                            <td>{{ $storage->cluster }}</td>
                             <td>{{ $storage->storage }}</td>
                             <td>
                                 <div class="progress" style="width: 100px;">
@@ -90,7 +89,6 @@
                             @else
                                 <td>{{ round($storage->maxdisk / 1073741824, 2) }} GB</td>
                             @endif
-                            <td>{{ $storage->node_id }}</td>
                             <td>{{ $storage->content }}</td>
                             <td>{{ $storage->plugintype }}</td>
                             <td>{{ \Carbon\Carbon::parse($storage->updated_at)->format('d/m/Y H:i') }}</td>

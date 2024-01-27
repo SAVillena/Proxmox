@@ -229,6 +229,7 @@ class ProxmoxService2
                     'plugintype' => $storageItem['plugintype'],
                     'shared' => $storageItem['shared'],
                     'used' => ($storageItem['disk'] / $storageItem['maxdisk']),
+                    'cluster' => $this->clusterName,
                 ]
             );
         }

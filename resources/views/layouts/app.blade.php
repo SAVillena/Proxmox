@@ -23,7 +23,35 @@
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 
 </head>
+<style>
+body {
+    background-color: #343a40;
+}
 
+h1 {
+    color: #fff;
+}
+
+h2 {
+    color: #fff;
+}
+
+h3 {
+    color: #fff;
+}
+
+h4 {
+    color: #fff;
+}
+
+h5 {
+    color: #fff;
+}
+
+p {
+    color: #fff;
+}
+</style>
 <body>
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-dark bg-dark shadow-sm">

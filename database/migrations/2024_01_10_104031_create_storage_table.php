@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('plugintype')->nullable();
             $table->string('shared')->nullable();
             $table->float('used')->nullable();
+            $table->string('cluster')->nullable();
             $table->timestamps();
 
             $table->foreign('node_id')->references('id_proxmox')->on('nodes')->onDelete('cascade');

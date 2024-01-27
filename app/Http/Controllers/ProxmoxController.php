@@ -154,7 +154,7 @@ class ProxmoxController extends Controller
         $qemus = qemu::all();
 
         // Obtiene todos los registros de la tabla storage
-        $storages = storage::all();
+        $storages = storage::where('storage', '!=', 'local')->where('storage', '!=', 'local-lvm')->where('storage', '!=', 'Backup')->where('storage', '!=', 'Backup-Vicidial')->get();
 
         // Obtiene todos los registros de la tabla node
         $nodes = node::all();
