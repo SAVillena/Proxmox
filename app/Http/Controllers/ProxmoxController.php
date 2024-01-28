@@ -632,8 +632,9 @@ class ProxmoxController extends Controller
         $storages = Storage::where('storage', 'like', '%' . $search . '%')->paginate(100)->appends(['search' => $search]);
 
         $uniqueNames = [];
+        $totalUsedDisk = 0;
+        $totalMaxDisk = 0;
 
-        $filteredStorages = [];
         foreach ($storages as $storage) {
             if (!in_array($storage->storage, $uniqueNames)) {
                 $uniqueNames[] = $storage->storage;
@@ -641,11 +642,13 @@ class ProxmoxController extends Controller
                 if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
 
                     $filteredStorages[] = $storage;
+                    $totalUsedDisk += $storage->disk;
+                    $totalMaxDisk += $storage->maxdisk;
                 }
             }
         }
 
-        return view('proxmox.storage', ['storages' => $storages, 'filteredStorages' => $filteredStorages]);
+        return view('proxmox.storage', ['storages' => $storages, 'filteredStorages' => $filteredStorages, 'totalUsedDisk' => $totalUsedDisk, 'totalMaxDisk' => $totalMaxDisk]);
     }
 
     /**
