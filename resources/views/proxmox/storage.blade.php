@@ -26,9 +26,9 @@
             <div class="card w-100 bg-dark text-white py">
                 <div class="card-header">
                     <h3>Total almacenamiento</h3>
-                    <p> Uso: </p>
-                    <p> Utilizado: </p>
-                    <p> Tamaño Vol: </p>
+                    <p> Uso: {{round($totalUsedDisk/$totalMaxDisk,2) *100}} %</p>
+                    <p> Utilizado:  {{ $totalUsedDisk >= 1099511627776 ? round($totalUsedDisk / 1099511627776, 2) . ' TB' : round($totalUsedDisk / 1073741824, 2) . ' GB' }}</p>
+                    <p> Tamaño Vol: {{ $totalMaxDisk >= 1099511627776 ? round($totalMaxDisk / 1099511627776, 2) . ' TB' : round($totalMaxDisk / 1073741824, 2) . ' GB' }} </p>
                 </div>
                 <div class="card-body">
                     <canvas id="totalStorageChart" width="200" height="200"></canvas>

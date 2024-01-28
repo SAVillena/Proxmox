@@ -310,28 +310,39 @@ class ProxmoxController extends Controller
      */
     public function storage()
     {
-        $storages = storage::where('storage', '!=', 'local')->where('storage', '!=', 'local-lvm')->where('storage', '!=', 'Backup')->where('storage', '!=', 'Backup-Vicidial')->get();
-        
-        $uniqueNames = [];
+        $storages = storage::where('storage', '!=', 'local')
+            ->where('storage', '!=', 'local-lvm')
+            ->where('storage', '!=', 'Backup')
+            ->where('storage', '!=', 'Backup-Vicidial')->get();
 
+        $uniqueNames = [];
         $filteredStorages = [];
+        $totalUsedDisk = 0;
+        $totalMaxDisk = 0;
+
         foreach ($storages as $storage) {
             if (!in_array($storage->storage, $uniqueNames)) {
                 $uniqueNames[] = $storage->storage;
 
-                if($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial'){
-                    
+                if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
+
                     $filteredStorages[] = $storage;
+                    // Suma al total usado y al tamaño máximo a medida que filtras los storages
+                    $totalUsedDisk += $storage->disk;
+                    $totalMaxDisk += $storage->maxdisk;
                 }
             }
         }
 
-        
-
-
-
-        return view('proxmox.storage', ['storages' => $storages, 'filteredStorages' => $filteredStorages]);
+        // Pasa los totales calculados a la vista junto con los storages filtrados
+        return view('proxmox.storage', [
+            'storages' => $storages,
+            'filteredStorages' => $filteredStorages,
+            'totalUsedDisk' => $totalUsedDisk,
+            'totalMaxDisk' => $totalMaxDisk
+        ]);
     }
+
 
     /**
      * Elimina un clúster y sus nodos, qemus y almacenamientos asociados.
@@ -619,7 +630,7 @@ class ProxmoxController extends Controller
     {
         $search = $request->get('search');
         $storages = Storage::where('storage', 'like', '%' . $search . '%')->paginate(100)->appends(['search' => $search]);
-        
+
         $uniqueNames = [];
 
         $filteredStorages = [];
@@ -627,8 +638,8 @@ class ProxmoxController extends Controller
             if (!in_array($storage->storage, $uniqueNames)) {
                 $uniqueNames[] = $storage->storage;
 
-                if($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial'){
-                    
+                if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
+
                     $filteredStorages[] = $storage;
                 }
             }
