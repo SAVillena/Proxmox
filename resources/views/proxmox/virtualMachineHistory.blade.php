@@ -60,7 +60,7 @@
                 return \Carbon\Carbon::parse($item->date)->format('Y-F');
             });
         @endphp
-        <div class = "py-3">
+        <div class = "container py-3">
             @foreach ($grouped as $month => $items)
                 <div class="card w-100 bg-dark text-white py-3">
                     <div class="card-header">{{ $month }}</div>

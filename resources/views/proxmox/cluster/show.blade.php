@@ -99,7 +99,7 @@
                 <tr>
                     <th scope="col">Cluster</th>
                     <th scope="col">Nodo</th>
-                    <th scope="col">id de la VM</th>
+                    <th scope="col">VM ID</th>
                     <th scope="col">Nombre</th>
                     <th scope="col">Estado</th>
                     <th scope="col">vCPU</th>

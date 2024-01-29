@@ -599,28 +599,36 @@ class ProxmoxService2
 
 
         foreach ($QemuDeleted as $qemu) {
-            QemuDeleted::updateOrCreate(
-                ['id_proxmox' => $qemu->id_proxmox],
-                [
-                    'vmid' => $qemu->vmid,
-                    'node_id' => $qemu->node_id,
-                    'name' => $qemu->name,
-                    'type' => $qemu->type,
-                    'status' => 'eliminado',
-                    'cpu' => $qemu->cpu,
-                    'maxcpu' => $qemu->maxcpu,
-                    'diskwrite' => $qemu->diskwrite,
-                    'maxdisk' => $qemu->maxdisk,
-                    'netout' => $qemu->netout,
-                    'mem' => $qemu->mem,
-                    'maxmem' => $qemu->maxmem,
-                    'uptime' => $qemu->uptime,
-                    'disk' => $qemu->disk,
-                    'netin' => $qemu->netin,
-                    'storageName' => $qemu->storageName,
-                    'size' => $qemu->size,
-                ]
-            );
+
+            // Verificar si el QEMU existe con el mismo vmid y cluster_name en los actualizados
+            $existsInUpdated = Qemu::where('vmid', $qemu->vmid)
+                ->where('cluster_name', $qemu->cluster_name)
+                ->whereNotIn('id_proxmox', $this->updatedQemuIds)
+                ->exists();
+            if (!$existsInUpdated) {
+                QemuDeleted::updateOrCreate(
+                    ['id_proxmox' => $qemu->id_proxmox],
+                    [
+                        'vmid' => $qemu->vmid,
+                        'node_id' => $qemu->node_id,
+                        'name' => $qemu->name,
+                        'type' => $qemu->type,
+                        'status' => 'eliminado',
+                        'cpu' => $qemu->cpu,
+                        'maxcpu' => $qemu->maxcpu,
+                        'diskwrite' => $qemu->diskwrite,
+                        'maxdisk' => $qemu->maxdisk,
+                        'netout' => $qemu->netout,
+                        'mem' => $qemu->mem,
+                        'maxmem' => $qemu->maxmem,
+                        'uptime' => $qemu->uptime,
+                        'disk' => $qemu->disk,
+                        'netin' => $qemu->netin,
+                        'storageName' => $qemu->storageName,
+                        'size' => $qemu->size,
+                    ]
+                );
+            }
 
             //eliminar el estado de status de los qemus eliminados
             Qemu::where('status', 'eliminado')->delete();

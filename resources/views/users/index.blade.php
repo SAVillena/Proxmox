@@ -33,8 +33,8 @@
                         <td>{{ $user->email }}</td>
                         <td>
                             <div class="d-flex align-items-center">
-                                <a href="{{ route('users.show', $user->id) }}" class="btn btn-primary me-2 flex-grow-1">Ver</a>
-                                <a href="{{ route('users.edit', $user->id) }}" class="btn btn-primary me-2 flex-grow-1">Editar</a>
+                                <a href="{{ route('users.show', $user->id) }}" class="btn btn-success me-2 flex-grow-1">Ver</a>
+                                <a href="{{ route('users.edit', $user->id) }}" class="btn btn-success me-2 flex-grow-1">Editar</a>
                                 <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="flex-grow-1">
                                     @csrf
                                     @method('DELETE')
