@@ -67,6 +67,7 @@ p {
                     <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
                         <ul class="navbar-nav">
                             <li class="nav-item"><a href="{{ url('/proxmox') }}" class="nav-link">Datos</a></li>
+                            <li class="nav-item"><a href="{{ url('/proxmox/cluster') }}" class="nav-link">Cluster</a>
                             <li class="nav-item"><a href="{{ url('/proxmox/node') }}" class="nav-link">Nodo</a></li>
                             <li class="nav-item"><a href="{{ url('/proxmox/qemu') }}" class="nav-link">VM</a></li>
                             <li class="nav-item"><a href="{{ url('/proxmox/storage') }}" class="nav-link">Storage</a></li>

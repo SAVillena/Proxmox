@@ -40,6 +40,7 @@ Route::get('/proxmox/qemu', [ProxmoxController::class, 'qemu'])->name('proxmox.q
 Route::get('/proxmox/storage', [ProxmoxController::class, 'storage'])->name('proxmox.storage');
 Route::get('/proxmox/cluster/create', [ProxmoxController::class, 'createCluster'])->name('proxmox.cluster.create');
 Route::post('/proxmox/cluster/', [ProxmoxController::class, 'storeCluster'])->name('proxmox.cluster.store');
+Route::get('/proxmox/cluster', [ProxmoxController::class, 'cluster'])->name('proxmox.cluster');
 
 Route::get('/proxmox/cluster/{name}', [ProxmoxController::class, 'showByIdCluster'])->name('proxmox.cluster.show');
 Route::delete('/proxmox/cluster/{name}', [ProxmoxController::class, 'destroyCluster'])->name('proxmox.cluster.destroy');

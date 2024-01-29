@@ -225,6 +225,10 @@ class ProxmoxController extends Controller
         }
     }
 
+    public function cluster(){
+        $clusters = cluster::all();
+        return view('proxmox.cluster.index', ['clusters' => $clusters]);
+    }
 
     /**
      * Método para obtener información de los nodos, qemus y storages.
