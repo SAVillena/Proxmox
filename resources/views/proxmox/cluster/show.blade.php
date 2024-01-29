@@ -1,11 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="justify-content-start px-3 py-3">
-        <h1>Detalles de {{ $cluster->name }}</h1>
+<div class="justify-content-start px-3 py-3">
+        <h1 class = "text-center">Detalles de {{ $cluster->name }}</h1>
+        <div class="d-flex justify-content-start mb-3">
+            <a href="{{ route('proxmox.index') }}" class="btn btn-success"> &#8592; Volver</a>
+        </div>
         <!-- Agrega aquí más detalles del cluster -->
 
-        <h2>Nodos</h2>
+        <h2 class = "text-center py-3">Nodos</h2>
         <table class="table table-dark table-hover table-bordered">
             <thead>
                 <tr>
@@ -88,12 +91,13 @@
         </table>
 
 
-        <h2 class="text-center">Maquinas Virtuales</h2>
+        <h2 class="text-center py-3">Maquinas Virtuales</h2>
 
         {{-- Mostrar datos de Qemu --}}
         <table class="table table-dark table-hover table-bordered">
             <thead>
                 <tr>
+                    <th scope="col">Cluster</th>
                     <th scope="col">Nodo</th>
                     <th scope="col">id de la VM</th>
                     <th scope="col">Nombre</th>
@@ -111,6 +115,7 @@
             <tbody>
                 @foreach ($qemus as $qemu)
                     <tr>
+                        <td>{{ $qemu->cluster_name }}</td>
                         <td>{{ $qemu->node->node }}</td>
                         <td>{{ $qemu->vmid }}</td>
                         <td>{{ $qemu->name }}</td>
@@ -152,7 +157,7 @@
                 @endforeach
             </tbody>
         </table>
-        <h2>Almacenamiento</h2>
+        <h2 class = "text-center py-3">Almacenamiento</h2>
         <table class="table table-dark table-hover table-bordered">
             <thead>
                 <tr>

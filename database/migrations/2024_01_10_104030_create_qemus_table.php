@@ -31,6 +31,7 @@ return new class extends Migration
             $table->bigInteger('netout')->nullable();
             $table->string('storageName')->nullable();
             $table->bigInteger('size')->nullable();
+            $table->string('cluster_name')->nullable();
             $table->timestamps();
 
             $table->foreign('node_id')->references('id_proxmox')->on('nodes')->onDelete('cascade');

@@ -60,37 +60,39 @@
                 return \Carbon\Carbon::parse($item->date)->format('Y-F');
             });
         @endphp
-        @foreach ($grouped as $month => $items)
-            <div class="card w-100 bg-dark text-white py-3">
-                <div class="card-header">{{ $month }}</div>
-                <div class="card-body">
-                    <table class="table table-dark table-hover table-bordered ">
-                        <thead>
-                            <tr>
-                                <th scope="col">Cluster</th>
-                                <th scope="col">VMs</th>
-                                <th scope="col">CPU</th>
-                                <th scope="col">Memoria</th>
-                                <th scope="col">Disco</th>
-                                <th scope="col">Fecha</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($items as $item)
+        <div class = "py-3">
+            @foreach ($grouped as $month => $items)
+                <div class="card w-100 bg-dark text-white py-3">
+                    <div class="card-header">{{ $month }}</div>
+                    <div class="card-body">
+                        <table class="table table-dark table-hover table-bordered ">
+                            <thead>
                                 <tr>
-                                    <td>{{ $item->cluster_name }}</td>
-                                    <td>{{ $item->cluster_qemus }}</td>
-                                    <td>{{ $item->cluster_cpu }}</td>
-                                    <td>{{ round($item->cluster_memory / 1024 ** 3, 2) }} GB</td>
-                                    <td>{{ round($item->cluster_disk / 1024 ** 3, 2) }} GB</td>
-                                    <td>{{ $item->date }}</td>
+                                    <th scope="col">Cluster</th>
+                                    <th scope="col">VMs</th>
+                                    <th scope="col">CPU</th>
+                                    <th scope="col">Memoria</th>
+                                    <th scope="col">Disco</th>
+                                    <th scope="col">Fecha</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($items as $item)
+                                    <tr>
+                                        <td>{{ $item->cluster_name }}</td>
+                                        <td>{{ $item->cluster_qemus }}</td>
+                                        <td>{{ $item->cluster_cpu }}</td>
+                                        <td>{{ round($item->cluster_memory / 1024 ** 3, 2) }} GB</td>
+                                        <td>{{ round($item->cluster_disk / 1024 ** 3, 2) }} GB</td>
+                                        <td>{{ $item->date }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
-        @endforeach
+            @endforeach
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

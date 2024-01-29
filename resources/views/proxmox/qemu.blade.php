@@ -26,6 +26,7 @@
         <table class="table table-dark table-hover table-bordered">
             <thead>
                 <tr>
+                    <th scope="col">Cluster</th>
                     <th scope="col">Nodo</th>
                     <th scope="col">id de la VM</th>
                     <th scope="col">Nombre</th>
@@ -43,6 +44,7 @@
             <tbody>
                 @foreach ($qemus as $qemu)
                     <tr>
+                        <td>{{ $qemu->cluster_name }}</td>
                         <td>{{ $qemu->node_id }}</td>
                         <td>{{ $qemu->vmid }}</td>
                         <td>{{ $qemu->name }}</td>

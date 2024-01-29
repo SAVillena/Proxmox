@@ -27,6 +27,7 @@ class qemu extends Model
         'netout',
         'storageName',
         'size',
+        'cluster_name',
     ];
 
       public function node()

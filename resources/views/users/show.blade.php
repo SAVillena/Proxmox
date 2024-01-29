@@ -20,7 +20,7 @@
 
                     <div class="card-body">
                         <div class="py-2">
-                            <a href="{{ route('users.index') }}" class="btn btn-primary">Volver</a>
+                            <a href="{{ route('users.index') }}" class="btn btn-primary">&#8592; Volver</a>
                         </div>
                         <table class="table table-bordered table-dark">
                             <!-- Agrega la clase 'table-dark' para el tema oscuro -->

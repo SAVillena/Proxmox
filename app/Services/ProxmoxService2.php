@@ -275,6 +275,7 @@ class ProxmoxService2
                         'netin' => $qemuItem['netin'],
                         'storageName' => $disk['storageNames'],
                         'size' => $disk['totalSize'],
+                        'cluster_name' => $this->clusterName,
                     ]
                 );
             }

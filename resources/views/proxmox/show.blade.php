@@ -18,7 +18,7 @@
             </div>
         @endif
 
-        <h2 class="text-center">Cluster Data</h2>
+        <h2 class="text-center py-3">Cluster Data</h2>
         {{-- Mostrar datos de Cluster --}}
         <table class="table table-dark table-hover table-bordered">
             <thead class="table-dark">
@@ -36,7 +36,7 @@
                     <tr>
                         <td>{{ $cluster->name }}</td>
                         <td>{{ $cluster->type }}</td>
-                        <td>{{ $cluster->node_count }}</td>
+                        <td class= "text-center">{{ $cluster->node_count }}</td>
                         <td>{{ $cluster->nodes }}</td>
                         <td>{{ \Carbon\Carbon::parse($cluster->updated_at)->format('d/m/Y H:i') }}</td>
                         <td>
@@ -59,7 +59,7 @@
         </table>
 
 
-        <h2 class="text-center">Node Data</h2>
+        <h2 class="text-center py-3">Node Data</h2>
 
         {{-- Mostrar datos de Node --}}
         <div class="d-flex justify-content-start ">
@@ -146,7 +146,7 @@
             </table>
         </div>
 
-        <h2 class="text-center">Maquinas Virtuales</h2>
+        <h2 class="text-center py-3">Maquinas Virtuales</h2>
         {{-- boton para exportar a excel --}}
         <div class="d-flex justify-content-start mb-3">
             <a href="{{ route('proxmox.export') }}" class="btn btn-success">Exportar a Excel</a>
@@ -155,6 +155,7 @@
         <table class="table table-dark table-hover table-bordered">
             <thead>
                 <tr>
+                    <th scope="col">Cluster</th>
                     <th scope="col">Nodo</th>
                     <th scope="col">id de la VM</th>
                     <th scope="col">Nombre</th>
@@ -172,6 +173,7 @@
             <tbody>
                 @foreach ($qemus as $qemu)
                     <tr>
+                        <td>{{ $qemu->cluster_name }}</td>
                         <td>{{ $qemu->node->node }}</td>
                         <td>{{ $qemu->vmid }}</td>
                         <td>{{ $qemu->name }}</td>
@@ -214,7 +216,7 @@
             </tbody>
         </table>
 
-        <h2 class="text-center">Almacenamiento</h2>
+        <h2 class="text-center py-3">Almacenamiento</h2>
         {{-- Mostrar datos de Storage --}}
         <table class="table table-dark table-hover table-bordered">
             <thead>
