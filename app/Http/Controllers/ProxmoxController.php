@@ -78,6 +78,9 @@ class ProxmoxController extends Controller
 
         $diskUsagePercentage = round($diskUsagePercentage, 2);
 
+        //nodos con cluster name null
+        $OnlyNodes = Node::where('cluster_name', null)->count();
+
         return view('proxmox.home', [
             'totalClusters' => $totalClusters,
             'totalNodes' => $totalNodes,
@@ -91,6 +94,7 @@ class ProxmoxController extends Controller
             'cpuUsagePercentage' => $cpuUsagePercentage,
             'memoryUsagePercentage' => $memoryUsagePercentage,
             'diskUsagePercentage' => $diskUsagePercentage,
+            'OnlyNodes' => $OnlyNodes
         ]);
     }
     /**
@@ -491,7 +495,29 @@ class ProxmoxController extends Controller
             $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
 
             // Obtiene los storages asociados a los nodos
-            $storages = Storage::whereIn('node_id', $nodeIds)->get();
+            $storages = storage::whereIn('node_id', $nodeIds)->where('storage', '!=', 'local')
+                ->where('storage', '!=', 'local-lvm')
+                ->where('storage', '!=', 'Backup')
+                ->where('storage', '!=', 'Backup-Vicidial')->get();
+
+            $uniqueNames = [];
+            $filteredStorages = [];
+            $totalUsedDisk = 0;
+            $totalMaxDisk = 0;
+
+            foreach ($storages as $storage) {
+                if (!in_array($storage->storage, $uniqueNames)) {
+                    $uniqueNames[] = $storage->storage;
+
+                    if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
+
+                        $filteredStorages[] = $storage;
+                        // Suma al total usado y al tamaño máximo a medida que filtras los storages
+                        $totalUsedDisk += $storage->disk;
+                        $totalMaxDisk += $storage->maxdisk;
+                    }
+                }
+            }
 
             // Inicializa un arreglo para almacenar las sumas de size por node_id
             $sizeSumByNodeId = [];
@@ -535,7 +561,7 @@ class ProxmoxController extends Controller
                 [
                     'nodes' => $nodes,
                     'qemus' => $qemus,
-                    'storages' => $storages,
+                    'storages' => $filteredStorages,
                     'storageLocal' => $sizeSumByNodeId,
                     'storageLocalMax' => $storageLocalMax
                 ]
@@ -692,7 +718,10 @@ class ProxmoxController extends Controller
             $nodes = node::where('id_proxmox', $node)->get();
             foreach ($nodes as $node) {
                 $qemus = Qemu::where('node_id', $node->id_proxmox)->get();
-                $storages = Storage::where('node_id', $node->id_proxmox)->get();
+                $storages = Storage::where('node_id', $node->id_proxmox)->where('storage', '!=', 'local')
+                ->where('storage', '!=', 'local-lvm')
+                ->where('storage', '!=', 'Backup')
+                ->where('storage', '!=', 'Backup-Vicidial')->get();
             }
 
             // Inicializa un arreglo para almacenar las sumas de size por node_id
@@ -727,12 +756,32 @@ class ProxmoxController extends Controller
                 $sizeSumByNodeId[$nodeId] += $size;
             }
 
+            
+            $uniqueNames = [];
+            $filteredStorages = [];
+            $totalUsedDisk = 0;
+            $totalMaxDisk = 0;
+    
+            foreach ($storages as $storage) {
+                if (!in_array($storage->storage, $uniqueNames)) {
+                    $uniqueNames[] = $storage->storage;
+
+                    if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
+
+                        $filteredStorages[] = $storage;
+                        // Suma al total usado y al tamaño máximo a medida que filtras los storages
+                        $totalUsedDisk += $storage->disk;
+                        $totalMaxDisk += $storage->maxdisk;
+                    }
+                }
+            }
+
             return view(
                 'proxmox.node.show',
                 [
                     'nodes' => $nodes,
                     'qemus' => $qemus,
-                    'storages' => $storages,
+                    'storages' => $filteredStorages,
                     'storageLocal' => $sizeSumByNodeId,
                     'storageLocalMax' => $storageLocalMax
                 ]

@@ -20,7 +20,7 @@
             <div class="col-md-6 mb-3 d-flex align-items-stretch">
                 <div class="card w-100 bg-dark text-white">
                     <!-- Estructura de la tarjeta para Nodos -->
-                    <h5 class="card-header">Nodes</h5>
+                    <h5 class="card-header">Nodos</h5>
                     <div class="card-body">
                         <h5 class="card-title">{{ $totalNodes }}</h5>
                         <p class="card-text">Total de nodos en el sistema.</p>
@@ -28,6 +28,19 @@
                 </div>
 
             </div>
+
+            <div class="col-md-6 mb-3 d-flex align-items-stretch">
+                <div class="card w-100 bg-dark text-white">
+                    <!-- Estructura de la tarjeta para Nodos -->
+                    <h5 class="card-header">Nodos stand alone</h5>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ $OnlyNodes }}</h5>
+                        <p class="card-text">Total de nodos sin cluster.</p>
+                    </div>
+                </div>
+
+            </div>
+
 
             <!-- Nueva fila para las siguientes dos tarjetas -->
 

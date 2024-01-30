@@ -583,7 +583,7 @@ class ProxmoxService2
             }
 
             // Guardar o actualizar información en la tabla de totales mensuales
-            $monthlyTotal = MonthlyTotal::updateOrCreate(
+            MonthlyTotal::updateOrCreate(
                 ['date' => $startOfMonth],
                 [
                     'cluster_qemus' => $totalMonthlyQemus,

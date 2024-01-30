@@ -66,7 +66,11 @@
                 <tbody>
                     @foreach ($filteredStorages as $storage)
                         <tr>
-                            <td>{{ $storage->cluster }}</td>
+                            @if($storage->cluster)
+                                <td>{{ $storage->cluster }}</td>
+                            @else
+                                <td> {{$storage->node_id}} </td>
+                            @endif
                             <td>{{ $storage->storage }}</td>
                             <td>
                                 <div class="progress" style="width: 100px;">
