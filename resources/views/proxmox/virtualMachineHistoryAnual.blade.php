@@ -20,7 +20,7 @@
         <p>Último Registro - Total de máquinas: {{ $last->first()->cluster_qemus ?? 'N/A' }}</p>
         <p>Último Registro - vCPU: {{ $last->first()->cluster_cpu ?? 'N/A' }}</p>
         <p>Último Registro - Memoria:
-            {{ $AnualData->last() ? number_format($last->first()->cluster_memory / 1024 ** 3, 2) : 'N/A' }}
+            {{ $AnualData->last() ? number_format($last->first()->cluster_memory / 1024 ** 3) : 'N/A' }}
             GB</p>
         <p>Último Registro - Disco:
             @if ($AnualData->last())
@@ -43,8 +43,20 @@
             <div class="card-body">
                 <p>VMs: {{ $growth['qemus'] }}</p>
                 <p>vCPU: {{ $growth['cpus'] }}</p>
-                <p>RAM: {{ $growth['memorys'] }}</p>
-                <p>Disco: {{ $growth['disks'] }}</p>
+                <p>RAM: {{  $growth['memorys'] ? number_format($growth['memorys'] / 1024 ** 3) : 'N/A' }} GB</p>
+                <p>Disco: 
+                @if ($growth['disks'])
+                @php
+                    $diskInGB = $growth['disks'] / 1024 ** 3; // Convertir a GB
+                @endphp
+                @if ($diskInGB >= 1024)
+                    {{ number_format($diskInGB / 1024, 2) }} TB
+                @else
+                    {{ number_format($diskInGB, 2) }} GB
+                @endif
+            @else
+                N/A
+            @endif </p>
             </div>
         </div>
 
