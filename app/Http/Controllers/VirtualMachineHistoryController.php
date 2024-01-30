@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MonthlyTotal;
 use App\Models\VirtualMachineHistory;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -28,7 +29,7 @@ class VirtualMachineHistoryController extends Controller
         $VMHistory = VirtualMachineHistory::all();
 
         //suma todas las qemu de cada clúster, todas las cpu de cada clúster, todas las memoria de cada clúster, todas las disco de cada clúster por meses
-        
+
         //histories suma de todos los clusters del mes
         $histories = VirtualMachineHistory::selectRaw('date, SUM(cluster_qemus) as cluster_qemus, SUM(cluster_cpu) as cluster_cpu, SUM(cluster_memory) as cluster_memory, SUM(cluster_disk) as cluster_disk')
             ->groupBy('date')->get();
@@ -36,10 +37,32 @@ class VirtualMachineHistoryController extends Controller
         $total_qemus = $histories->sum('cluster_qemus');
         $total_cpus = $histories->sum('cluster_cpu');
         $total_memorys = $histories->sum('cluster_memory');
-    
+
         $total_disks = $histories->sum('cluster_disk');
 
-        return view('proxmox.virtualMachineHistory', compact('histories'), compact('total_qemus', 'total_cpus', 'total_memorys', 'total_disks', 'VMHistory'));
+        $growth = [
+            'qemus' => 0,
+            'cpus' => 0,
+            'memorys' => 0,
+            'disks' => 0,
+        ];
+
+        $lastRecord = MonthlyTotal::orderBy('date', 'desc')->first();
+        $secondLastRecord = MonthlyTotal::orderBy('date', 'desc')->skip(1)->first();
+
+        if ($lastRecord && $secondLastRecord) {
+            $growth['qemus'] = $lastRecord->cluster_qemus - $secondLastRecord->cluster_qemus;
+            $growth['cpus'] = $lastRecord->cluster_cpu - $secondLastRecord->cluster_cpu;
+            $growth['memorys'] = $lastRecord->cluster_memory - $secondLastRecord->cluster_memory;
+            $growth['disks'] = $lastRecord->cluster_disk - $secondLastRecord->cluster_disk;
+        } else {
+            $growth['qemus'] = 0;
+            $growth['cpus'] = 0;
+            $growth['memorys'] = 0;
+            $growth['disks'] = 0;
+        }
+
+        return view('proxmox.virtualMachineHistory', compact('histories'), compact('total_qemus', 'total_cpus', 'total_memorys', 'total_disks', 'VMHistory', 'growth'));
     }
 
     /**
@@ -60,7 +83,7 @@ class VirtualMachineHistoryController extends Controller
         $total_qemus = VirtualMachineHistory::sum('cluster_qemus');
         $total_cpus = VirtualMachineHistory::sum('cluster_cpu');
         $total_memorys = VirtualMachineHistory::sum('cluster_memory');
-    
+
         $total_disks = VirtualMachineHistory::sum('cluster_disk');
 
         // Calculate the sum of QEMUs, CPUs, memory, and disks for each date
@@ -68,6 +91,40 @@ class VirtualMachineHistoryController extends Controller
             ->groupBy('date')
             ->get();
 
-        return view('proxmox.virtualMachineHistoryAnual', compact('histories'), compact('total_qemus', 'total_cpus', 'total_memorys', 'total_disks', 'VMHistory'));
+
+        $currentYear = 2025;
+        $previousYear = $currentYear - 1;
+
+        // Obtener todos los registros del año actual y del año anterior
+        $currentYearRecords = MonthlyTotal::whereYear('date', $currentYear)->orderBy('date')->get();
+        
+        //obtener la diferencia de la suma del año actual
+        $last = $currentYearRecords->last();
+        $currentYearSumQemu = $last->cluster_qemus;
+        $currentYearSumCPU = $last->cluster_cpu;
+        $currentYearSumRAM = $last->cluster_memory;
+        $currentYearSumDisk = $last->cluster_disk;
+        //obtener el ultimo registro del año anterior
+        $previousYearRecord = MonthlyTotal::whereYear('date', $previousYear)->orderBy('date', 'desc')->first();
+        
+        $growth = [
+            'qemus' => 0,
+            'cpus' => 0,
+            'memorys' => 0,
+            'disks' => 0,
+        ];
+
+        if($previousYearRecord){
+            
+            //restar la suma del año actual menos el ultimo registro del año anterior
+            $growth['qemus'] = $currentYearSumQemu - $previousYearRecord->cluster_qemus;
+            $growth['cpus'] = $currentYearSumCPU - $previousYearRecord->cluster_cpu;
+            $growth['memorys'] = $currentYearSumRAM - $previousYearRecord->cluster_memory;
+            $growth['disks'] = $currentYearSumDisk - $previousYearRecord->cluster_disk;
+            
+        }
+
+        $lastRecord = MonthlyTotal::orderBy('date', 'desc')->first();
+        return view('proxmox.virtualMachineHistoryAnual', compact('histories'), compact('total_qemus', 'total_cpus', 'total_memorys', 'total_disks', 'VMHistory', 'growth'));
     }
 }

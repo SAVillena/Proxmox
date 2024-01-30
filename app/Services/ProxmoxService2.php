@@ -11,6 +11,7 @@ use App\Models\cluster;
 use App\Models\ClusterCredentials;
 use Illuminate\Support\Facades\Crypt;
 use App\Models\VirtualMachineHistory;
+use App\Models\MonthlyTotal;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Debug\VirtualRequestStack;
@@ -537,6 +538,10 @@ class ProxmoxService2
             $startOfMonth = Carbon::now()->startOfMonth();
             $endOfMonth = Carbon::now()->endOfMonth();
 
+            $totalMonthlyQemus = 0;
+            $totalMonthlyCPU = 0;
+            $totalMonthlyRAM = 0;
+            $totalMonthlyDisk = 0;
             // Recorrer los nodos del clúster
             foreach ($NameAllCluster as $nameCluster) {
                 // Inicializar totales
@@ -557,6 +562,10 @@ class ProxmoxService2
                 $TotalCPU = $qemus->sum('maxcpu');
                 $TotalRAM = $qemus->sum('maxmem');
                 $TotalDisk = $qemus->sum('maxdisk');
+                $totalMonthlyCPU += $TotalCPU;
+                $totalMonthlyRAM += $TotalRAM;
+                $totalMonthlyQemus += $TotalQemus;
+                $totalMonthlyDisk += $TotalDisk;
 
                 // Guardar o actualizar información en la tabla de historial
                 VirtualMachineHistory::updateOrCreate(
@@ -572,6 +581,18 @@ class ProxmoxService2
                     ]
                 );
             }
+
+            // Guardar o actualizar información en la tabla de totales mensuales
+            $monthlyTotal = MonthlyTotal::updateOrCreate(
+                ['date' => $startOfMonth],
+                [
+                    'cluster_qemus' => $totalMonthlyQemus,
+                    'cluster_cpu' => $totalMonthlyCPU,
+                    'cluster_memory' => $totalMonthlyRAM,
+                    'cluster_disk' => $totalMonthlyDisk,
+                ]
+            );
+
         } catch (GuzzleException $e) {
             Log::error("Error occurred: " . $e->getMessage());
         }

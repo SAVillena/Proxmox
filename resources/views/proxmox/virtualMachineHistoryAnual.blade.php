@@ -36,7 +36,17 @@
                 N/A
             @endif
         </p>
-    </div>
+        <div class="card w-100 bg-dark text-white py-3">
+            <div class = "card-header">
+                <h3>Crecimiento respecto al año anterior</h3>
+            </div>
+            <div class="card-body">
+                <p>VMs: {{ $growth['qemus'] }}</p>
+                <p>vCPU: {{ $growth['cpus'] }}</p>
+                <p>RAM: {{ $growth['memorys'] }}</p>
+                <p>Disco: {{ $growth['disks'] }}</p>
+            </div>
+        </div>
 
         {{-- Registro por cluster --}}
 
