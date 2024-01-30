@@ -92,7 +92,7 @@ class VirtualMachineHistoryController extends Controller
             ->get();
 
 
-        $currentYear = 2025;
+        $currentYear = Carbon::now()->year;
         $previousYear = $currentYear - 1;
 
         // Obtener todos los registros del año actual y del año anterior
