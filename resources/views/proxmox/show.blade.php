@@ -45,7 +45,7 @@
                                     @csrf
                                     @method('DELETE')
                                     @can('manage cluster')
-                                        <button type="submit" class="btn btn-danger btn-sm ">Borrar</button>
+                                        <button type="submit" class="btn btn-danger btn-sm " onclick="return confirm('¿Estás seguro de querer borrar este cluster?');" onclick="return confirm('¿Estás seguro de querer borrar este cluster?');">Borrar</button>
                                     @endcan
                                 </form>
                             </div>
@@ -133,7 +133,7 @@
                                         @csrf
                                         @method('DELETE')
                                         @can('manage cluster')
-                                            <button type="submit" class="btn btn-danger btn-sm">Borrar</button>
+                                            <button type="submit" class="btn btn-danger btn-sm"onclick="return confirm('¿Estás seguro de querer borrar este cluster?');">Borrar</button>
                                         @endcan
                                     </form>
                                 </div>
