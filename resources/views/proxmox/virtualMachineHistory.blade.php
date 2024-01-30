@@ -20,7 +20,7 @@
             <p>Último Registro - Total de máquinas: {{ $last->first()->cluster_qemus ?? 'N/A' }}</p>
             <p>Último Registro - vCPU: {{ $last->first()->cluster_cpu ?? 'N/A' }}</p>
             <p>Último Registro - Memoria:
-                {{ $monthlyData->last() ? number_format($last->first()->cluster_memory / 1024 ** 3, 2) : 'N/A' }}
+                {{ $last->first()->cluster_memory ? number_format($last->first()->cluster_memory / 1024 ** 3) : 'N/A' }}
                 GB</p>
             <p>Último Registro - Disco:
                 @if ($monthlyData->last())
@@ -28,9 +28,9 @@
                         $diskInGB = $last->first()->cluster_disk / 1024 ** 3; // Convertir a GB
                     @endphp
                     @if ($diskInGB >= 1024)
-                        {{ number_format($diskInGB / 1024, 2) }} TB
+                        {{ round($diskInGB / 1024) }} TB
                     @else
-                        {{ number_format($diskInGB, 2) }} GB
+                        {{ round($diskInGB) }} GB
                     @endif
                 @else
                     N/A
