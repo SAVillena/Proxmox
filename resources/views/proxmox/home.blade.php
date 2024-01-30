@@ -128,7 +128,7 @@
             <!-- Tarjeta para total maquinas virtuales -->
             <div class="col-md-6 mb-3 d-flex align-items-stretch">
                 <div class="card w-100 bg-dark text-white">
-                    <h5 class="card-header">Qemu</h5>
+                    <h5 class="card-header">Maquinas Vrituales</h5>
                     <div class="card-body">
                         <p class="card-text">Total de maquinas virtuales en el sistema:</p>
                         <h5 class="card-text">{{ $totalQemus }}</h5>
