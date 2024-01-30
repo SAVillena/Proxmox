@@ -107,9 +107,9 @@
                             <td>
                                 <div class="progress" style="width: 100px;">
                                     <div class="progress-bar 
-                                        {{ ($node->mem / $node->maxmem) * 100 <= 50 ? 'bg-success' : (($node->mem / $node->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
-                                        role="progressbar" style="width: {{ ($node->mem / $node->maxmem) * 100 }}%"
-                                        aria-valuenow="{{ ($node->mem / $node->maxmem) * 100 }}" aria-valuemin="0"
+                                        {{(round($node->mem / $node->maxmem,2)) * 100 <= 50 ? 'bg-success' : (($node->mem / $node->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
+                                        role="progressbar" style="width: {{(round($node->mem / $node->maxmem,2)) * 100 }}%"
+                                        aria-valuenow="{{(round($node->mem / $node->maxmem,2)) * 100 }}" aria-valuemin="0"
                                         aria-valuemax="100">
                                         {{ round(($node->mem / $node->maxmem) * 100, 2) }}%
                                     </div>

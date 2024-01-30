@@ -154,7 +154,29 @@ class ProxmoxController extends Controller
         $qemus = qemu::all();
 
         // Obtiene todos los registros de la tabla storage
-        $storages = storage::where('storage', '!=', 'local')->where('storage', '!=', 'local-lvm')->where('storage', '!=', 'Backup')->where('storage', '!=', 'Backup-Vicidial')->get();
+        $storages = storage::where('storage', '!=', 'local')
+            ->where('storage', '!=', 'local-lvm')
+            ->where('storage', '!=', 'Backup')
+            ->where('storage', '!=', 'Backup-Vicidial')->get();
+
+        $uniqueNames = [];
+        $filteredStorages = [];
+        $totalUsedDisk = 0;
+        $totalMaxDisk = 0;
+
+        foreach ($storages as $storage) {
+            if (!in_array($storage->storage, $uniqueNames)) {
+                $uniqueNames[] = $storage->storage;
+
+                if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
+
+                    $filteredStorages[] = $storage;
+                    // Suma al total usado y al tamaño máximo a medida que filtras los storages
+                    $totalUsedDisk += $storage->disk;
+                    $totalMaxDisk += $storage->maxdisk;
+                }
+            }
+        }
 
         // Obtiene todos los registros de la tabla node
         $nodes = node::all();
@@ -198,7 +220,7 @@ class ProxmoxController extends Controller
 
         return view('proxmox.show', [
             'qemus' => $qemus,
-            'storages' => $storages,
+            'storages' => $filteredStorages,
             'nodes' => $nodes,
             'storageLocalMax' => $storageLocalMax,
             'clusters' => $clusters,
@@ -225,7 +247,8 @@ class ProxmoxController extends Controller
         }
     }
 
-    public function cluster(){
+    public function cluster()
+    {
         $clusters = cluster::all();
         return view('proxmox.cluster.index', ['clusters' => $clusters]);
     }
