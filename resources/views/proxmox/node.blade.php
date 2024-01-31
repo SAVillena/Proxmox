@@ -33,8 +33,11 @@
                 <tbody>
                     @foreach ($nodes as $node)
                         <tr>
-
-                            <td>{{ $node->cluster_name }}</td>
+                            @if ($node->cluster_name == null)
+                                <td>Sin cluster</td>
+                            @else
+                                <td>{{ $node->cluster_name }}</td>
+                            @endif
                             <td>{{ $node->node }}</td>
                             <td>{{ $node->status }}</td>
                             <td>{{ $node->maxcpu }}</td>
@@ -57,11 +60,12 @@
                             <td>
                                 <div class="progress" style="width: 100px;">
                                     <div class="progress-bar 
-                                        {{(round($node->mem / $node->maxmem,2)) * 100 <= 50 ? 'bg-success' : (($node->mem / $node->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
-                                        role="progressbar" style="width: {{(round($node->mem / $node->maxmem,2)) * 100 }}%"
-                                        aria-valuenow="{{(round($node->mem / $node->maxmem,2)) * 100 }}" aria-valuemin="0"
+                                        {{ round($node->mem / $node->maxmem, 2) * 100 <= 50 ? 'bg-success' : (($node->mem / $node->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
+                                        role="progressbar"
+                                        style="width: {{ round($node->mem / $node->maxmem, 2) * 100 }}%"
+                                        aria-valuenow="{{ round($node->mem / $node->maxmem, 2) * 100 }}" aria-valuemin="0"
                                         aria-valuemax="100">
-                                        {{(round($node->mem / $node->maxmem,2)) * 100 }}%
+                                        {{ round($node->mem / $node->maxmem, 2) * 100 }}%
                                     </div>
                             <td>
                                 <div class="progress" style="width: 100px;">
@@ -82,8 +86,9 @@
                                     <form action="{{ route('proxmox.cluster.node.destroy', $node->node) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
-                                        @can ('manage cluster')
-                                            <button type="submit" class="btn btn-danger btn-sm"onclick="return confirm('¿Estás seguro de querer borrar este cluster?');">Borrar</button>
+                                        @can('manage cluster')
+                                            <button type="submit"
+                                                class="btn btn-danger btn-sm"onclick="return confirm('¿Estás seguro de querer borrar este cluster?');">Borrar</button>
                                         @endcan
                                     </form>
                                 </div>

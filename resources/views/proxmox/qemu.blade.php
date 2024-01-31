@@ -44,7 +44,11 @@
             <tbody>
                 @foreach ($qemus as $qemu)
                     <tr>
-                        <td>{{ $qemu->cluster_name }}</td>
+                        @if ($qemu->cluster_name == null)
+                            <td>Sin cluster</td>
+                        @else
+                            <td>{{ $qemu->cluster_name }}</td>
+                        @endif
                         <td>{{ $qemu->node_id }}</td>
                         <td>{{ $qemu->vmid }}</td>
                         <td>{{ $qemu->name }}</td>

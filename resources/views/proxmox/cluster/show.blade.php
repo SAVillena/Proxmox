@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="justify-content-start px-3 py-3">
+    <div class="justify-content-start px-3 py-3">
         <h1 class = "text-center">Detalles de {{ $cluster->name }}</h1>
         <div class="d-flex justify-content-start mb-3">
             <a href="{{ route('proxmox.index') }}" class="btn btn-success"> &#8592; Volver</a>
@@ -31,8 +31,11 @@
             <tbody>
                 @foreach ($nodes as $node)
                     <tr>
-
-                        <td>{{ $node->cluster_name }}</td>
+                        @if ($node->cluster_name == null)
+                            <td>Sin cluster</td>
+                        @else
+                            <td>{{ $node->cluster_name }}</td>
+                        @endif
                         <td>{{ $node->node }}</td>
                         <td>{{ $node->status }}</td>
                         <td>{{ $node->maxcpu }}</td>
@@ -55,11 +58,11 @@
                         <td>
                             <div class="progress" style="width: 100px;">
                                 <div class="progress-bar 
-                                        {{(round($node->mem / $node->maxmem,2)) * 100 <= 50 ? 'bg-success' : (($node->mem / $node->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
-                                    role="progressbar" style="width: {{(round($node->mem / $node->maxmem,2)) * 100 }}%"
-                                    aria-valuenow="{{(round($node->mem / $node->maxmem,2)) * 100 }}" aria-valuemin="0"
+                                        {{ round($node->mem / $node->maxmem, 2) * 100 <= 50 ? 'bg-success' : (($node->mem / $node->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
+                                    role="progressbar" style="width: {{ round($node->mem / $node->maxmem, 2) * 100 }}%"
+                                    aria-valuenow="{{ round($node->mem / $node->maxmem, 2) * 100 }}" aria-valuemin="0"
                                     aria-valuemax="100">
-                                    {{(round($node->mem / $node->maxmem,2)) * 100 }}%
+                                    {{ round($node->mem / $node->maxmem, 2) * 100 }}%
                                 </div>
                         <td>
                             <div class="progress" style="width: 100px;">
@@ -80,7 +83,8 @@
                                     @csrf
                                     @method('DELETE')
                                     @can('manage cluster')
-                                        <button type="submit" class="btn btn-danger btn-sm"onclick="return confirm('¿Estás seguro de querer borrar este cluster?');">Borrar</button>
+                                        <button type="submit"
+                                            class="btn btn-danger btn-sm"onclick="return confirm('¿Estás seguro de querer borrar este cluster?');">Borrar</button>
                                     @endcan
                                 </form>
                             </div>
@@ -115,7 +119,11 @@
             <tbody>
                 @foreach ($qemus as $qemu)
                     <tr>
-                        <td>{{ $qemu->cluster_name }}</td>
+                        @if ($qemu->cluster_name == null)
+                            <td>Sin cluster</td>
+                        @else
+                            <td>{{ $qemu->cluster_name }}</td>
+                        @endif
                         <td>{{ $qemu->node->node }}</td>
                         <td>{{ $qemu->vmid }}</td>
                         <td>{{ $qemu->name }}</td>
@@ -176,7 +184,11 @@
             <tbody>
                 @foreach ($storages as $storage)
                     <tr>
-                        <td>{{ $storage->cluster }}</td>
+                        @if($storage->cluster)
+                            <td>{{ $storage->cluster }}</td>
+                        @else
+                            <td> {{$storage->node_id}} </td>
+                        @endif
                         <td>{{ $storage->storage }}</td>
                         <td>
                             <div class="progress" style="width: 100px;">
