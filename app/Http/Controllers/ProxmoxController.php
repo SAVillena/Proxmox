@@ -51,7 +51,7 @@ class ProxmoxController extends Controller
         $totalCPU = Node::sum('maxcpu');
         $totalRAM = Node::sum('maxmem');
         //que la suma no incluya ni al 'Backup-Virt' tampoco  'local' ni 'local-lvm'
-        $totalDisk = Storage::where('storage', '!=', 'Backup-Virt')->where('storage', '!=', 'local')->where('storage', '!=', 'local-lvm')->sum('maxdisk');
+        $totalDisk = Storage::where('storage', '!=', 'Backup-Virt')->where('storage', '!=', 'local')->where('storage', '!=', 'local-lvm')->where('cluster','!=', 'null')->sum('maxdisk');
 
         //cpuUsagePercentage, Node->cpu es el porcentaje de uso de cpu de cada nodo
         $cpuUsagePercentage = Node::sum('cpu');
@@ -69,7 +69,7 @@ class ProxmoxController extends Controller
             $memoryUsagePercentage = $memoryUsagePercentage / $totalRAM * 100;
         }
         //diskUsagePercentage
-        $diskUsagePercentage = Storage::where('storage', '!=', 'Backup-Virt')->where('storage', '!=', 'local')->where('storage', '!=', 'local-lvm')->sum('disk');
+        $diskUsagePercentage = Storage::where('storage', '!=', 'Backup-Virt')->where('storage', '!=', 'local')->where('storage', '!=', 'local-lvm')->where('cluster','!=', 'null')->sum('disk');
         if ($diskUsagePercentage == 0) {
             $diskUsagePercentage = 0;
         } else {
@@ -167,10 +167,7 @@ class ProxmoxController extends Controller
         $qemus = qemu::all();
 
         // Obtiene todos los registros de la tabla storage
-        $storages = storage::where('storage', '!=', 'local')
-            ->where('storage', '!=', 'local-lvm')
-            ->where('storage', '!=', 'Backup')
-            ->where('storage', '!=', 'Backup-Vicidial')->get();
+        $storages = storage::all();
 
         $uniqueNames = [];
         $filteredStorages = [];
@@ -181,7 +178,7 @@ class ProxmoxController extends Controller
             if (!in_array($storage->storage, $uniqueNames)) {
                 $uniqueNames[] = $storage->storage;
 
-                if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
+                if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial' || $storage->cluster == null) {
 
                     $filteredStorages[] = $storage;
                     // Suma al total usado y al tamaño máximo a medida que filtras los storages
@@ -496,10 +493,7 @@ class ProxmoxController extends Controller
             $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
 
             // Obtiene los storages asociados a los nodos
-            $storages = storage::whereIn('node_id', $nodeIds)->where('storage', '!=', 'local')
-                ->where('storage', '!=', 'local-lvm')
-                ->where('storage', '!=', 'Backup')
-                ->where('storage', '!=', 'Backup-Vicidial')->get();
+            $storages = storage::whereIn('node_id', $nodeIds)->get();
 
             $uniqueNames = [];
             $filteredStorages = [];
@@ -510,7 +504,7 @@ class ProxmoxController extends Controller
                 if (!in_array($storage->storage, $uniqueNames)) {
                     $uniqueNames[] = $storage->storage;
 
-                    if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
+                    if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial' || $storage->cluster == null) {
 
                         $filteredStorages[] = $storage;
                         // Suma al total usado y al tamaño máximo a medida que filtras los storages
@@ -718,10 +712,7 @@ class ProxmoxController extends Controller
             $nodes = node::where('id_proxmox', $node)->get();
             foreach ($nodes as $node) {
                 $qemus = Qemu::where('node_id', $node->id_proxmox)->get();
-                $storages = Storage::where('node_id', $node->id_proxmox)->where('storage', '!=', 'local')
-                    ->where('storage', '!=', 'local-lvm')
-                    ->where('storage', '!=', 'Backup')
-                    ->where('storage', '!=', 'Backup-Vicidial')->get();
+                $storages = Storage::where('node_id', $node->id_proxmox)->get();
             }
 
             // Inicializa un arreglo para almacenar las sumas de size por node_id
@@ -766,7 +757,7 @@ class ProxmoxController extends Controller
                 if (!in_array($storage->storage, $uniqueNames)) {
                     $uniqueNames[] = $storage->storage;
 
-                    if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
+                    if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial' || $storage->cluster == null) {
 
                         $filteredStorages[] = $storage;
                         // Suma al total usado y al tamaño máximo a medida que filtras los storages
