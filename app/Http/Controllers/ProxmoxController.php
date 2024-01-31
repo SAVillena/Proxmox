@@ -119,6 +119,11 @@ class ProxmoxController extends Controller
         }
     }
 
+    /**
+     * Actualiza los datos y redirige a la ruta 'proxmox.index'.
+     *
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function getDataRedirect()
     {
         set_time_limit(60);
@@ -132,7 +137,11 @@ class ProxmoxController extends Controller
             return redirect()->back()->with('error', 'An error occurred.');
         }
     }
-
+    /**
+     * Actualiza los datos sin la necesidad de iniciar sesion.
+     *
+     *
+     */
     public function getDataRedirect2()
     {
         set_time_limit(60);
@@ -451,11 +460,6 @@ class ProxmoxController extends Controller
      */
     public function storeCluster(Request $request)
     {
-        /* $request->validate([
-            'ip' => 'required|string',
-            'username' => 'required|string',
-            'password' => 'required|string'
-        ]); */
 
         try {
             $ip = $request->input('ip');
@@ -719,9 +723,9 @@ class ProxmoxController extends Controller
             foreach ($nodes as $node) {
                 $qemus = Qemu::where('node_id', $node->id_proxmox)->get();
                 $storages = Storage::where('node_id', $node->id_proxmox)->where('storage', '!=', 'local')
-                ->where('storage', '!=', 'local-lvm')
-                ->where('storage', '!=', 'Backup')
-                ->where('storage', '!=', 'Backup-Vicidial')->get();
+                    ->where('storage', '!=', 'local-lvm')
+                    ->where('storage', '!=', 'Backup')
+                    ->where('storage', '!=', 'Backup-Vicidial')->get();
             }
 
             // Inicializa un arreglo para almacenar las sumas de size por node_id
@@ -756,12 +760,12 @@ class ProxmoxController extends Controller
                 $sizeSumByNodeId[$nodeId] += $size;
             }
 
-            
+
             $uniqueNames = [];
             $filteredStorages = [];
             $totalUsedDisk = 0;
             $totalMaxDisk = 0;
-    
+
             foreach ($storages as $storage) {
                 if (!in_array($storage->storage, $uniqueNames)) {
                     $uniqueNames[] = $storage->storage;
