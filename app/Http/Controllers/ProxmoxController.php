@@ -364,7 +364,7 @@ class ProxmoxController extends Controller
             if (!in_array($storage->storage, $uniqueNames)) {
                 $uniqueNames[] = $storage->storage;
 
-                if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
+                if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial' || $storage->cluster == null) {
 
                     $filteredStorages[] = $storage;
                     // Suma al total usado y al tamaño máximo a medida que filtras los storages
