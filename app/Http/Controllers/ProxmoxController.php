@@ -45,6 +45,7 @@ class ProxmoxController extends Controller
 
         $totalClusters = Cluster::count();
         $totalNodes = Node::count();
+        $totalQemus = Qemu::count();
 
         $totalStorages = Storage::count();
 
@@ -84,7 +85,7 @@ class ProxmoxController extends Controller
         return view('proxmox.home', [
             'totalClusters' => $totalClusters,
             'totalNodes' => $totalNodes,
-            'totalQemus' => $totals->totalQemus,
+            'totalQemus' => $totalQemus,
             'totalStorages' => $totalStorages,
             'totalCPU' => $totals->totalCPU,
             'totalNodeCpu' => $totalCPU,
