@@ -350,10 +350,7 @@ class ProxmoxController extends Controller
      */
     public function storage()
     {
-        $storages = storage::where('storage', '!=', 'local')
-            ->where('storage', '!=', 'local-lvm')
-            ->where('storage', '!=', 'Backup')
-            ->where('storage', '!=', 'Backup-Vicidial')->get();
+        $storages = storage::all();
 
         $uniqueNames = [];
         $filteredStorages = [];
@@ -695,7 +692,7 @@ class ProxmoxController extends Controller
         foreach ($storages as $storage) {
             if (!in_array($storage->storage, $uniqueNames)) {
                 $uniqueNames[] = $storage->storage;
-                if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
+                if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial' || $storage->cluster == null) {
 
                     $filteredStorages[] = $storage;
                     $totalUsedDisk += $storage->disk;
