@@ -695,7 +695,6 @@ class ProxmoxController extends Controller
         foreach ($storages as $storage) {
             if (!in_array($storage->storage, $uniqueNames)) {
                 $uniqueNames[] = $storage->storage;
-
                 if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
 
                     $filteredStorages[] = $storage;
@@ -770,12 +769,12 @@ class ProxmoxController extends Controller
                 if (!in_array($storage->storage, $uniqueNames)) {
                     $uniqueNames[] = $storage->storage;
 
-                    if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial' && $storage->cluster_name != null) {
+                    if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial') {
 
                         $filteredStorages[] = $storage;
                         // Suma al total usado y al tamaño máximo a medida que filtras los storages
                         $totalUsedDisk += $storage->disk;
-                        $totalMaxDisk += $storage->maxdisk;
+                        $totalMaxDisk += $storage->maxdisk;   
                     }
                 }
             }

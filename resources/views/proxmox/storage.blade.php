@@ -106,6 +106,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         @foreach ($filteredStorages as $storage)
+            @if ($storage->cluster != null)
             var ctx = document.getElementById('storageChart{{ $loop->index }}').getContext('2d');
             var maxDisk = {{ $storage->maxdisk }};
             var usedDisk = {{ $storage->disk }};
@@ -153,6 +154,7 @@
                     maintainAspectRatio: false,
                 }
             });
+            @endif
         @endforeach
     </script>
 
