@@ -7,6 +7,8 @@
         {{-- realizar un grafico de torta con porcentaje de uso de cada storage --}}
         <div class="row">
             @foreach ($filteredStorages as $storage)
+                @if($storage->cluster)
+                    
                 <div class="col-lg-6 py-3">
                     <div class="card w-100 bg-dark text-white py">
                         <div class="card-header">
@@ -20,6 +22,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             @endforeach
             <div class="col-lg-6 py-3">
 
@@ -106,7 +109,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         @foreach ($filteredStorages as $storage)
-            @if ($storage->cluster != null)
             var ctx = document.getElementById('storageChart{{ $loop->index }}').getContext('2d');
             var maxDisk = {{ $storage->maxdisk }};
             var usedDisk = {{ $storage->disk }};
@@ -154,7 +156,6 @@
                     maintainAspectRatio: false,
                 }
             });
-            @endif
         @endforeach
     </script>
 
