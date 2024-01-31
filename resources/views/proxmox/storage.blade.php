@@ -12,14 +12,14 @@
                     <div class="card w-100 bg-dark text-white py">
                         <div class="card-header">
                             <h3>Storage: {{ $storage->storage }}</h3>
+                            <p>Uso: {{ $storage->used * 100 }}%</p>
+                            <p>Utilizado: {{ $storage->disk >= 1099511627776 ? round($storage->disk / 1099511627776, 2) . ' TB' : round($storage->disk / 1073741824, 2) . ' GB' }}</p>
+                            <p>Tamaño Vol: {{ $storage->maxdisk >= 1099511627776 ? round($storage->maxdisk / 1099511627776, 2) . ' TB' : round($storage->maxdisk / 1073741824, 2) . ' GB' }}</p>
                             @if(!$storage->cluster)
                                 <p>Node: {{ $storage->node_id }}</p>
                             @else
                                 <p>Cluster: {{ $storage->cluster }}</p>
                             @endif     
-                            <p>Uso: {{ $storage->used * 100 }}%</p>
-                            <p>Utilizado: {{ $storage->disk >= 1099511627776 ? round($storage->disk / 1099511627776, 2) . ' TB' : round($storage->disk / 1073741824, 2) . ' GB' }}</p>
-                            <p>Tamaño Vol: {{ $storage->maxdisk >= 1099511627776 ? round($storage->maxdisk / 1099511627776, 2) . ' TB' : round($storage->maxdisk / 1073741824, 2) . ' GB' }}</p>
                         </div>
                         <div class="card-body">
                             <canvas id="storageChart{{ $loop->index }}" width="200" height="200"></canvas>
@@ -32,10 +32,10 @@
             <div class="card w-100 bg-dark text-white py">
                 <div class="card-header">
                     <h3>Total almacenamiento</h3>
-                    <p> No se consideran los nodos sin cluster</p>
                     <p> Uso: {{round($totalUsedDisk/$totalMaxDisk,2) *100}} %</p>
                     <p> Utilizado:  {{ $totalUsedDisk >= 1099511627776 ? round($totalUsedDisk / 1099511627776, 2) . ' TB' : round($totalUsedDisk / 1073741824, 2) . ' GB' }}</p>
                     <p> Tamaño Vol: {{ $totalMaxDisk >= 1099511627776 ? round($totalMaxDisk / 1099511627776, 2) . ' TB' : round($totalMaxDisk / 1073741824, 2) . ' GB' }} </p>
+                    <p> No se consideran los nodos sin cluster</p>
                 </div>
                 <div class="card-body">
                     <canvas id="totalStorageChart" width="200" height="200"></canvas>
