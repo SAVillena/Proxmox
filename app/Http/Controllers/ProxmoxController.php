@@ -7,6 +7,7 @@ use App\Models\qemu;
 use App\Models\Storage;
 use App\Models\node;
 use App\Models\cluster;
+use App\Models\MonthlyTotal;
 use App\Models\QemuDeleted;
 use App\Models\VirtualMachineHistory;
 use App\Services\ProxmoxService2;
@@ -51,8 +52,7 @@ class ProxmoxController extends Controller
 
         $totalCPU = Node::sum('maxcpu');
         $totalRAM = Node::sum('maxmem');
-        //que la suma no incluya ni al 'Backup-Virt' tampoco  'local' ni 'local-lvm'
-        $totalDisk = Storage::where('storage', '!=', 'Backup-Virt')->where('storage', '!=', 'local')->where('storage', '!=', 'local-lvm')->where('cluster','!=', 'null')->sum('maxdisk');
+
 
         //cpuUsagePercentage, Node->cpu es el porcentaje de uso de cpu de cada nodo
         $cpuUsagePercentage = Node::sum('cpu');
@@ -69,15 +69,29 @@ class ProxmoxController extends Controller
         } else {
             $memoryUsagePercentage = $memoryUsagePercentage / $totalRAM * 100;
         }
-        //diskUsagePercentage
-        $diskUsagePercentage = Storage::where('storage', '!=', 'Backup-Virt')->where('storage', '!=', 'local')->where('storage', '!=', 'local-lvm')->where('cluster','!=', 'null')->sum('disk');
-        if ($diskUsagePercentage == 0) {
-            $diskUsagePercentage = 0;
-        } else {
-            $diskUsagePercentage = $diskUsagePercentage / $totalDisk * 100;
+        
+
+        $storages = Storage::all();
+        $uniqueNames = [];
+        $filteredStorages = [];
+        $totalUsedDisk = 0;
+        $totalMaxDisk = 0;
+
+        foreach ($storages as $storage) {
+            if (!in_array($storage->storage, $uniqueNames)) {
+                $uniqueNames[] = $storage->storage;
+
+                if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial' || $storage->cluster == null) {
+
+                    $filteredStorages[] = $storage;
+                    // Suma al total usado y al tamaño máximo a medida que filtras los storages
+                    $totalUsedDisk += $storage->disk;
+                    $totalMaxDisk += $storage->maxdisk;
+                }
+            }
         }
 
-        $diskUsagePercentage = round($diskUsagePercentage, 2);
+        $diskUsagePercentage = $totalUsedDisk / $totalMaxDisk * 100;
 
         //nodos con cluster name null
         $OnlyNodes = Node::where('cluster_name', null)->count();
@@ -91,7 +105,7 @@ class ProxmoxController extends Controller
             'totalNodeCpu' => $totalCPU,
             'totalNodeRAM' => $totalRAM,
             'totalRAM' => $totals->totalRAM,
-            'totalDisk' => $totals->totalDisk,
+            'totalDisk' => $totalMaxDisk,
             'cpuUsagePercentage' => $cpuUsagePercentage,
             'memoryUsagePercentage' => $memoryUsagePercentage,
             'diskUsagePercentage' => $diskUsagePercentage,
@@ -113,6 +127,7 @@ class ProxmoxController extends Controller
             $this->proxmoxService->markMissingQemuAsDeleted();
             $this->proxmoxService->VMHistory();
             $this->proxmoxService->resetUpdatedQemuIds();
+            $this->proxmoxService->MonthlyTotals();
         } catch (\Exception $e) {
 
             Log::error($e->getMessage());
@@ -763,7 +778,7 @@ class ProxmoxController extends Controller
                         $filteredStorages[] = $storage;
                         // Suma al total usado y al tamaño máximo a medida que filtras los storages
                         $totalUsedDisk += $storage->disk;
-                        $totalMaxDisk += $storage->maxdisk;   
+                        $totalMaxDisk += $storage->maxdisk;
                     }
                 }
             }

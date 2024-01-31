@@ -17,15 +17,15 @@
     <div class="container">
         <div>
             <h1>Historial de Maquinas Virtuales</h1>
-            <p>Último Registro - Total de máquinas: {{ $last->first()->cluster_qemus ?? 'N/A' }}</p>
-            <p>Último Registro - vCPU: {{ $last->first()->cluster_cpu ?? 'N/A' }}</p>
+            <p>Último Registro - Total de máquinas: {{ $lastMonthlyTotal->cluster_qemus ?? 'N/A' }}</p>
+            <p>Último Registro - vCPU: {{ $lastMonthlyTotal->cluster_cpu ?? 'N/A' }}</p>
             <p>Último Registro - Memoria:
-                {{ $last->first()->cluster_memory ? number_format($last->first()->cluster_memory / 1024 ** 3) : 'N/A' }}
+                {{ $lastMonthlyTotal->cluster_memory ? number_format($lastMonthlyTotal->cluster_memory / 1024 ** 3) : 'N/A' }}
                 GB</p>
             <p>Último Registro - Disco:
-                @if ($monthlyData->last())
+                @if ($lastMonthlyTotal->cluster_disk)
                     @php
-                        $diskInGB = $last->first()->cluster_disk / 1024 ** 3; // Convertir a GB
+                        $diskInGB = $lastMonthlyTotal->cluster_disk / 1024 ** 3; // Convertir a GB
                     @endphp
                     @if ($diskInGB >= 1024)
                         {{ round($diskInGB / 1024) }} TB

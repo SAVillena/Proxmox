@@ -16,6 +16,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Debug\VirtualRequestStack;
 use App\Models\QemuDeleted;
+use Illuminate\Support\Facades\DB;
 
 class ProxmoxService2
 {
@@ -467,6 +468,7 @@ class ProxmoxService2
                 $this->getProxmoxData($authData);
                 $this->addClusterCredentials($ip, $username, $password);
                 $this->VMHistory();
+                $this->MonthlyTotals();
             } else {
                 Log::error("Error al conectar con el nodo: " . $ip);
             }
@@ -538,10 +540,6 @@ class ProxmoxService2
             $startOfMonth = Carbon::now()->startOfMonth();
             $endOfMonth = Carbon::now()->endOfMonth();
 
-            $totalMonthlyQemus = 0;
-            $totalMonthlyCPU = 0;
-            $totalMonthlyRAM = 0;
-            $totalMonthlyDisk = 0;
             // Recorrer los nodos del clúster
             foreach ($NameAllCluster as $nameCluster) {
                 // Inicializar totales
@@ -557,15 +555,18 @@ class ProxmoxService2
                     ->whereBetween('updated_at', [$startOfMonth, $endOfMonth])
                     ->get();
 
-                // Calcular totales
+                // Calcular totales de CPU, RAM y Qemus
                 $TotalQemus = $qemus->count();
                 $TotalCPU = $qemus->sum('maxcpu');
                 $TotalRAM = $qemus->sum('maxmem');
-                $TotalDisk = $qemus->sum('maxdisk');
-                $totalMonthlyCPU += $TotalCPU;
-                $totalMonthlyRAM += $TotalRAM;
-                $totalMonthlyQemus += $TotalQemus;
-                $totalMonthlyDisk += $TotalDisk;
+
+                // Calcular el total de Disk para storages únicos dentro del mismo cluster
+                $storages = Storage::select('storage', DB::raw('MAX(maxdisk) as maxdisk'))
+                    ->where('cluster', $nameCluster)
+                    ->groupBy('storage')
+                    ->get();
+
+                $TotalDisk = $storages->sum('maxdisk');
 
                 // Guardar o actualizar información en la tabla de historial
                 VirtualMachineHistory::updateOrCreate(
@@ -581,22 +582,48 @@ class ProxmoxService2
                     ]
                 );
             }
+        } catch (\Exception $e) {
+            Log::error("Error occurred: " . $e->getMessage());
+        }
+    }
 
-            // Guardar o actualizar información en la tabla de totales mensuales
+
+
+    public function MonthlyTotals()
+    {
+        try {
+            // Fecha de inicio y fin del mes actual
+            $startOfMonth = Carbon::now()->startOfMonth();
+            $endOfMonth = Carbon::now()->endOfMonth();
+
+            $totals = VirtualMachineHistory::whereBetween('date', [$startOfMonth, $endOfMonth])->first()->get();
+
+            $totals = $totals->groupBy('date')->map(function ($group) {
+                return (object)[
+                    'totalQemus' => $group->sum('cluster_qemus'),
+                    'totalCPU' => $group->sum('cluster_cpu'),
+                    'totalRAM' => $group->sum('cluster_memory'),
+                    'totalDisk' => $group->sum('cluster_disk'),
+                ];
+            });
+            $lastTotal = $totals->last();
             MonthlyTotal::updateOrCreate(
-                ['date' => $startOfMonth],
                 [
-                    'cluster_qemus' => $totalMonthlyQemus,
-                    'cluster_cpu' => $totalMonthlyCPU,
-                    'cluster_memory' => $totalMonthlyRAM,
-                    'cluster_disk' => $totalMonthlyDisk,
+                    'date' => $startOfMonth,
+                ],
+                [
+                    'cluster_qemus' => $lastTotal->totalQemus ?? 0,
+                    'cluster_cpu' => $lastTotal->totalCPU ?? 0,
+                    'cluster_memory' => $lastTotal->totalRAM ?? 0,
+                    'cluster_disk' => $lastTotal->totalDisk ?? 0,
                 ]
             );
-
         } catch (GuzzleException $e) {
             Log::error("Error occurred: " . $e->getMessage());
         }
     }
+
+
 
     /**
      * Marca los QEMU no recibidos en las peticiones como eliminados.

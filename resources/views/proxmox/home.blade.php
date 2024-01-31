@@ -116,9 +116,9 @@
 
                         <div class="progress stacked " style="height: 30px">
                             <div class="progress-bar {{ $diskUsagePercentage >= 90 ? 'bg-danger' : ($diskUsagePercentage >= 70 ? 'bg-warning' : 'bg-info') }}"
-                                role="progressbar" style="width: {{ $diskUsagePercentage }}%"
-                                aria-valuenow="{{ $diskUsagePercentage }} " aria-valuemin="0" aria-valuemax="100">
-                                {{ $diskUsagePercentage }}%
+                                role="progressbar" style="width: {{ round($diskUsagePercentage, 2)  }}%"
+                                aria-valuenow="{{ round($diskUsagePercentage, 2)  }} " aria-valuemin="0" aria-valuemax="100">
+                                {{ round($diskUsagePercentage, 2)  }}%
                             </div>
                         </div>
                     </div>

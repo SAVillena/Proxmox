@@ -49,6 +49,7 @@ class VirtualMachineHistoryController extends Controller
 
         $lastRecord = MonthlyTotal::orderBy('date', 'desc')->first();
         $secondLastRecord = MonthlyTotal::orderBy('date', 'desc')->skip(1)->first();
+        $lastMonthlyTotal = MonthlyTotal::orderBy('date', 'desc')->first();
 
         if ($lastRecord && $secondLastRecord) {
             $growth['qemus'] = $lastRecord->cluster_qemus - $secondLastRecord->cluster_qemus;
@@ -62,7 +63,7 @@ class VirtualMachineHistoryController extends Controller
             $growth['disks'] = 0;
         }
 
-        return view('proxmox.virtualMachineHistory', compact('histories'), compact('total_qemus', 'total_cpus', 'total_memorys', 'total_disks', 'VMHistory', 'growth'));
+        return view('proxmox.virtualMachineHistory', compact('histories'), compact('total_qemus', 'total_cpus', 'total_memorys', 'total_disks', 'VMHistory', 'growth', 'lastMonthlyTotal'));
     }
 
     /**
@@ -123,6 +124,8 @@ class VirtualMachineHistoryController extends Controller
             $growth['disks'] = $currentYearSumDisk - $previousYearRecord->cluster_disk;
             
         }
+
+        
 
         $lastRecord = MonthlyTotal::orderBy('date', 'desc')->first();
         return view('proxmox.virtualMachineHistoryAnual', compact('histories'), compact('total_qemus', 'total_cpus', 'total_memorys', 'total_disks', 'VMHistory', 'growth'));
