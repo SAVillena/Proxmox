@@ -105,7 +105,7 @@
                                         <td>{{ $item->cluster_qemus }}</td>
                                         <td>{{ $item->cluster_cpu }}</td>
                                         <td>{{ round($item->cluster_memory / 1024 ** 3, 2) }} GB</td>
-                                        <td>{{ round($item->cluster_disk / 1024 ** 3, 2) }} GB</td>
+                                        <td>{{ round($item->cluster_disk / 1024 ** 4, 2) }} TB</td>
                                         <td>{{ $item->date }}</td>
                                     </tr>
                                 @endforeach

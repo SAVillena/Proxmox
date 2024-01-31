@@ -325,7 +325,7 @@ class ProxmoxService2
      */
     protected function extractDiskInfo($diskString)
     {
-        if (preg_match('/size=(\d+(?:\.\d+)?)G/', $diskString, $matches)) {
+        if (preg_match('/size=(\d+(?:\.\d+)?)(G|T)/', $diskString, $matches)) {
             return ['size' => $matches[1]];
         }
         return null;
@@ -586,6 +586,44 @@ class ProxmoxService2
             Log::error("Error occurred: " . $e->getMessage());
         }
     }
+
+    /*public function MonthlyTotals()
+    {
+        try {
+            // Fecha de inicio y fin del mes actual
+            $startOfMonth = Carbon::now()->startOfMonth()->data;
+            $endOfMonth = Carbon::now()->endOfMonth();
+
+            $totals = VirtualMachineHistory::whereBetween('date', [$startOfMonth, $endOfMonth])->first()->get();
+            
+            Log::info($totals);
+            foreach ($totals as $total) {
+                dd($total->date, $startOfMonth);
+                if($total->date == $startOfMonth){
+                    $totalQemu =+ $total->cluster_qemus;
+                    $totalCPU =+ $total->cluster_cpu;
+                    $totalRAM =+ $total->cluster_memory;
+                    $totalDisk =+ $total->cluster_disk;
+                }
+            }            
+            //falta suma 
+
+
+            MonthlyTotal::updateOrCreate(
+                [
+                    'date' => $startOfMonth,
+                ],
+                [
+                    'cluster_qemus' => $totalQemu ?? 0,
+                    'cluster_cpu' => $totalCPU ?? 0,
+                    'cluster_memory' => $totalRAM ?? 0,
+                    'cluster_disk' => $totalDisk ?? 0,
+                ]
+            );
+        } catch (GuzzleException $e) {
+            Log::error("Error occurred: " . $e->getMessage());
+        }
+    }*/
 
 
 
