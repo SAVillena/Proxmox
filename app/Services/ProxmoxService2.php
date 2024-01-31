@@ -299,12 +299,20 @@ class ProxmoxService2
                 $diskInfo = $this->extractDiskInfo($value);
                 if ($diskInfo && isset($diskInfo['size'])) {
                     $totalSize += $this->convertToGigabytes($diskInfo['size']);
+                }else {
+                    log::info($diskInfo . "extractDiskInfo");
                 }
                 // Extraer el nombre del storage
                 $storageName = explode(':', $value)[0];
                 if (!in_array($storageName, $storageNames)) {
                     $storageNames[] = $storageName;
                 }
+                else {
+                    log::info($storageName . "disco  no registrado o if in_array no se cumple");
+                }
+            }else {
+                log::info($value . "no es un disco, if de -disk- no se cumple");
+
             }
         }
 
