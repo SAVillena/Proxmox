@@ -418,12 +418,12 @@ class ProxmoxController extends Controller
             $qemus = Qemu::whereIn('node_id', $nodesIdProxmox)->get();
             $storages = Storage::where('cluster', $name)->get();
 
-            
-            
+
+
             //si existe otro nodo conectado mediante node_storage al storage no eliminar
-            
-            
-            
+
+
+
             foreach ($qemus as $qemu) {
                 $qemu->delete();
             }
@@ -431,8 +431,8 @@ class ProxmoxController extends Controller
                 node_storage::where('node_id', $node->id)->delete();
                 $node->delete();
             }
-            foreach($storages as $storage){
-                
+            foreach ($storages as $storage) {
+
                 Node_storage::where('storage_id', $storage->id)->delete();
                 $storage->delete();
             }
@@ -455,23 +455,28 @@ class ProxmoxController extends Controller
         $node = node::where('node', $name)->first();
         $qemus = Qemu::where('node_id', $node->id_proxmox)->get();
         $node_storage = node_storage::where('node_id', $node->id)->get();
-        $idStorages = $node_storage->pluck('storage_id')->toArray();
+       
         $node_storage = node_storage::where('node_id', $node->id)->delete();
 
+        $storages = Storage::where('node_id', $node->id_proxmox)->get();
+
+
+
         //si existe otro nodo conectado mediante node_storage al storage no eliminar
-        foreach ($idStorages as $idStorage) {
-            $node_storage = node_storage::where('storage_id', $idStorage)->get();
-            if ($node_storage->isEmpty()) {
-                $storage = Storage::find($idStorage);
-                $storage->delete();
-            }
-        }
+
+
 
         foreach ($qemus as $qemu) {
             $qemu->delete();
         }
 
+        node_storage::where('node_id', $node->id)->delete();
         $node->delete();
+        foreach ($storages as $storage) {
+
+            Node_storage::where('storage_id', $storage->id)->delete();
+            $storage->delete();
+        }
         return redirect()->route('proxmox.index');
     }
 
