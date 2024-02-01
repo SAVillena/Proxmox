@@ -620,10 +620,10 @@ class ProxmoxController extends Controller
         $qemus = qemu::all();
 
         // nombre del cluster obtenido del nodo que pertenece el qemu
-        foreach ($qemus as $qemu) {
+        /* foreach ($qemus as $qemu) {
             $node = node::where('id_proxmox', $qemu->node_id)->first();
             $qemu->cluster_name = $node->cluster_name;
-        }
+        } */
 
         //transformar el maxmem de bytes a gigabytes
         foreach ($qemus as $qemu) {
