@@ -65,7 +65,7 @@ class ProxmoxController extends Controller
         }
 
         //memoryUsagePercentage
-        $memoryUsagePercentage = Node::sum('mem');
+        $memoryUsagePercentage = Qemu::sum('maxmem');
         if ($memoryUsagePercentage == 0) {
             $memoryUsagePercentage = 0;
         } else {
