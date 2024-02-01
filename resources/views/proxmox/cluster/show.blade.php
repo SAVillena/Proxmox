@@ -211,7 +211,7 @@
                         @else
                             <td>{{ round($storage->maxdisk / 1073741824, 2) }} GB</td>
                         @endif
-                        <td>{{ $storage->node->node }}</td>
+                        <td>{{ $storage->node_id }}</td>
                         <td>{{ $storage->content }}</td>
                         <td>{{ $storage->plugintype }}</td>
                         <td>{{ \Carbon\Carbon::parse($storage->updated_at)->format('d/m/Y H:i') }}</td>

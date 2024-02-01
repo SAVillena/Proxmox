@@ -12,6 +12,8 @@ use App\Models\QemuDeleted;
 use App\Models\VirtualMachineHistory;
 use App\Services\ProxmoxService2;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use App\Models\Node_storage;
 
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -293,13 +295,13 @@ class ProxmoxController extends Controller
         $nodes = node::all();
 
         // Obtiene los IDs de los nodos
-        $nodeIds = $nodes->pluck('id_proxmox')->toArray();
+        $nodesIdProxmox = $nodes->pluck('id_proxmox')->toArray();
 
         // Obtiene los qemus asociados a los nodos
-        $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
+        $qemus = Qemu::whereIn('node_id', $nodesIdProxmox)->get();
 
         // Obtiene los storages asociados a los nodos
-        $storages = Storage::whereIn('node_id', $nodeIds)->get();
+        $storages = Storage::whereIn('node_id', $nodesIdProxmox)->get();
 
         // Inicializa un arreglo para almacenar las sumas de size por node_id
         $sizeSumByNodeId = [];
@@ -412,15 +414,29 @@ class ProxmoxController extends Controller
                 throw new \Exception('Cluster no encontrado');
             }
             $nodes = node::where('cluster_name', $name)->get();
-            $nodeIds = $nodes->pluck('id_proxmox')->toArray();
-            $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
-            $storages = Storage::whereIn('node_id', $nodeIds)->get();
+            $nodesId = $nodes->pluck('id')->toArray();
+            $nodesIdProxmox = $nodes->pluck('id_proxmox')->toArray();
+            $qemus = Qemu::whereIn('node_id', $nodesIdProxmox)->get();            
+            $node_storage = node_storage::whereIn('node_id', $nodesId)->get();
+            $idStorages = $node_storage->pluck('storage_id')->toArray();
+            $node_storage = node_storage::whereIn('node_id', $nodesId)->delete();
+
+        
+        //si existe otro nodo conectado mediante node_storage al storage no eliminar
+        foreach ($idStorages as $idStorage) {
+            $node_storage = node_storage::where('storage_id', $idStorage)->get();
+            if ($node_storage->isEmpty()) {
+                $storage = Storage::find($idStorage);
+                if($storage){
+                $storage->delete();
+                }
+            
+            }
+        }
+
 
             foreach ($qemus as $qemu) {
                 $qemu->delete();
-            }
-            foreach ($storages as $storage) {
-                $storage->delete();
             }
             foreach ($nodes as $node) {
                 $node->delete();
@@ -441,16 +457,25 @@ class ProxmoxController extends Controller
      */
     public function destroyNode($name)
     {
-        $node = node::find('node/' . $name);
+        $node = node::where('node', $name)->first();
         $qemus = Qemu::where('node_id', $node->id_proxmox)->get();
-        $storages = Storage::where('node_id', $node->id_proxmox)->get();
+        $node_storage = node_storage::where('node_id', $node->id)->get();
+        $idStorages = $node_storage->pluck('storage_id')->toArray();
+        $node_storage = node_storage::where('node_id', $node->id)->delete();
+        
+        //si existe otro nodo conectado mediante node_storage al storage no eliminar
+        foreach ($idStorages as $idStorage) {
+            $node_storage = node_storage::where('storage_id', $idStorage)->get();
+            if ($node_storage->isEmpty()) {
+                $storage = Storage::find($idStorage);
+                $storage->delete();
+            }
+        }
 
         foreach ($qemus as $qemu) {
             $qemu->delete();
         }
-        foreach ($storages as $storage) {
-            $storage->delete();
-        }
+
         $node->delete();
         return redirect()->route('proxmox.index');
     }
@@ -506,13 +531,13 @@ class ProxmoxController extends Controller
             $nodes = node::where('cluster_name', $name)->get();
 
             // Obtiene los IDs de los nodos
-            $nodeIds = $nodes->pluck('id_proxmox')->toArray();
+            $nodesIdProxmox = $nodes->pluck('id_proxmox')->toArray();
 
             // Obtiene los qemus asociados a los nodos
-            $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
+            $qemus = Qemu::whereIn('node_id', $nodesIdProxmox)->get();
 
             // Obtiene los storages asociados a los nodos
-            $storages = storage::whereIn('node_id', $nodeIds)->get();
+            $storages = storage::whereIn('node_id', $nodesIdProxmox)->get();
 
             $uniqueNames = [];
             $filteredStorages = [];
@@ -641,9 +666,9 @@ class ProxmoxController extends Controller
         $nodes = Node::where('id_proxmox', 'like', '%' . $search . '%')->paginate(100)->appends(['search' => $search]);
 
         //realizar una funcion en vez de repetir 
-        $nodeIds = $nodes->pluck('id_proxmox')->toArray();
-        $qemus = Qemu::whereIn('node_id', $nodeIds)->get();
-        $storages = Storage::whereIn('node_id', $nodeIds)->get();
+        $nodesIdProxmox = $nodes->pluck('id_proxmox')->toArray();
+        $qemus = Qemu::whereIn('node_id', $nodesIdProxmox)->get();
+        $storages = Storage::whereIn('node_id', $nodesIdProxmox)->get();
 
         // Inicializa un arreglo para almacenar las sumas de size por node_id
         $sizeSumByNodeId = [];

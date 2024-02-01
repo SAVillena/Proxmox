@@ -28,7 +28,6 @@ return new class extends Migration
             $table->string('cluster')->nullable();
             $table->timestamps();
 
-            $table->foreign('node_id')->references('id_proxmox')->on('nodes');
         });
     } 
 
