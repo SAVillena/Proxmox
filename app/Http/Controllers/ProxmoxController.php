@@ -87,8 +87,10 @@ class ProxmoxController extends Controller
 
                     $filteredStorages[] = $storage;
                     // Suma al total usado y al tamaño máximo a medida que filtras los storages
+                    if($storage->storage != 'Backup-Virt'){
                     $totalUsedDisk += $storage->disk;
                     $totalMaxDisk += $storage->maxdisk;
+                    }
                 }
             }
         }
@@ -737,8 +739,10 @@ class ProxmoxController extends Controller
                 if ($storage->storage != 'local' && $storage->storage != 'local-lvm' && $storage->storage != 'Backup' && $storage->storage != 'Backup-Vicidial' || $storage->cluster == null) {
 
                     $filteredStorages[] = $storage;
+                    if($storage->storage != 'Backup-Virt'){
                     $totalUsedDisk += $storage->disk;
                     $totalMaxDisk += $storage->maxdisk;
+                    }
                 }
             }
         }
