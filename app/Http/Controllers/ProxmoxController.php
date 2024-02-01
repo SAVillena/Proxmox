@@ -433,7 +433,8 @@ class ProxmoxController extends Controller
             }
             foreach($storages as $storage){
                 
-                    $storage->delete();
+                Node_storage::where('storage_id', $storage->id)->delete();
+                $storage->delete();
             }
             $cluster->delete();
             return redirect()->route('proxmox.index');
