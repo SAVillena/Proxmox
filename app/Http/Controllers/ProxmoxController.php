@@ -90,8 +90,11 @@ class ProxmoxController extends Controller
                 }
             }
         }
-
+        if($totalMaxDisk == 0){
+            $diskUsagePercentage = 0;
+        }else{
         $diskUsagePercentage = $totalUsedDisk / $totalMaxDisk * 100;
+        }
 
         //nodos con cluster name null
         $OnlyNodes = Node::where('cluster_name', null)->count();
