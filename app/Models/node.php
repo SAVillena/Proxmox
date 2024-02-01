@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Node extends Model
 {
-    protected $primaryKey = 'id_proxmox';
-    public $incrementing = false;
+    /* protected $primaryKey = 'id_proxmox';
+    public $incrementing = false; */
     protected $fillable = [
         'cluster_name',
         'id_proxmox',
@@ -29,7 +29,7 @@ class Node extends Model
 
     public function storages()
     {
-        return $this->hasMany(Storage::class);
+        return $this->belongsToMany(Storage::class, 'node_storage', 'node_id', 'storage_id');
     }
 
     public function cluster()

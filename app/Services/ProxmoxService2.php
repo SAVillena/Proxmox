@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpKernel\Debug\VirtualRequestStack;
 use App\Models\QemuDeleted;
 use Illuminate\Support\Facades\DB;
+use App\Models\Node_storage as Node_storageDB;
 
 class ProxmoxService2
 {
@@ -132,6 +133,7 @@ class ProxmoxService2
         });
         if ($data) {
             // Procesar y guardar los datos
+
             foreach ($data as $item) {
                 if ($item['type'] == 'node') {
                     $IP = $this->nodeInfo[$item['id']] ?? null;
@@ -216,12 +218,16 @@ class ProxmoxService2
                 $storageItem['plugintype'] = null;
                 $storageItem['content'] = null;
             }
+
+            $node = Node::where('id_proxmox', 'node/'.$storageItem['node'])->first();
+            $nodeId = $node->id;
+
             // Guardar los datos en la base de datos
             Storage::updateOrCreate(
-                ['id_proxmox' => $storageItem['id']],
+                ['storage' => $storageItem['storage'],],
                 [
-                    'node_id' => 'node/' . $storageItem['node'],
-                    'storage' => $storageItem['storage'],
+                    'id_proxmox' => $storageItem['id'],
+                    'node_id' => 'node/'.$storageItem['node'],
                     'type' => $storageItem['type'],
                     'status' => $storageItem['status'],
                     'disk' => $storageItem['disk'],
@@ -232,6 +238,15 @@ class ProxmoxService2
                     'shared' => $storageItem['shared'],
                     'used' => ($storageItem['disk'] / $storageItem['maxdisk']),
                     'cluster' => $this->clusterName,
+                ]
+            );
+
+            // Guardar los datos en node_storage
+            Node_storageDB::updateOrCreate(
+                ['node_id' => $nodeId, 'storage_id' => $storageItem['id']],
+                [
+                    'node_id' => $nodeId,
+                    'storage_id' => Storage::where('id_proxmox', $storageItem['id'])->first()->id,
                 ]
             );
         }
@@ -255,12 +270,15 @@ class ProxmoxService2
             $this->updatedQemuIds[] = $qemuItem['node'] . '/' . $qemuItem['id'];
             if ($configData) {
 
+                $node = Node::where('id_proxmox', 'node/'.$qemuItem['node'])->first();
+                $nodeId = $node->id;
                 $disk = $this->calculateTotalDiskSize($configData);
                 // Guardar los datos combinados en la base de datos
                 Qemu::updateOrCreate(
                     ['id_proxmox' => $qemuItem['node'] . '/' . $qemuItem['id']],
                     [
                         'node_id' => 'node/' . $qemuItem['node'],
+                        'id_node' => $nodeId,
                         'vmid' => $qemuItem['vmid'],
                         'name' => $qemuItem['name'],
                         'type' => $qemuItem['type'],
@@ -294,25 +312,26 @@ class ProxmoxService2
     {
         $totalSize = 0;
         $storageNames = [];
+        $disksNon = [
+            'Backup', 'Backup-Virt', 'local', 'local-lvm'
+        ];
         foreach ($configData as $key => $value) {
             if (strpos($value, '-disk-') !== false) {
-                $diskInfo = $this->extractDiskInfo($value);
-                if ($diskInfo && isset($diskInfo['size'])) {
-                    $totalSize += $this->convertToGigabytes($diskInfo['size']);
-                }else {
-                    log::info($diskInfo . "extractDiskInfo");
+                $lineas = explode(PHP_EOL, $value);
+                foreach ($lineas as $linea) {
+                    $diskInfo = $this->extractDiskInfo($linea);
+                    $storageName = explode(':', $value)[0];
+                    //Log::info(["storageName" => $storageName]);
+                    if (!in_array($storageName, $storageNames)) {
+                        $storageNames[] = $storageName;
+                    }
+                    if (!in_array($storageName, $disksNon)) {
+                        //Log::info(["storageIn" => $storageName]);
+                        if ($diskInfo && isset($diskInfo['size'])) {
+                            $totalSize += $this->convertToGigabytes($diskInfo['size']);
+                        }
+                    }
                 }
-                // Extraer el nombre del storage
-                $storageName = explode(':', $value)[0];
-                if (!in_array($storageName, $storageNames)) {
-                    $storageNames[] = $storageName;
-                }
-                else {
-                    log::info($storageName . "disco  no registrado o if in_array no se cumple");
-                }
-            }else {
-                log::info($value . "no es un disco, if de -disk- no se cumple");
-
             }
         }
 
@@ -333,9 +352,13 @@ class ProxmoxService2
      */
     protected function extractDiskInfo($diskString)
     {
-        if (preg_match('/size=(\d+(?:\.\d+)?)(G|T)/', $diskString, $matches)) {
+        //Log::info(["disk string" => $diskString]);
+        if (preg_match('/size=([^,]+)/', $diskString, $matches)) {
             return ['size' => $matches[1]];
         }
+        // if (preg_match('/size=(\d+(?:\.\d+)?)(G|T)/', $diskString, $matches)) {
+        //     return ['size' => $matches[1]];
+        // }
         return null;
     }
 
@@ -350,11 +373,15 @@ class ProxmoxService2
         //cambiar de T a Bytes
         if (strpos($size, 'T') !== false) {
             $size = str_replace('T', '', $size);
-            $size = $size * 1024 * 1024 * 1024;
+            $size = $size * 1024 * 1024 * 1024 * 1024;
         }
         //cambiar de G a Bytes
         if (strpos($size, 'G') !== false) {
             $size = str_replace('G', '', $size);
+            $size = $size * 1024 * 1024 * 1024;
+        }
+        if (strpos($size, 'M') !== false) {
+            $size = str_replace('M', '', $size);
             $size = $size * 1024 * 1024;
         }
 

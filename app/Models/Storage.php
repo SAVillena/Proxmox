@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Storage extends Model
 {
-    protected $primaryKey = 'id_proxmox';
-    public $incrementing = false;
+    /* protected $primaryKey = 'id_proxmox';
+    public $incrementing = false; */
     protected $fillable = [
         'id_proxmox',
         'storage',
@@ -25,9 +25,9 @@ class Storage extends Model
         'cluster',
     ];
 
-    public function node()
+     public function node()
     {
-        return $this->belongsTo(Node::class, 'node_id', 'id_proxmox');
+        return $this->belongsTo(Node::class,'node_storage', 'storage_id', 'node_id');
     }
 
 }

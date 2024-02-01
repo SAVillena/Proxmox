@@ -189,11 +189,12 @@
                         <td>{{ $qemu->maxcpu }}</td>
                         <td>{{ round($qemu->maxmem / 1073741824, 2) }} GB</td>
 
-                        @if ($qemu->maxdisk >= 1099511627776)
-                            <td>{{ round($qemu->maxdisk / 1099511627776, 2) }} TB</td>
+                        @if ($qemu->size >= 1099511627776)
+                            <td>{{ round($qemu->size / 1099511627776, 2) }} TB</td>
                         @else
-                            <td>{{ round($qemu->maxdisk / 1073741824, 2) }} GB</td>
-                        @endif
+                            <td>{{ round($qemu->size / 1073741824, 2) }} GB</td>
+                        @endif 
+                        {{-- <td>{{ $qemu->size }}</td> --}}
 
                         <td>
                             <div class="progress" style="width: 100px;"
@@ -234,7 +235,6 @@
                     <th scope="col">Carga</th>
                     <th scope="col">Uso</th>
                     <th scope="col">Total</th>
-                    <th scope="col">Nodo</th>
                     <th scope="col">Contenido</th>
                     <th scope="col">Tipo</th>
                     <th scope="col">Última actualización</th>
@@ -271,7 +271,6 @@
                         @else
                             <td>{{ round($storage->maxdisk / 1073741824, 2) }} GB</td>
                         @endif
-                        <td>{{ $storage->node->node }}</td>
                         <td>{{ $storage->content }}</td>
                         <td>{{ $storage->plugintype }}</td>
                         <td>{{ \Carbon\Carbon::parse($storage->updated_at)->format('d/m/Y H:i') }}</td>

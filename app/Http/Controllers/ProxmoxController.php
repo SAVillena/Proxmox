@@ -601,6 +601,7 @@ class ProxmoxController extends Controller
         //transformar el maxmem de bytes a gigabytes
         foreach ($qemus as $qemu) {
             $qemu->maxmem = ($qemu->maxmem / 1024 / 1024 / 1024) . " Gb";
+            $qemu->size = ($qemu->size / 1024 / 1024 / 1024) . " Gb";
         }
 
         $csvExporter = new \Laracsv\Export();
@@ -618,7 +619,9 @@ class ProxmoxController extends Controller
         $search = $request->get('search');
         $qemusID = Qemu::where('vmid', 'like', '%' . $search . '%')->paginate(1000)->appends(['search' => $search]);
         $qemus = Qemu::where('name', 'like', '%' . $search . '%')->paginate(1000)->appends(['search' => $search]);
-        $qemus = $qemus->merge($qemusID);
+        $qemuByCluster = Qemu::where('cluster_name', 'like', '%' . $search . '%')->paginate(1000)->appends(['search' => $search]);
+        $qemuByNode = Qemu::where('node_id', 'like', '%' . $search . '%')->paginate(1000)->appends(['search' => $search]);
+        $qemus = $qemusID->merge($qemus)->merge($qemuByCluster)->merge($qemuByNode);
         return view('proxmox.qemu', ['qemus' => $qemus]);
     }
 

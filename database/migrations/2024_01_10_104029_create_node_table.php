@@ -13,8 +13,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('nodes', function (Blueprint $table) {
+            $table->id('id');
             $table->string('cluster_name')->nullable();
-            $table->string('id_proxmox')->primary();
+            $table->string('id_proxmox')->unique();
             $table->string('ip')->nullable();
             $table->string('type')->nullable();
             $table->boolean('online')->nullable();
@@ -29,7 +30,7 @@ return new class extends Migration
             $table->bigInteger('uptime')->nullable();
             $table->timestamps();
 
-            $table->foreign('cluster_name')->references('name')->on('clusters')->onDelete('cascade');
+            $table->foreign('cluster_name')->references('name')->on('clusters');
         });
     } 
 

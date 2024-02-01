@@ -13,8 +13,9 @@ return new class extends Migration
     {
         //debo guardar el nombre del cluster, las ips del nodo, el id del nodo, para eso se hace referencia  nodo para los ultimos 2
         Schema::create('clusters', function (Blueprint $table) {
+            $table->id('id')->index();
             $table->string('id_proxmox')->nullable();
-            $table->string('name')->primary();
+            $table->string('name')->unique();
             $table->integer('node_count')->nullable();
             $table->string('type')->nullable();
             $table->string('nodes')->nullable();

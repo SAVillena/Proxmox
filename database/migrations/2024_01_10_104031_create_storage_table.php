@@ -13,13 +13,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('storages', function (Blueprint $table) {
-            $table->string('id_proxmox')->primary();
+            $table->id('id')->index();
+            $table->string('id_proxmox');
             $table->string('type')->nullable();
             $table->string('status')->nullable();
             $table->bigInteger('disk')->nullable();
             $table->bigInteger('maxdisk')->nullable();
             $table->string('node_id')->nullable();
-            $table->string('storage')->nullable();
+            $table->string('storage')->unique();
             $table->string('content')->nullable();
             $table->string('plugintype')->nullable();
             $table->string('shared')->nullable();
@@ -27,7 +28,7 @@ return new class extends Migration
             $table->string('cluster')->nullable();
             $table->timestamps();
 
-            $table->foreign('node_id')->references('id_proxmox')->on('nodes')->onDelete('cascade');
+            $table->foreign('node_id')->references('id_proxmox')->on('nodes');
         });
     } 
 

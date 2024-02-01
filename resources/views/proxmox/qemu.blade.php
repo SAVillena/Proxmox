@@ -56,10 +56,10 @@
                         <td>{{ $qemu->maxcpu }}</td>
                         <td>{{ round($qemu->maxmem / 1073741824, 2) }} GB</td>
 
-                        @if ($qemu->maxdisk >= 1099511627776)
-                            <td>{{ round($qemu->maxdisk / 1099511627776, 2) }} TB</td>
+                        @if ($qemu->size >= 1099511627776)
+                            <td>{{ round($qemu->size / 1099511627776, 2) }} TB</td>
                         @else
-                            <td>{{ round($qemu->maxdisk / 1073741824, 2) }} GB</td>
+                            <td>{{ round($qemu->size / 1073741824, 2) }} GB</td>
                         @endif
 
                         <td>

@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class qemu extends Model
 {
-    protected $primaryKey = 'id_proxmox';
-    public $incrementing = false;
+    /* protected $primaryKey = 'id_proxmox';
+    public $incrementing = true; */
     protected $fillable = [
         'id_proxmox',
         'vmid',
@@ -28,11 +28,12 @@ class qemu extends Model
         'storageName',
         'size',
         'cluster_name',
+        'id_node'
     ];
 
       public function node()
     {
-        return $this->belongsTo(Node::class, 'node_id', 'id_proxmox');
+        return $this->belongsTo(Node::class, 'id_node', 'id');
     }
 
     public function disks()

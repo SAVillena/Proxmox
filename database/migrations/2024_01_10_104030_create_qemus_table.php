@@ -14,8 +14,10 @@ return new class extends Migration
     public function up(): void
     {
     Schema::create('qemus', function (Blueprint $table) {
+            $table->id('id')->index();
+            $table->unsignedBigInteger('id_node')->nullable();
             $table->string('node_id')->nullable();
-            $table->string('id_proxmox')->primary();
+            $table->string('id_proxmox')->unique();
             $table->string('vmid')->nullable();
             $table->string('name')->nullable();
             $table->string('type', 50)->nullable();
@@ -34,7 +36,7 @@ return new class extends Migration
             $table->string('cluster_name')->nullable();
             $table->timestamps();
 
-            $table->foreign('node_id')->references('id_proxmox')->on('nodes')->onDelete('cascade');
+            $table->foreign('id_node')->references('id')->on('nodes');
         });
         
     }
