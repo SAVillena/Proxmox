@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
 
 
-            $table->foreign('node_id')->references('id')->on('nodes');
+            $table->foreign('node_id')->references('id')->on('nodes')->delete('cascade');
             $table->foreign('storage_id')->references('id')->on('storages');
             // $table->unique(['node_id', 'storage_id']);
         });

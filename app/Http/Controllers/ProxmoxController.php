@@ -414,33 +414,26 @@ class ProxmoxController extends Controller
                 throw new \Exception('Cluster no encontrado');
             }
             $nodes = node::where('cluster_name', $name)->get();
-            $nodesId = $nodes->pluck('id')->toArray();
             $nodesIdProxmox = $nodes->pluck('id_proxmox')->toArray();
             $qemus = Qemu::whereIn('node_id', $nodesIdProxmox)->get();
-            $node_storage = node_storage::whereIn('node_id', $nodesId)->get();
-            $idStorages = $node_storage->pluck('storage_id')->toArray();
-            $node_storage = node_storage::whereIn('node_id', $nodesId)->delete();
+            $storages = Storage::where('cluster', $name)->get();
 
-
+            
+            
             //si existe otro nodo conectado mediante node_storage al storage no eliminar
-            foreach ($idStorages as $idStorage) {
-                $node_storages = node_storage::where('storage_id', $idStorage)->get();
-                foreach ($node_storages as $node_storage) {
-                    if (empty($node_storage)) {
-                        $storage = Storage::find($idStorage);
-                        if ($storage) {
-                            $storage->delete();
-                        }
-                    }
-                }
-            }
-
-
+            
+            
+            
             foreach ($qemus as $qemu) {
                 $qemu->delete();
             }
             foreach ($nodes as $node) {
+                node_storage::where('node_id', $node->id)->delete();
                 $node->delete();
+            }
+            foreach($storages as $storage){
+                
+                    $storage->delete();
             }
             $cluster->delete();
             return redirect()->route('proxmox.index');
