@@ -71,7 +71,7 @@ class ProxmoxController extends Controller
         } else {
             $memoryUsagePercentage = $memoryUsagePercentage / $totalRAM * 100;
         }
-        
+
 
         $storages = Storage::all();
         $uniqueNames = [];
@@ -92,10 +92,10 @@ class ProxmoxController extends Controller
                 }
             }
         }
-        if($totalMaxDisk == 0){
+        if ($totalMaxDisk == 0) {
             $diskUsagePercentage = 0;
-        }else{
-        $diskUsagePercentage = $totalUsedDisk / $totalMaxDisk * 100;
+        } else {
+            $diskUsagePercentage = $totalUsedDisk / $totalMaxDisk * 100;
         }
 
         //nodos con cluster name null
@@ -416,23 +416,24 @@ class ProxmoxController extends Controller
             $nodes = node::where('cluster_name', $name)->get();
             $nodesId = $nodes->pluck('id')->toArray();
             $nodesIdProxmox = $nodes->pluck('id_proxmox')->toArray();
-            $qemus = Qemu::whereIn('node_id', $nodesIdProxmox)->get();            
+            $qemus = Qemu::whereIn('node_id', $nodesIdProxmox)->get();
             $node_storage = node_storage::whereIn('node_id', $nodesId)->get();
             $idStorages = $node_storage->pluck('storage_id')->toArray();
             $node_storage = node_storage::whereIn('node_id', $nodesId)->delete();
 
-        
-        //si existe otro nodo conectado mediante node_storage al storage no eliminar
-        foreach ($idStorages as $idStorage) {
-            $node_storage = node_storage::where('storage_id', $idStorage)->get();
-            if ($node_storage->isEmpty()) {
-                $storage = Storage::find($idStorage);
-                if($storage){
-                $storage->delete();
+
+            //si existe otro nodo conectado mediante node_storage al storage no eliminar
+            foreach ($idStorages as $idStorage) {
+                $node_storages = node_storage::where('storage_id', $idStorage)->get();
+                foreach ($node_storages as $node_storage) {
+                    if (empty($node_storage)) {
+                        $storage = Storage::find($idStorage);
+                        if ($storage) {
+                            $storage->delete();
+                        }
+                    }
                 }
-            
             }
-        }
 
 
             foreach ($qemus as $qemu) {
@@ -462,7 +463,7 @@ class ProxmoxController extends Controller
         $node_storage = node_storage::where('node_id', $node->id)->get();
         $idStorages = $node_storage->pluck('storage_id')->toArray();
         $node_storage = node_storage::where('node_id', $node->id)->delete();
-        
+
         //si existe otro nodo conectado mediante node_storage al storage no eliminar
         foreach ($idStorages as $idStorage) {
             $node_storage = node_storage::where('storage_id', $idStorage)->get();
