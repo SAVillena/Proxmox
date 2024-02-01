@@ -454,9 +454,8 @@ class ProxmoxController extends Controller
     {
         $node = node::where('node', $name)->first();
         $qemus = Qemu::where('node_id', $node->id_proxmox)->get();
-        $node_storage = node_storage::where('node_id', $node->id)->get();
+        node_storage::where('node_id', $node->id)->get();
        
-        $node_storage = node_storage::where('node_id', $node->id)->delete();
 
         $storages = Storage::where('node_id', $node->id_proxmox)->get();
 
