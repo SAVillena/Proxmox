@@ -322,9 +322,9 @@ class ProxmoxService2
                     $diskInfo = $this->extractDiskInfo($linea);
                     $storageName = explode(':', $value)[0];
                     //Log::info(["storageName" => $storageName]);
-                    if (!in_array($storageName, $storageNames)) {
+                    //if (!in_array($storageName, $storageNames)) {
                         $storageNames[] = $storageName;
-                    }
+                    //}
                     if (!in_array($storageName, $disksNon)) {
                         //Log::info(["storageIn" => $storageName]);
                         if ($diskInfo && isset($diskInfo['size'])) {
@@ -595,13 +595,8 @@ class ProxmoxService2
                 $TotalCPU = $qemus->sum('maxcpu');
                 $TotalRAM = $qemus->sum('maxmem');
 
-                // Calcular el total de Disk para storages únicos dentro del mismo cluster
-                $storages = Storage::select('storage', DB::raw('MAX(maxdisk) as maxdisk'))
-                    ->where('cluster', $nameCluster)
-                    ->groupBy('storage')
-                    ->get();
-
-                $TotalDisk = $storages->sum('maxdisk');
+                // Calcular suma de size de qemus por cluster
+                $TotalDisk = $qemus->sum('size');
 
                 // Guardar o actualizar información en la tabla de historial
                 VirtualMachineHistory::updateOrCreate(
