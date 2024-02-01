@@ -55,6 +55,8 @@ class ProxmoxController extends Controller
         $totalCPU = Node::sum('maxcpu');
         $totalRAM = Node::sum('maxmem');
 
+        $totalRAMQemu = Qemu::sum('maxmem');
+    
 
         //cpuUsagePercentage, Node->cpu es el porcentaje de uso de cpu de cada nodo
         $cpuUsagePercentage = Node::sum('cpu');
@@ -65,11 +67,11 @@ class ProxmoxController extends Controller
         }
 
         //memoryUsagePercentage
-        $memoryUsagePercentage = Qemu::sum('maxmem');
-        if ($memoryUsagePercentage == 0) {
+        $totalRAMQemu = Qemu::sum('maxmem');
+        if ($totalRAMQemu == 0) {
             $memoryUsagePercentage = 0;
         } else {
-            $memoryUsagePercentage = $memoryUsagePercentage / $totalRAM * 100;
+            $memoryUsagePercentage = $totalRAMQemu / $totalRAM * 100;
         }
 
 
@@ -111,7 +113,7 @@ class ProxmoxController extends Controller
             'totalCPU' => $totals->totalCPU,
             'totalNodeCpu' => $totalCPU,
             'totalNodeRAM' => $totalRAM,
-            'totalRAM' => $totals->totalRAM,
+            'totalRAM' => $totalRAM,
             'totalDisk' => $totalMaxDisk,
             'cpuUsagePercentage' => $cpuUsagePercentage,
             'memoryUsagePercentage' => $memoryUsagePercentage,
