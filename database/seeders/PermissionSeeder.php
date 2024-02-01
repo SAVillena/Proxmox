@@ -24,7 +24,7 @@ class PermissionSeeder extends Seeder
         $adminRole->givePermissionTo($manageUsersPermission);
         $adminRole->givePermissionTo($manageClusterPermission);
         $adminRole->givePermissionTo($viewClusterPermission);
-        $userRole ->givePermissionTo($viewClusterPermission);
+        
     }
 
 }
