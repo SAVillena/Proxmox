@@ -81,7 +81,7 @@
                             <td>{{ $storage->storage }}</td>
                             <td>
                                 <div class="progress" style="width: 100px;">
-                                    <div class="progress-bar 
+                                    <div class="progress-bar text-dark fw-bolder 
                                 {{ $storage->used * 100 <= 50 ? 'bg-success' : ($storage->used * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                         role="progressbar" style="width: {{ $storage->used * 100 }}%"
                                         aria-valuenow="{{ $storage->used * 100 }}" aria-valuemin="0" aria-valuemax="100">

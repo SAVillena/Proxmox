@@ -4,7 +4,7 @@
     <div class="justify-content-start px-3 py-3">
         <h1 class = "text-center">Detalles de {{ $cluster->name }}</h1>
         <div class="d-flex justify-content-start mb-3">
-            <a href="{{ route('proxmox.index') }}" class="btn btn-success"> &#8592; Volver</a>
+            <a href="{{ route('proxmox.cluster') }}" class="btn btn-success"> &#8592; Volver</a>
         </div>
 
         {{-- crear card con informacion del cluster --}}
@@ -32,7 +32,7 @@
                             <h5 class="card-text">Total RAM asignada: {{ round($totalRAMQemu / 1073741824, 2) }} GB</h5>
 
                             <div class="progress "style="height: 30px" style="width: 100px;">
-                                <div class="progress-bar 
+                                <div class="progress-bar text-dark fw-bolder text-dark fw-bolder
                             {{ round($totalRAMQemu / $totalRAM, 2) * 100 <= 50 ? 'bg-success' : (round($totalRAMQemu / $totalRAM, 2) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                     role="progressbar" style="width: {{ round($totalRAMQemu / $totalRAM, 2) * 100 }}%"
                                     aria-valuenow="{{ round($totalRAMQemu / $totalRAM, 2) * 100 }}" aria-valuemin="0"
@@ -55,7 +55,7 @@
                             <h5 class="card-text">Total vCPU-Cores asignadas: {{ $totalCPUQemu }}</h5>
 
                             <div class="progress" style="height: 30px" style="width: 100px;">
-                                <div class="progress-bar 
+                                <div class="progress-bar text-dark fw-bolder 
                             {{ round($totalCPUQemu / $totalCPU, 2) * 100 <= 50 ? 'bg-success' : (round($totalCPUQemu / $totalCPU, 2) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                     role="progressbar" style="width: {{ round($totalCPUQemu / $totalCPU, 2) * 100 }}%"
                                     aria-valuenow="{{ round($totalCPUQemu / $totalCPU, 2) * 100 }}" aria-valuemin="0"
@@ -83,7 +83,7 @@
                             </h5>
 
                             <div class="progress" style="height: 30px" style="width: 100px;">
-                                <div class="progress-bar 
+                                <div class="progress-bar text-dark fw-bolder 
                             {{ round($totalDiskQemu / $totalMaxDisk, 2) * 100 <= 50 ? 'bg-success' : (round($totalDiskQemu / $totalMaxDisk, 2) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                     role="progressbar" style="width: {{ round($totalDiskQemu / $totalMaxDisk, 2) * 100 }}%"
                                     aria-valuenow="{{ round($totalDiskQemu / $totalMaxDisk, 2) * 100 }}" aria-valuemin="0"
@@ -150,7 +150,7 @@
                         <td>{{ floor($node->uptime / 86400) }} días</td>
                         <td>
                             <div class="progress" style="width: 100px;">
-                                <div class="progress-bar 
+                                <div class="progress-bar text-dark fw-bolder 
                                         {{ round($node->mem / $node->maxmem, 2) * 100 <= 50 ? 'bg-success' : (($node->mem / $node->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                     role="progressbar" style="width: {{ round($node->mem / $node->maxmem, 2) * 100 }}%"
                                     aria-valuenow="{{ round($node->mem / $node->maxmem, 2) * 100 }}" aria-valuemin="0"
@@ -159,7 +159,7 @@
                                 </div>
                         <td>
                             <div class="progress" style="width: 100px;">
-                                <div class="progress-bar 
+                                <div class="progress-bar text-dark fw-bolder 
                                         {{ $node->cpu * 100 <= 50 ? 'bg-success' : ($node->cpu * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                     role="progressbar" style="width: {{ $node->cpu * 100 }}%"
                                     aria-valuenow="{{ $node->cpu * 100 }}" aria-valuemin="0" aria-valuemax="100">
@@ -233,7 +233,7 @@
                         <td>
                             <div class="progress" style="width: 100px;"
                                 title="{{ round($qemu->mem / $qemu->maxmem, 4) * 100 }}%">
-                                <div class="progress-bar 
+                                <div class="progress-bar text-dark fw-bolder 
                                             {{ ($qemu->mem / $qemu->maxmem) * 100 <= 50 ? 'bg-success' : (($qemu->mem / $qemu->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                     role="progressbar" style="width: {{ ($qemu->mem / $qemu->maxmem) * 100 }}%"
                                     aria-valuenow="{{ ($qemu->mem / $qemu->maxmem) * 100 }}" aria-valuemin="0"
@@ -244,7 +244,7 @@
                         </td>
                         <td>
                             <div class="progress" style="width: 100px;">
-                                <div class="progress-bar 
+                                <div class="progress-bar text-dark fw-bolder 
                                             {{ $qemu->cpu * 100 <= 50 ? 'bg-success' : ($qemu->cpu * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                     role="progressbar" style="width: {{ $qemu->cpu * 100 }}%"
                                     aria-valuenow="{{ $qemu->cpu * 100 }}" aria-valuemin="0" aria-valuemax="100">
@@ -284,7 +284,7 @@
                         <td>{{ $storage->storage }}</td>
                         <td>
                             <div class="progress" style="width: 100px;">
-                                <div class="progress-bar 
+                                <div class="progress-bar text-dark fw-bolder 
                             {{ $storage->used * 100 <= 50 ? 'bg-success' : ($storage->used * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                     role="progressbar" style="width: {{ $storage->used * 100 }}%"
                                     aria-valuenow="{{ $storage->used * 100 }}" aria-valuemin="0" aria-valuemax="100">

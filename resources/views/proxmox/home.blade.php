@@ -88,7 +88,7 @@
                         <p class="card-text">Porcentaje de memoria usado:</p>
                         <p class="card-text">{{ round($memoryUsagePercentage, 2) }}%</p>
                         <div class="progress" style="height: 30px">
-                            <div class="progress-bar {{ $memoryUsagePercentage >= 90 ? 'bg-danger' : ($memoryUsagePercentage >= 70 ? 'bg-warning' : 'bg-info') }}"
+                            <div class="progress-bar text-dark fw-bolder {{ $memoryUsagePercentage >= 90 ? 'bg-danger' : ($memoryUsagePercentage >= 70 ? 'bg-warning' : 'bg-info') }}"
                                 role="progressbar" style="width: {{ $memoryUsagePercentage }}%"
                                 aria-valuenow="{{ $memoryUsagePercentage }}" aria-valuemin="0" aria-valuemax="100">
                                 {{ round($memoryUsagePercentage, 2) }}%</div>
@@ -115,7 +115,7 @@
                         <p class="card-text">{{ round($diskUsagePercentage, 2) }}%</p>
 
                         <div class="progress stacked " style="height: 30px">
-                            <div class="progress-bar {{ $diskUsagePercentage >= 90 ? 'bg-danger' : ($diskUsagePercentage >= 70 ? 'bg-warning' : 'bg-info') }}"
+                            <div class="progress-bar text-dark fw-bolder {{ $diskUsagePercentage >= 90 ? 'bg-danger' : ($diskUsagePercentage >= 70 ? 'bg-warning' : 'bg-info') }}"
                                 role="progressbar" style="width: {{ round($diskUsagePercentage, 2)  }}%"
                                 aria-valuenow="{{ round($diskUsagePercentage, 2)  }} " aria-valuemin="0" aria-valuemax="100">
                                 {{ round($diskUsagePercentage, 2)  }}%

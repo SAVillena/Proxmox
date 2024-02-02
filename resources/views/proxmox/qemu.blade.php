@@ -65,7 +65,7 @@
                         <td>
                             <div class="progress" style="width: 100px;"
                                 title="{{ round($qemu->mem / $qemu->maxmem, 4) * 100 }}%">
-                                <div class="progress-bar 
+                                <div class="progress-bar text-dark fw-bolder 
                                             {{ ($qemu->mem / $qemu->maxmem) * 100 <= 50 ? 'bg-success' : (($qemu->mem / $qemu->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                     role="progressbar" style="width: {{ ($qemu->mem / $qemu->maxmem) * 100 }}%"
                                     aria-valuenow="{{ ($qemu->mem / $qemu->maxmem) * 100 }}" aria-valuemin="0"
@@ -76,7 +76,7 @@
                         </td>
                         <td>
                             <div class="progress" style="width: 100px;">
-                                <div class="progress-bar 
+                                <div class="progress-bar text-dark fw-bolder 
                                             {{ $qemu->cpu * 100 <= 50 ? 'bg-success' : ($qemu->cpu * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                     role="progressbar" style="width: {{ $qemu->cpu * 100 }}%"
                                     aria-valuenow="{{ $qemu->cpu * 100 }}" aria-valuemin="0" aria-valuemax="100">

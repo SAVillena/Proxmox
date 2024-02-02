@@ -132,7 +132,7 @@
                                         <td>{{ round($node->uptime / 86400) }} días</td>
                                         <td>
                                             <div class="progress" style="width: 100px;">
-                                                <div class="progress-bar 
+                                                <div class="progress-bar text-dark fw-bolder 
                                         {{ round($node->mem / $node->maxmem, 2) * 100 <= 50 ? 'bg-success' : (($node->mem / $node->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                                     role="progressbar"
                                                     style="width: {{ round($node->mem / $node->maxmem, 2) * 100 }}%"
@@ -142,7 +142,7 @@
                                                 </div>
                                         <td>
                                             <div class="progress" style="width: 100px;">
-                                                <div class="progress-bar 
+                                                <div class="progress-bar text-dark fw-bolder 
                                         {{ $node->cpu * 100 <= 50 ? 'bg-success' : ($node->cpu * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                                     role="progressbar" style="width: {{ $node->cpu * 100 }}%"
                                                     aria-valuenow="{{ $node->cpu * 100 }}" aria-valuemin="0"
@@ -233,7 +233,7 @@
                                         <td>
                                             <div class="progress" style="width: 100px;"
                                                 title="{{ round($qemu->mem / $qemu->maxmem, 4) * 100 }}%">
-                                                <div class="progress-bar 
+                                                <div class="progress-bar text-dark fw-bolder 
                                             {{ ($qemu->mem / $qemu->maxmem) * 100 <= 50 ? 'bg-success' : (($qemu->mem / $qemu->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                                     role="progressbar"
                                                     style="width: {{ ($qemu->mem / $qemu->maxmem) * 100 }}%"
@@ -245,7 +245,7 @@
                                         </td>
                                         <td>
                                             <div class="progress" style="width: 100px;">
-                                                <div class="progress-bar 
+                                                <div class="progress-bar text-dark fw-bolder 
                                             {{ $qemu->cpu * 100 <= 50 ? 'bg-success' : ($qemu->cpu * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                                     role="progressbar" style="width: {{ $qemu->cpu * 100 }}%"
                                                     aria-valuenow="{{ $qemu->cpu * 100 }}" aria-valuemin="0"
@@ -301,7 +301,7 @@
                                         <td>{{ $storage->storage }}</td>
                                         <td>
                                             <div class="progress" style="width: 100px;">
-                                                <div class="progress-bar 
+                                                <div class="progress-bar text-dark fw-bolder 
                             {{ $storage->used * 100 <= 50 ? 'bg-success' : ($storage->used * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                                     role="progressbar" style="width: {{ $storage->used * 100 }}%"
                                                     aria-valuenow="{{ $storage->used * 100 }}" aria-valuemin="0"

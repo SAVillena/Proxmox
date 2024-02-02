@@ -59,7 +59,7 @@
                             <td>{{ floor($node->uptime / 86400) }} días</td>
                             <td>
                                 <div class="progress" style="width: 100px;">
-                                    <div class="progress-bar 
+                                    <div class="progress-bar text-dark fw-bolder 
                                         {{ round($node->mem / $node->maxmem, 2) * 100 <= 50 ? 'bg-success' : (($node->mem / $node->maxmem) * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                         role="progressbar"
                                         style="width: {{ round($node->mem / $node->maxmem, 2) * 100 }}%"
@@ -69,7 +69,7 @@
                                     </div>
                             <td>
                                 <div class="progress" style="width: 100px;">
-                                    <div class="progress-bar 
+                                    <div class="progress-bar text-dark fw-bolder 
                                         {{ $node->cpu * 100 <= 50 ? 'bg-success' : ($node->cpu * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
                                         role="progressbar" style="width: {{ $node->cpu * 100 }}%"
                                         aria-valuenow="{{ $node->cpu * 100 }}" aria-valuemin="0" aria-valuemax="100">
