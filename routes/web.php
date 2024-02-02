@@ -43,6 +43,7 @@ Route::post('/proxmox/cluster/', [ProxmoxController::class, 'storeCluster'])->na
 Route::get('/proxmox/cluster', [ProxmoxController::class, 'cluster'])->name('proxmox.cluster');
 
 Route::get('/proxmox/cluster/{name}', [ProxmoxController::class, 'showByIdCluster'])->name('proxmox.cluster.show');
+Route::get('/proxmox/cluster/{name}/export', [ProxmoxController::class, 'exportQemuByClusterCSV'])->name('proxmox.qemuByCluster.export');
 Route::delete('/proxmox/cluster/{name}', [ProxmoxController::class, 'destroyCluster'])->name('proxmox.cluster.destroy');
 
 Route::delete('/proxmox/node/{node}', [ProxmoxController::class, 'destroyNode'])->name('proxmox.cluster.node.destroy');

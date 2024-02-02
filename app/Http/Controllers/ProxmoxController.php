@@ -703,6 +703,25 @@ class ProxmoxController extends Controller
     }
 
     /**
+     * Exporta los datos del qemu del cluster en formato CSV.
+     * 
+     * @param string $name El nombre del cluster.
+     * @return \Illuminate\Http\Response
+     */
+    public function exportQemuByClusterCSV($name)
+    {
+        $qemus = Qemu::where('cluster_name', $name)->get();
+        foreach ($qemus as $qemu) {
+            $qemu->maxmem = ($qemu->maxmem / 1024 / 1024 / 1024) . " Gb";
+            $qemu->size = ($qemu->size / 1024 / 1024 / 1024) . " Gb";
+        }
+
+        $csvExporter = new \Laracsv\Export();
+        $csvExporter->build($qemus, ['cluster_name','id_proxmox', 'name', 'status', 'size', 'vmid', 'maxcpu', 'maxmem',  'storageName'])->download();
+    }
+
+
+    /**
      * Exporta los datos de los cluster en formato CSV
      * 
      * @return \Illuminate\Http\Response

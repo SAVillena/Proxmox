@@ -190,7 +190,13 @@
 
 
         <h2 class="text-center py-3">Maquinas Virtuales</h2>
-
+        {{-- boton de exportar a excel donde se envia el nombre del cluster --}}
+        <div class="d-flex px-3">
+            <div class="d-flex justify-content-start mb-3">
+                <a href="{{ route('proxmox.qemuByCluster.export', $cluster->name) }}" class="btn btn-success">Exportar a Excel</a>
+            </div>
+        </div>
+        
         {{-- Mostrar datos de Qemu --}}
         <table class="table table-dark table-hover table-bordered">
             <thead>
