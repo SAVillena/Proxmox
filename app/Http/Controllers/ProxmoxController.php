@@ -616,7 +616,7 @@ class ProxmoxController extends Controller
                 $totalDiskQemu += $qemu->size;
             }
 
-            
+            $totalQemu = $qemus->count();
 
 
             // Retorna la vista con los datos del cluster y sus asociaciones
@@ -634,7 +634,8 @@ class ProxmoxController extends Controller
                     'totalRAMQemu' => $totalRAMQemu,
                     'totalCPUQemu' => $totalCPUQemu,
                     'totalMaxDisk' => $totalMaxDisk,
-                    'totalDiskQemu' => $totalDiskQemu
+                    'totalDiskQemu' => $totalDiskQemu,
+                    'totalQemu' => $totalQemu
 
                 ]
             );

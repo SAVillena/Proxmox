@@ -16,8 +16,9 @@
 
                     </div>
                     <div class="card-body">
-                        <h4 class="card-title">Nombre del cluster: {{ $cluster->name }}</h4>
+                        <h5 class="card-title">Nombre del cluster: {{ $cluster->name }}</h5>
                         <h5 class="card-text">Cantidad de nodos: {{ $cluster->node_count }}</h5>
+                        <h5 class="card-text">Cantidad de VMs: {{ $totalQemu }}</h5>
                     </div>
                 </div>
             </div>
