@@ -67,7 +67,7 @@
                     <!-- Botones centrados -->
                     <div class="collapse navbar-collapse justify-content-center" id="navbarSupportedContent">
                         <ul class="navbar-nav px-3">
-                            <li class="nav-item px-1"><a href="{{ url('/proxmox') }}" class="btn btn-success">Datos</a></li>
+                            <li class="nav-item px-1"><a href="{{ url('/proxmox') }}" class="btn btn-success">Resumen</a></li>
                             <li class="nav-item px-1"><a href="{{ url('/proxmox/cluster') }}"
                                     class="btn btn-success">Cluster</a>
                             <li class="nav-item px-1"><a href="{{ url('/proxmox/node') }}" class=" btn btn-success">Nodo</a>

@@ -23,7 +23,7 @@
                 <h3 class="accordion-header" id="headingOne">
                     <button class="accordion-button bg-dark" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
                         aria-expanded="true" aria-controls="collapseOne" >
-                        <h3>Cluster Data</h3>
+                        <h3>Cluster</h3>
                     </button>
                 </h3>
                 <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
@@ -79,7 +79,7 @@
                 <h3 class="accordion-header" id="headingTwo">
                     <button class="accordion-button bg-dark collapsed" type="button" data-bs-toggle="collapse"
                         data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                        <h3>Node Data</h3>
+                        <h3>Nodo</h3>
                     </button>
                 </h3>
                 <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"

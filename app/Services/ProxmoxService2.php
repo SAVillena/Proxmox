@@ -322,9 +322,9 @@ class ProxmoxService2
                     $diskInfo = $this->extractDiskInfo($linea);
                     $storageName = explode(':', $value)[0];
                     //Log::info(["storageName" => $storageName]);
-                    //if (!in_array($storageName, $storageNames)) {
+                    if (!in_array($storageName, $storageNames)) {
                         $storageNames[] = $storageName;
-                    //}
+                    }
                     if (!in_array($storageName, $disksNon)) {
                         //Log::info(["storageIn" => $storageName]);
                         if ($diskInfo && isset($diskInfo['size'])) {
