@@ -598,10 +598,12 @@ class ProxmoxController extends Controller
                 $sizeSumByNodeId[$nodeId] += $size;
             }
 
+            $totalDisk = 0;
             $totalRAM = 0;
             $totalCPU = 0;
             $totalRAMQemu = 0;
             $totalCPUQemu = 0;
+            $totalDiskQemu = 0;
 
             foreach ($nodes as $node) {
                 $totalRAM += $node->maxmem;
@@ -611,7 +613,10 @@ class ProxmoxController extends Controller
             foreach ($qemus as $qemu) {
                 $totalRAMQemu += $qemu->maxmem;
                 $totalCPUQemu += $qemu->maxcpu;
+                $totalDiskQemu += $qemu->size;
             }
+
+            
 
 
             // Retorna la vista con los datos del cluster y sus asociaciones
@@ -628,6 +633,8 @@ class ProxmoxController extends Controller
                     'totalCPU' => $totalCPU,
                     'totalRAMQemu' => $totalRAMQemu,
                     'totalCPUQemu' => $totalCPUQemu,
+                    'totalMaxDisk' => $totalMaxDisk,
+                    'totalDiskQemu' => $totalDiskQemu
 
                 ]
             );
