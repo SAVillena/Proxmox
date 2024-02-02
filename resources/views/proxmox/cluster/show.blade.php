@@ -97,7 +97,7 @@
                 </div>
             </div>
         </div>
-    </div>
+
 
     <!-- Agrega aquí más detalles del cluster -->
 
