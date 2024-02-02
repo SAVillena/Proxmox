@@ -46,9 +46,9 @@
 
             <div class="col-md-6 mb-3 d-flex align-items-stretch">
                 <div class = "card w-100 bg-dark text-white">
-                    <h5 class="card-header">CPU</h5>
+                    <h5 class="card-header">CPU Cores</h5>
                     <div class="card-body">
-                        <p class="card-text">Total de CPU de nodos:</p>
+                        <p class="card-text">Total de cores en nodos:</p>
                         <h5 class="card-text">{{ $totalNodeCpu }} Cores</h5>
 
                     </div>
@@ -63,7 +63,7 @@
                     {{-- mostrar total de cpu --}}
                     <div class="card-body">
                         <p class="card-text">Total de vCPU en Maquinas virtuales :</p>
-                        <h5 class="card-text">{{ $totalCPU }} Cores</h5>
+                        <h5 class="card-text">{{ $totalCPU }} vCPUs</h5>
                         {{-- mostrar porcentaje de cpu usado --}}
 
                     </div>
