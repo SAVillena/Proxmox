@@ -104,14 +104,14 @@
                 <div class="card w-100 bg-dark text-white">
                     <h5 class="card-header">Storage</h5>
                     <div class="card-body">
-                        <p class="card-text">Total de storage Almacenamiento:</p>
+                        <p class="card-text">Total almacenamiento:</p>
                         @if ($totalDisk >= 1099511627776)
                         <h5 class="card-text">{{ round($totalDisk / 1099511627776, 2) }} TB</h5>
                         @else
                             <h5 class="card-text">{{ round($totalDisk / 1073741824, 2) }} GB</h5>
                         @endif
 
-                        <p class="card-text">Total de storage usado:</p>
+                        <p class="card-text">Total de almacenamiento usado:</p>
                         <p class="card-text">{{ round($diskUsagePercentage, 2) }}%</p>
 
                         <div class="progress stacked " style="height: 30px">
