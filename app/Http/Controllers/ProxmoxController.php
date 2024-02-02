@@ -712,8 +712,8 @@ class ProxmoxController extends Controller
     {
         $qemus = Qemu::where('cluster_name', $name)->get();
         foreach ($qemus as $qemu) {
-            $qemu->maxmem = ($qemu->maxmem / 1024 / 1024 / 1024) . " Gb";
-            $qemu->size = ($qemu->size / 1024 / 1024 / 1024) . " Gb";
+            $qemu->maxmem = round($qemu->maxmem / 1024 / 1024 / 1024,2) . " Gb";
+            $qemu->size = round($qemu->size / 1024 / 1024 / 1024,2) . " Gb";
         }
 
         $csvExporter = new \Laracsv\Export();
