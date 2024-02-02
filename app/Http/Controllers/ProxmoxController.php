@@ -671,6 +671,50 @@ class ProxmoxController extends Controller
     }
 
     /**
+     * Exporta los datos de los nodos en formato CSV.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function exportNodeCSV()
+    {
+        $nodes = node::all();
+        foreach ($nodes as $node) {
+            $node->maxmem = round($node->maxmem / 1024 / 1024 / 1024,2) . " Gb";
+            $node->maxdisk = round($node->maxdisk / 1024 / 1024 / 1024,2) . " Gb";
+        }
+        $csvExporter = new \Laracsv\Export();
+        $csvExporter->build($nodes, ['id_proxmox', 'node', 'cluster_name','cpu', 'maxcpu', 'maxmem', 'disk', 'maxdisk', 'ip'])->download();
+    }
+
+    /**
+     * Exporta los datos de los storages en formato CSV.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function exportStorageCSV()
+    {
+        $storages = storage::all();
+        foreach ($storages as $storage) {
+            $storage->disk = round($storage->disk / 1024 / 1024 / 1024 / 1024,2) . " Tb";
+            $storage->maxdisk = round($storage->maxdisk / 1024 / 1024 / 1024 /2024,2) . " Tb";
+        }
+        $csvExporter = new \Laracsv\Export();
+        $csvExporter->build($storages, ['id_proxmox', 'storage', 'node_id', 'disk', 'maxdisk', 'cluster'])->download();
+    }
+
+    /**
+     * Exporta los datos de los cluster en formato CSV
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function exportClusterCSV()
+    {
+        $clusters = cluster::all();
+        $csvExporter = new \Laracsv\Export();
+        $csvExporter->build($clusters, ['name', 'node_count', 'nodes'])->download();
+    }
+
+    /**
      * Busca las instancias Qemu que coincidan con el término de búsqueda proporcionado.
      *
      * @param  \Illuminate\Http\Request  $request

@@ -4,6 +4,12 @@
 
         <h2 class="text-center py-3"><strong>Node Data</strong></h2>
 
+        <div class="d-flex px-3">
+            <div class="d-flex justify-content-start mb-3">
+                <a href="{{ route('proxmox.exportNode') }}" class="btn btn-success">Exportar a Excel</a>
+            </div>
+        </div>
+
         <form action="{{ route('proxmox.searchNode') }}" method="GET">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" placeholder="Buscar por nombre" name="search">

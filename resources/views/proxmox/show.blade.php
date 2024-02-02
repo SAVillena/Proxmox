@@ -187,7 +187,7 @@
                     <div class="accordion-body">
                         {{-- boton para exportar a excel --}}
                         <div class="d-flex justify-content-start mb-3">
-                            <a href="{{ route('proxmox.export') }}" class="btn btn-success">Exportar a Excel</a>
+                            <a href="{{ route('proxmox.exportQemu') }}" class="btn btn-success">Exportar a Excel</a>
                         </div>
                         {{-- Mostrar datos de Qemu --}}
                         <table class="table table-dark table-hover table-bordered">

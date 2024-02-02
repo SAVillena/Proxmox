@@ -50,6 +50,10 @@
 
         <h3 class ="text-center py-3"><strong>Tabla de datos</strong></h3>
         {{-- Buscador de Storage --}}
+        {{-- exportar a excel --}}
+        <div class="d-flex justify-content-start mb-3">
+            <a href="{{ route('proxmox.exportStorage') }}" class="btn btn-success">Exportar a Excel</a>
+        </div>
         <form action="{{ route('proxmox.searchStorage') }}" method="GET">
             <div class="input-group mb-3">
                 <input type="text" class="form-control" placeholder="Buscar por nombre" name="search">

@@ -8,7 +8,7 @@
             {{-- boton para exportar a excel --}}
 
             <div class="d-flex justify-content-start mb-3">
-                <a href="{{ route('proxmox.export') }}" class="btn btn-success">Exportar a Excel</a>
+                <a href="{{ route('proxmox.exportQemu') }}" class="btn btn-success">Exportar a Excel</a>
             </div>
             {{-- crear boton de eliminar qemus en estado eliminado --}}
         </div>

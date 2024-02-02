@@ -49,7 +49,11 @@ Route::delete('/proxmox/node/{node}', [ProxmoxController::class, 'destroyNode'])
 Route::get('/proxmox/node/search', [ProxmoxController::class, 'searchNode'])->name('proxmox.searchNode');
 Route::get('/proxmox/node/{node}', [ProxmoxController::class, 'showByIdNode'])->name('proxmox.cluster.node.show');
 
-Route::get('/proxmox/export', [ProxmoxController::class, 'exportQemuCSV'])->name('proxmox.export');
+Route::get('/proxmox/exportQemu', [ProxmoxController::class, 'exportQemuCSV'])->name('proxmox.exportQemu');
+Route::get('/proxmox/exportStorage', [ProxmoxController::class, 'exportStorageCSV'])->name('proxmox.exportStorage');
+Route::get('/proxmox/exportNode', [ProxmoxController::class, 'exportNodeCSV'])->name('proxmox.exportNode');
+Route::get('/proxmox/exportCluster', [ProxmoxController::class, 'exportClusterCSV'])->name('proxmox.exportCluster');
+
 Route::get('/proxmox/qemu/search', [ProxmoxController::class, 'searchQemu'])->name('proxmox.searchQemu');
 Route::get('/proxmox/storage/search', [ProxmoxController::class, 'searchStorage'])->name('proxmox.searchStorage');
 

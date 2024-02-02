@@ -17,6 +17,11 @@
         @endif
 
         <h2 class="text-center py-3">Cluster Data</h2>
+        <div class="d-flex px-3">
+            <div class="d-flex justify-content-start mb-3">
+                <a href="{{ route('proxmox.exportCluster') }}" class="btn btn-success">Exportar a Excel</a>
+            </div>
+        </div>
         {{-- Mostrar datos de Cluster --}}
         <table class="table table-dark table-hover table-bordered">
             <thead class="table-dark">
