@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class node_storage extends Model
+class Node_storage extends Model
 {
     use HasFactory;
 

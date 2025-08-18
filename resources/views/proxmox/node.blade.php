@@ -89,14 +89,13 @@
                                 <div class="d-flex justify-content-center gap-1">
                                     <a class="btn btn-secondary btn-sm"
                                         href="/proxmox/node/{{ $node->node }}">Mostrar</a>
-                                    <form action="{{ route('proxmox.cluster.node.destroy', $node->node) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        @can('manage cluster')
-                                            <button type="submit"
-                                                class="btn btn-danger btn-sm"onclick="return confirm('¿Estás seguro de querer borrar este cluster?');">Borrar</button>
-                                        @endcan
-                                    </form>
+                                    @can('manage cluster')
+                                        <button type="button" 
+                                                class="btn btn-danger btn-sm" 
+                                                onclick="deleteNode({{ $node->id }}, '{{ $node->node }}')">
+                                            Borrar
+                                        </button>
+                                    @endcan
                                 </div>
 
                         </tr>
@@ -104,4 +103,64 @@
                 </tbody>
             </table>
     </div>
+@endsection
+
+@section('script')
+<script>
+function deleteNode(nodeId, nodeName) {
+    if (confirm(`¿Estás seguro de querer borrar el nodo "${nodeName}"?`)) {
+        // Mostrar indicador de carga
+        const button = event.target;
+        const originalText = button.innerHTML;
+        button.innerHTML = 'Eliminando...';
+        button.disabled = true;
+        
+        fetch(`/proxmox/node/${nodeId}`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.status === 401) {
+                // Usuario no autenticado, redirigir al login
+                alert('Su sesión ha expirado. Será redirigido al login.');
+                window.location.href = '/login';
+                return;
+            }
+            if (response.status === 403) {
+                // Sin permisos
+                alert('No tiene permisos para eliminar nodos. Contacte al administrador.');
+                button.innerHTML = originalText;
+                button.disabled = false;
+                return;
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.success) {
+                // Mostrar mensaje de éxito
+                alert('Nodo eliminado exitosamente');
+                // Recargar la página para actualizar la lista
+                window.location.reload();
+            } else if (data) {
+                // Mostrar mensaje de error
+                alert('Error: ' + data.message);
+                // Restaurar el botón
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error de conexión al eliminar el nodo');
+            // Restaurar el botón
+            button.innerHTML = originalText;
+            button.disabled = false;
+        });
+    }
+}
+</script>
 @endsection

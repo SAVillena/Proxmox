@@ -12,9 +12,21 @@
                     <div class="card w-100 bg-dark text-white py">
                         <div class="card-header">
                             <h3>Storage: {{ $storage->storage }}</h3>
-                            <p>Uso: {{ $storage->used * 100 }}%</p>
-                            <p>Utilizado: {{ $storage->disk >= 1099511627776 ? round($storage->disk / 1099511627776, 2) . ' TB' : round($storage->disk / 1073741824, 2) . ' GB' }}</p>
-                            <p>Tamaño Vol: {{ $storage->maxdisk >= 1099511627776 ? round($storage->maxdisk / 1099511627776, 2) . ' TB' : round($storage->maxdisk / 1073741824, 2) . ' GB' }}</p>
+                            <p>Uso: {{ $storage->used ? round($storage->used * 100, 1) : 0 }}%</p>
+                            <p>Utilizado: 
+                                @if ($storage->disk)
+                                    {{ $storage->disk >= 1099511627776 ? round($storage->disk / 1099511627776, 2) . ' TB' : round($storage->disk / 1073741824, 2) . ' GB' }}
+                                @else
+                                    N/A
+                                @endif
+                            </p>
+                            <p>Tamaño Vol: 
+                                @if ($storage->maxdisk)
+                                    {{ $storage->maxdisk >= 1099511627776 ? round($storage->maxdisk / 1099511627776, 2) . ' TB' : round($storage->maxdisk / 1073741824, 2) . ' GB' }}
+                                @else
+                                    N/A
+                                @endif
+                            </p>
                             @if(!$storage->cluster)
                                 <p>Node: {{ $storage->node_id }}</p>
                             @else
@@ -32,9 +44,21 @@
             <div class="card w-100 bg-dark text-white py">
                 <div class="card-header">
                     <h3>Total almacenamiento</h3>
-                    <p> Uso: {{round($totalUsedDisk/$totalMaxDisk,2) *100}} %</p>
-                    <p> Utilizado:  {{ $totalUsedDisk >= 1099511627776 ? round($totalUsedDisk / 1099511627776, 2) . ' TB' : round($totalUsedDisk / 1073741824, 2) . ' GB' }}</p>
-                    <p> Tamaño Vol: {{ $totalMaxDisk >= 1099511627776 ? round($totalMaxDisk / 1099511627776, 2) . ' TB' : round($totalMaxDisk / 1073741824, 2) . ' GB' }} </p>
+                    <p> Uso: {{ $totalMaxDisk > 0 ? round($totalUsedDisk/$totalMaxDisk,2) * 100 : 0 }} %</p>
+                    <p> Utilizado:  
+                        @if ($totalUsedDisk)
+                            {{ $totalUsedDisk >= 1099511627776 ? round($totalUsedDisk / 1099511627776, 2) . ' TB' : round($totalUsedDisk / 1073741824, 2) . ' GB' }}
+                        @else
+                            N/A
+                        @endif
+                    </p>
+                    <p> Tamaño Vol: 
+                        @if ($totalMaxDisk)
+                            {{ $totalMaxDisk >= 1099511627776 ? round($totalMaxDisk / 1099511627776, 2) . ' TB' : round($totalMaxDisk / 1073741824, 2) . ' GB' }}
+                        @else
+                            N/A
+                        @endif
+                    </p>
                     <p> No se consideran los nodos sin cluster</p>
                 </div>
                 <div class="card-body">
@@ -84,26 +108,40 @@
                             @endif
                             <td>{{ $storage->storage }}</td>
                             <td>
+                                @php
+                                    $usagePercent = $storage->used ? ($storage->used * 100) : 0;
+                                @endphp
                                 <div class="progress" style="width: 100px;">
                                     <div class="progress-bar text-dark fw-bolder 
-                                {{ $storage->used * 100 <= 50 ? 'bg-success' : ($storage->used * 100 <= 75 ? 'bg-warning' : 'bg-danger') }}"
-                                        role="progressbar" style="width: {{ $storage->used * 100 }}%"
-                                        aria-valuenow="{{ $storage->used * 100 }}" aria-valuemin="0" aria-valuemax="100">
-                                        {{ $storage->used * 100 }}%
+                                {{ $usagePercent <= 50 ? 'bg-success' : ($usagePercent <= 75 ? 'bg-warning' : 'bg-danger') }}"
+                                        role="progressbar" style="width: {{ $usagePercent }}%"
+                                        aria-valuenow="{{ $usagePercent }}" aria-valuemin="0" aria-valuemax="100">
+                                        {{ round($usagePercent, 1) }}%
                                     </div>
                                 </div>
-
                             </td>
-                            @if ($storage->disk >= 1099511627776)
-                                <td>{{ round($storage->disk / 1099511627776, 2) }} TB</td>
-                            @else
-                                <td>{{ round($storage->disk / 1073741824, 2) }} GB</td>
-                            @endif
-                            @if ($storage->maxdisk >= 1099511627776)
-                                <td>{{ round($storage->maxdisk / 1099511627776, 2) }} TB</td>
-                            @else
-                                <td>{{ round($storage->maxdisk / 1073741824, 2) }} GB</td>
-                            @endif
+                            <td>
+                                @if ($storage->disk)
+                                    @if ($storage->disk >= 1099511627776)
+                                        {{ round($storage->disk / 1099511627776, 2) }} TB
+                                    @else
+                                        {{ round($storage->disk / 1073741824, 2) }} GB
+                                    @endif
+                                @else
+                                    N/A
+                                @endif
+                            </td>
+                            <td>
+                                @if ($storage->maxdisk)
+                                    @if ($storage->maxdisk >= 1099511627776)
+                                        {{ round($storage->maxdisk / 1099511627776, 2) }} TB
+                                    @else
+                                        {{ round($storage->maxdisk / 1073741824, 2) }} GB
+                                    @endif
+                                @else
+                                    N/A
+                                @endif
+                            </td>
                             <td>{{ $storage->content }}</td>
                             <td>{{ $storage->plugintype }}</td>
                             <td>{{ \Carbon\Carbon::parse($storage->updated_at)->format('d/m/Y H:i') }}</td>
@@ -118,9 +156,9 @@
     <script>
         @foreach ($filteredStorages as $storage)
             var ctx = document.getElementById('storageChart{{ $loop->index }}').getContext('2d');
-            var maxDisk = {{ $storage->maxdisk }};
-            var usedDisk = {{ $storage->disk }};
-            var freeDisk = maxDisk - usedDisk;
+            var maxDisk = {{ $storage->maxdisk ?? 0 }};
+            var usedDisk = {{ $storage->disk ?? 0 }};
+            var freeDisk = maxDisk > 0 ? (maxDisk - usedDisk) : 0;
 
             new Chart(ctx, {
                 type: 'pie',
@@ -154,7 +192,7 @@
                                 var label = context.label;
                                 var value = context.parsed;
                                 var total = context.chart._metasets[context.datasetIndex].total;
-                                var percentage = (value / total * 100).toFixed(2) + '%';
+                                var percentage = total > 0 ? (value / total * 100).toFixed(2) + '%' : '0%';
                                 return label + ': ' + percentage;
                             }
                         }
@@ -173,20 +211,21 @@
         var totalUsedDisk = 0;
         @foreach ($filteredStorages as $storage)
             @if($storage->cluster)
-            totalMaxDisk += {{ $storage->maxdisk }};
-            totalUsedDisk += {{ $storage->disk }};
+            totalMaxDisk += {{ $storage->maxdisk ?? 0 }};
+            totalUsedDisk += {{ $storage->disk ?? 0 }};
             @endif
         @endforeach
 
         // Crea el gráfico con los totales
         var ctxTotal = document.getElementById('totalStorageChart').getContext('2d');
+        var freeSpace = totalMaxDisk > 0 ? (totalMaxDisk - totalUsedDisk) : 0;
         new Chart(ctxTotal, {
             type: 'pie',
             data: {
                 labels: ['Espacio Usado Total', 'Espacio Libre Total'],
                 datasets: [{
                     label: 'Total Disk Usage',
-                    data: [totalUsedDisk, totalMaxDisk - totalUsedDisk],
+                    data: [totalUsedDisk, freeSpace],
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.8)',
                         'rgba(54, 162, 235, 0.8)'
@@ -211,7 +250,7 @@
                                 var label = context.label;
                                 var value = context.parsed;
                                 var total = context.chart._metasets[context.datasetIndex].total;
-                                var percentage = (value / total * 100).toFixed(2) + '%';
+                                var percentage = total > 0 ? (value / total * 100).toFixed(2) + '%' : '0%';
                                 return label + ': ' + percentage;
                             }
                         }

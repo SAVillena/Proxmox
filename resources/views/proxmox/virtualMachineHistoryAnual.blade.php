@@ -1,4 +1,7 @@
-@extends('layouts.app')
+@extends('l        $representativeMonthlyValues = $monthlyData->map(function ($subGroup) {
+            $lastItem = $subGroup->last();
+            return $lastItem ? $lastItem->cluster_qemus : 0;
+        });uts.app')
 
 @section('content')
     @php
@@ -17,13 +20,17 @@
 <div class="container">
     <div>
         <h1>Historial de Maquinas Virtuales</h1>
-        <p>Último Registro - Total de máquinas: {{ $last->first()->cluster_qemus ?? 'N/A' }}</p>
-        <p>Último Registro - vCPU: {{ $last->first()->cluster_cpu ?? 'N/A' }}</p>
+        <p>Último Registro - Total de máquinas: {{ $last && $last->first() ? $last->first()->cluster_qemus : 'N/A' }}</p>
+        <p>Último Registro - vCPU: {{ $last && $last->first() ? $last->first()->cluster_cpu : 'N/A' }}</p>
         <p>Último Registro - Memoria:
-            {{ $AnualData->last() ? number_format($last->first()->cluster_memory / 1024 ** 3) : 'N/A' }}
-            GB</p>
+            @if ($last && $last->first() && $last->first()->cluster_memory)
+                {{ number_format($last->first()->cluster_memory / 1024 ** 3, 2) }} GB
+            @else
+                N/A
+            @endif
+        </p>
         <p>Último Registro - Disco:
-            @if ($AnualData->last())
+            @if ($last && $last->first() && $last->first()->cluster_disk)
                 @php
                     $diskInGB = $last->first()->cluster_disk / 1024 ** 3; // Convertir a GB
                 @endphp
@@ -43,20 +50,27 @@
             <div class="card-body">
                 <p>VMs: {{ $growth['qemus'] }}</p>
                 <p>vCPU: {{ $growth['cpus'] }}</p>
-                <p>RAM: {{  $growth['memorys'] ? number_format($growth['memorys'] / 1024 ** 3) : 'N/A' }} GB</p>
+                <p>RAM: 
+                    @if (isset($growth['memorys']) && $growth['memorys'])
+                        {{ number_format($growth['memorys'] / 1024 ** 3, 2) }} GB
+                    @else
+                        N/A
+                    @endif
+                </p>
                 <p>Disco: 
-                @if ($growth['disks'])
-                @php
-                    $diskInGB = $growth['disks'] / 1024 ** 3; // Convertir a GB
-                @endphp
-                @if ($diskInGB >= 1024)
-                    {{ number_format($diskInGB / 1024, 2) }} TB
-                @else
-                    {{ number_format($diskInGB, 2) }} GB
-                @endif
-            @else
-                N/A
-            @endif </p>
+                    @if (isset($growth['disks']) && $growth['disks'])
+                        @php
+                            $diskInGB = $growth['disks'] / 1024 ** 3; // Convertir a GB
+                        @endphp
+                        @if ($diskInGB >= 1024)
+                            {{ number_format($diskInGB / 1024, 2) }} TB
+                        @else
+                            {{ number_format($diskInGB, 2) }} GB
+                        @endif
+                    @else
+                        N/A
+                    @endif
+                </p>
             </div>
         </div>
 
@@ -112,8 +126,20 @@
                                         <td>{{ $item->cluster_name }}</td>
                                         <td>{{ $item->cluster_qemus }}</td>
                                         <td>{{ $item->cluster_cpu }}</td>
-                                        <td>{{ round($item->cluster_memory / 1024 ** 3, 2) }} GB</td>
-                                        <td>{{ round($item->cluster_disk / 1024 ** 3, 2) }} GB</td>
+                                        <td>
+                                            @if ($item->cluster_memory)
+                                                {{ round($item->cluster_memory / 1024 ** 3, 2) }} GB
+                                            @else
+                                                N/A
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if ($item->cluster_disk)
+                                                {{ round($item->cluster_disk / 1024 ** 3, 2) }} GB
+                                            @else
+                                                N/A
+                                            @endif
+                                        </td>
                                         <td>{{ $item->date }}</td>
                                     </tr>
                                 @endforeach

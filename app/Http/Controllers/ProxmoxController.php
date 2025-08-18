@@ -10,6 +10,7 @@ use App\Models\cluster;
 use App\Models\MonthlyTotal;
 use App\Models\QemuDeleted;
 use App\Models\VirtualMachineHistory;
+use App\Models\ClusterCredentials;
 use App\Services\ProxmoxService2;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,7 @@ class ProxmoxController extends Controller
     public function __construct(ProxmoxService2 $proxmoxService)
     {
         $this->middleware('auth', ['except' => ['getDataRedirect2']]);
+        $this->middleware('can:manage cluster', ['only' => ['destroyNode', 'destroyCluster', 'storeCluster']]);
         $this->proxmoxService = $proxmoxService;
     }
 
@@ -434,7 +436,7 @@ class ProxmoxController extends Controller
                 $qemu->delete();
             }
             foreach ($nodes as $node) {
-                node_storage::where('node_id', $node->id)->delete();
+                Node_storage::where('node_id', $node->id)->delete();
                 $node->delete();
             }
             foreach ($storages as $storage) {
@@ -456,33 +458,113 @@ class ProxmoxController extends Controller
      * @param string $name El nombre del nodo a eliminar.
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroyNode($name)
+    public function destroyNode($nodeId)
     {
-        $node = node::where('node', $name)->first();
-        $qemus = Qemu::where('node_id', $node->id_proxmox)->get();
-        node_storage::where('node_id', $node->id)->get();
-       
+        try {
+            // Verificar si el usuario está autenticado
+            if (!auth()->check()) {
+                if (!request()->expectsJson()) {
+                    return redirect()->route('login')->with('error', 'Debe iniciar sesión para realizar esta acción.');
+                }
+                return response()->json(['success' => false, 'message' => 'Debe iniciar sesión para realizar esta acción.'], 401);
+            }
 
-        $storages = Storage::where('node_id', $node->id_proxmox)->get();
+            // Verificar permisos (el middleware también debería capturar esto, pero por seguridad)
+            if (!auth()->user()->can('manage cluster')) {
+                if (!request()->expectsJson()) {
+                    return redirect()->back()->with('error', 'No tiene permisos para eliminar nodos.');
+                }
+                return response()->json(['success' => false, 'message' => 'No tiene permisos para eliminar nodos.'], 403);
+            }
 
+            // Buscar el nodo por ID o por nombre
+            if (is_numeric($nodeId)) {
+                // Si es numérico, buscar por ID
+                $node = Node::find($nodeId);
+            } else {
+                // Si no es numérico, buscar por nombre
+                $node = Node::where('node', $nodeId)->first();
+            }
+            
+            if (!$node) {
+                // Para formularios tradicionales, redirigir con error
+                if (!request()->expectsJson()) {
+                    return redirect()->back()->with('error', 'Nodo no encontrado.');
+                }
+                // Para AJAX, responder JSON
+                return response()->json(['success' => false, 'message' => 'Nodo no encontrado.'], 404);
+            }
 
+            Log::info("Eliminando nodo: {$node->node} (ID: {$node->id})");
 
-        //si existe otro nodo conectado mediante node_storage al storage no eliminar
+            // Verificar solo dependencias críticas (VMs)
+            $qemuCount = Qemu::where('node_id', $node->id_proxmox)->count();
+            
+            if ($qemuCount > 0) {
+                Log::warning("Intento de eliminar nodo con VMs activas: QEMUs={$qemuCount}");
+                $errorMessage = "No se puede eliminar el nodo. Tiene {$qemuCount} máquinas virtuales activas. Elimine primero las VMs.";
+                
+                if (!request()->expectsJson()) {
+                    return redirect()->back()->with('error', $errorMessage);
+                }
+                return response()->json(['success' => false, 'message' => $errorMessage], 400);
+            }
 
+            // Obtener storages directamente asociados al nodo
+            $directStorages = Storage::where('node_id', $node->id_proxmox)->get();
+            
+            // Obtener IDs de storages asociados a través de la tabla pivot
+            $pivotStorageIds = Node_storage::where('node_id', $node->id)->pluck('storage_id');
+            $pivotStorages = Storage::whereIn('id', $pivotStorageIds)->get();
+            
+            $allStorages = $directStorages->merge($pivotStorages)->unique('id');
+            $storageCount = $allStorages->count();
+            
+            Log::info("Procesando eliminación: QEMUs={$qemuCount}, Storages directos={$directStorages->count()}, Storages pivot={$pivotStorages->count()}");
 
+            // PRIMERO: Eliminar relaciones de la tabla pivot node_storage
+            $deletedPivotRecords = Node_storage::where('node_id', $node->id)->delete();
+            if ($deletedPivotRecords > 0) {
+                Log::info("Eliminadas {$deletedPivotRecords} relaciones node_storage");
+            }
 
-        foreach ($qemus as $qemu) {
-            $qemu->delete();
+            // SEGUNDO: Manejar storages directos (ahora sin referencias en node_storage)
+            foreach ($directStorages as $storage) {
+                // Para storages con relación directa, eliminar el registro una vez que no haya referencias
+                Log::info("Eliminando storage directo '{$storage->storage}' del nodo");
+                try {
+                    $storage->delete();
+                    Log::info("Storage '{$storage->storage}' eliminado exitosamente");
+                } catch (\Exception $e) {
+                    Log::warning("No se pudo eliminar storage '{$storage->storage}': " . $e->getMessage());
+                    // Continuar con la eliminación del nodo incluso si algunos storages no se pueden eliminar
+                }
+            }
+
+            // Eliminar credenciales asociadas
+            ClusterCredentials::where('ip', $node->ip)->delete();
+            Log::info("Credenciales eliminadas para IP: {$node->ip}");
+            
+            // Eliminar el nodo
+            $node->delete();
+            
+            Log::info("Nodo eliminado exitosamente: {$nodeId}");
+            
+            $successMessage = "Nodo eliminado exitosamente. Se procesaron {$storageCount} almacenamientos asociados.";
+            
+            if (!request()->expectsJson()) {
+                return redirect()->back()->with('success', $successMessage);
+            }
+            return response()->json(['success' => true, 'message' => $successMessage]);
+            
+        } catch (\Exception $e) {
+            Log::error("Error al eliminar nodo {$nodeId}: " . $e->getMessage());
+            
+            if (!request()->expectsJson()) {
+                return redirect()->back()->with('error', 'Error interno del servidor.');
+            }
+            return response()->json(['success' => false, 'message' => 'Error interno del servidor.'], 500);
         }
-
-        node_storage::where('node_id', $node->id)->delete();
-        $node->delete();
-        foreach ($storages as $storage) {
-
-            Node_storage::where('storage_id', $storage->id)->delete();
-            $storage->delete();
-        }
-        return redirect()->route('proxmox.index');
     }
 
     /**
@@ -503,16 +585,50 @@ class ProxmoxController extends Controller
      */
     public function storeCluster(Request $request)
     {
-
         try {
+            // Validar los datos de entrada
+            $request->validate([
+                'ip' => 'required|ip',
+                'username' => 'required|string|min:2|max:50',
+                'password' => 'required|string|min:1'
+            ], [
+                'ip.required' => 'La dirección IP es obligatoria.',
+                'ip.ip' => 'Debe ser una dirección IP válida.',
+                'username.required' => 'El nombre de usuario es obligatorio.',
+                'username.min' => 'El nombre de usuario debe tener al menos 2 caracteres.',
+                'username.max' => 'El nombre de usuario no puede tener más de 50 caracteres.',
+                'password.required' => 'La contraseña es obligatoria.',
+                'password.min' => 'La contraseña debe tener al menos 1 caracter.'
+            ]);
+            
             $ip = $request->input('ip');
             $username = $request->input('username');
             $password = $request->input('password');
+            
+            // Intentar agregar el cluster/nodo
             $this->proxmoxService->addCluster($ip, $username, $password);
-            return redirect()->route('proxmox.index');
+            
+            Log::info("Cluster/Nodo agregado exitosamente: IP={$ip}, Usuario={$username}");
+            
+            return redirect()->route('proxmox.home')->with('success', 'Cluster/Nodo agregado exitosamente. Los datos han sido sincronizados.');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            // Re-lanzar la excepción de validación para que Laravel la maneje
+            throw $e;
         } catch (\Exception $e) {
-            Log::error($e->getMessage());
-            return redirect()->back()->with('error', 'Ocurrió un error agregando el cluster.');
+            Log::error('Error al agregar cluster/nodo: ' . $e->getMessage());
+            
+            // Determinar el tipo de error para mostrar un mensaje más específico
+            if (strpos($e->getMessage(), 'autenticar') !== false) {
+                $errorMessage = 'Error de autenticación. Verifique el usuario y contraseña.';
+            } elseif (strpos($e->getMessage(), 'conectar') !== false) {
+                $errorMessage = 'Error de conexión. Verifique que la IP sea correcta y que el puerto 8006 esté accesible.';
+            } else {
+                $errorMessage = 'Error al procesar la solicitud: ' . $e->getMessage();
+            }
+            
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', $errorMessage);
         }
     }
 

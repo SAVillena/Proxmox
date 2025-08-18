@@ -236,19 +236,22 @@ class ProxmoxService2
                     'content' => $storageItem['content'],
                     'plugintype' => $storageItem['plugintype'],
                     'shared' => $storageItem['shared'],
-                    'used' => ($storageItem['disk'] / $storageItem['maxdisk']),
+                    'used' => $storageItem['maxdisk'] > 0 ? ($storageItem['disk'] / $storageItem['maxdisk']) : 0,
                     'cluster' => $this->clusterName,
                 ]
             );
 
             // Guardar los datos en node_storage
-            Node_storageDB::updateOrCreate(
-                ['node_id' => $nodeId, 'storage_id' => $storageItem['id']],
-                [
-                    'node_id' => $nodeId,
-                    'storage_id' => Storage::where('id_proxmox', $storageItem['id'])->first()->id,
-                ]
-            );
+            $storage = Storage::where('id_proxmox', $storageItem['id'])->first();
+            if ($storage) {
+                Node_storageDB::updateOrCreate(
+                    ['node_id' => $nodeId, 'storage_id' => $storage->id],
+                    [
+                        'node_id' => $nodeId,
+                        'storage_id' => $storage->id,
+                    ]
+                );
+            }
         }
     }
 
@@ -504,13 +507,14 @@ class ProxmoxService2
                 $this->addClusterCredentials($ip, $username, $password);
                 $this->VMHistory();
                 $this->MonthlyTotals();
+                Log::info("Nodo/Cluster agregado exitosamente: " . $ip);
             } else {
-                Log::error("Error al conectar con el nodo: " . $ip);
+                Log::error("Error de autenticación con el nodo: " . $ip);
+                throw new \Exception("No se pudo autenticar con el servidor Proxmox. Verifique las credenciales.");
             }
         } catch (GuzzleException $e) {
-            // Si la autenticación falla, se podría registrar el error o intentar con el siguiente nodo
-
-            Log::error("Error al conectar con el nodo: " . $ip);
+            Log::error("Error de conexión con el nodo: " . $ip . " - " . $e->getMessage());
+            throw new \Exception("No se pudo conectar con el servidor Proxmox. Verifique la IP y que el puerto 8006 esté accesible.");
         }
     }
 
@@ -531,31 +535,49 @@ class ProxmoxService2
         $url = $this->baseUrl . '/cluster/status';
         $passwordEncrypt = Crypt::encrypt($password);
         $authData = $this->getAuthToken($ip, $username, $passwordEncrypt);
-        $data = $this->makeRequest('GET', $url, $authData);
-        usort($data, function ($item1, $item2) {
-            return strcmp($item1['type'], $item2['type']);
-        });
+        
+        try {
+            $data = $this->makeRequest('GET', $url, $authData);
+            usort($data, function ($item1, $item2) {
+                return strcmp($item1['type'], $item2['type']);
+            });
 
-        //si es un nodo guardar la ip en un array
-        if ($data) {
-            foreach ($data as $item) {
-                if ($item['type'] == 'node') {
-                    $IpNodes[] = $item['ip'];
+            $IpNodes = [];
+            //si es un nodo guardar la ip en un array
+            if ($data) {
+                foreach ($data as $item) {
+                    if ($item['type'] == 'node') {
+                        $IpNodes[] = $item['ip'];
+                    }
                 }
             }
+            
+            // Si no hay nodos en el cluster status, es un nodo standalone
+            if (empty($IpNodes)) {
+                Log::info("Nodo standalone detectado: " . $ip);
+                $IpNodes[] = $ip; // Agregar la IP actual como nodo standalone
+            }
+            
+        } catch (\Exception $e) {
+            // Si falla la consulta del cluster status, probablemente es un nodo standalone
+            Log::info("No se pudo obtener cluster status, tratando como nodo standalone: " . $ip);
+            $IpNodes = [$ip];
         }
+
         foreach ($IpNodes as $ipNode) {
             $credentials = ClusterCredentials::where('ip', $ipNode)->first();
             if ($credentials) {
                 $credentials->username = $username;
                 $credentials->password = Crypt::encrypt($password);
                 $credentials->save();
+                Log::info("Credenciales actualizadas para IP: " . $ipNode);
             } else {
                 ClusterCredentials::create([
                     'ip' => $ipNode,
                     'username' => $username,
                     'password' => Crypt::encrypt($password),
                 ]);
+                Log::info("Credenciales creadas para IP: " . $ipNode);
             }
         }
     }
@@ -630,10 +652,10 @@ class ProxmoxService2
             foreach ($totals as $total) {
                 dd($total->date, $startOfMonth);
                 if($total->date == $startOfMonth){
-                    $totalQemu =+ $total->cluster_qemus;
-                    $totalCPU =+ $total->cluster_cpu;
-                    $totalRAM =+ $total->cluster_memory;
-                    $totalDisk =+ $total->cluster_disk;
+                    $totalQemu += $total->cluster_qemus;
+                    $totalCPU += $total->cluster_cpu;
+                    $totalRAM += $total->cluster_memory;
+                    $totalDisk += $total->cluster_disk;
                 }
             }            
             //falta suma 
@@ -664,9 +686,30 @@ class ProxmoxService2
             $startOfMonth = Carbon::now()->startOfMonth();
             $endOfMonth = Carbon::now()->endOfMonth();
 
-            $totals = VirtualMachineHistory::whereBetween('date', [$startOfMonth, $endOfMonth])->first()->get();
+            // Obtener todos los registros del mes actual
+            $totals = VirtualMachineHistory::whereBetween('date', [$startOfMonth, $endOfMonth])->get();
 
-            $totals = $totals->groupBy('date')->map(function ($group) {
+            // Verificar si hay registros antes de procesar
+            if ($totals->isEmpty()) {
+                Log::info("No hay registros de VirtualMachineHistory para el mes actual: {$startOfMonth->format('Y-m')}");
+                
+                // Crear registro con valores en 0 si no hay datos
+                MonthlyTotal::updateOrCreate(
+                    [
+                        'date' => $startOfMonth,
+                    ],
+                    [
+                        'cluster_qemus' => 0,
+                        'cluster_cpu' => 0,
+                        'cluster_memory' => 0,
+                        'cluster_disk' => 0,
+                    ]
+                );
+                return;
+            }
+
+            // Agrupar por fecha y sumar los totales
+            $groupedTotals = $totals->groupBy('date')->map(function ($group) {
                 return (object)[
                     'totalQemus' => $group->sum('cluster_qemus'),
                     'totalCPU' => $group->sum('cluster_cpu'),
@@ -674,7 +717,11 @@ class ProxmoxService2
                     'totalDisk' => $group->sum('cluster_disk'),
                 ];
             });
-            $lastTotal = $totals->last();
+
+            // Obtener el último total (más reciente)
+            $lastTotal = $groupedTotals->last();
+
+            // Crear o actualizar el registro monthly_totals
             MonthlyTotal::updateOrCreate(
                 [
                     'date' => $startOfMonth,
@@ -686,8 +733,11 @@ class ProxmoxService2
                     'cluster_disk' => $lastTotal->totalDisk ?? 0,
                 ]
             );
-        } catch (GuzzleException $e) {
-            Log::error("Error occurred: " . $e->getMessage());
+
+            Log::info("MonthlyTotals actualizado correctamente para {$startOfMonth->format('Y-m')}");
+
+        } catch (\Exception $e) {
+            Log::error("Error en MonthlyTotals: " . $e->getMessage());
         }
     }
 

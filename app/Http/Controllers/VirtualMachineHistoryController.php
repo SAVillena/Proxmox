@@ -101,10 +101,10 @@ class VirtualMachineHistoryController extends Controller
         
         //obtener la diferencia de la suma del año actual
         $last = $currentYearRecords->last();
-        $currentYearSumQemu = $last->cluster_qemus;
-        $currentYearSumCPU = $last->cluster_cpu;
-        $currentYearSumRAM = $last->cluster_memory;
-        $currentYearSumDisk = $last->cluster_disk;
+        $currentYearSumQemu = $last ? $last->cluster_qemus : 0;
+        $currentYearSumCPU = $last ? $last->cluster_cpu : 0;
+        $currentYearSumRAM = $last ? $last->cluster_memory : 0;
+        $currentYearSumDisk = $last ? $last->cluster_disk : 0;
         //obtener el ultimo registro del año anterior
         $previousYearRecord = MonthlyTotal::whereYear('date', $previousYear)->orderBy('date', 'desc')->first();
         
